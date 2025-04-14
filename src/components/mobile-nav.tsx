@@ -2,12 +2,13 @@ import { createSignal } from "solid-js"
 
 import { Button } from "~/components/ui/button"
 import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer"
+import { navItems } from "~/lib/data"
 
 export function MobileNav() {
   const [open, setOpen] = createSignal(false)
 
   return (
-    <Drawer open={open()} onOpenChange={setOpen} side="right">
+    <Drawer open={open()} onOpenChange={setOpen}>
       <DrawerTrigger
         as={Button<"button">}
         variant="ghost"
@@ -50,7 +51,16 @@ export function MobileNav() {
 
         <span class="sr-only">Toggle Menu</span>
       </DrawerTrigger>
-      <DrawerContent>LOOK AT ME I'M THE CONTENT!</DrawerContent>
+      <DrawerContent class="min-h-[80svh]">
+        <div class="flex flex-col gap-6 text-xl items-center mt-12">
+          <div>SK</div>
+          {navItems.map((item) => (
+            <a href={item.href} title={item.name} class="font-medium text-foreground">
+              {item.name}
+            </a>
+          ))}
+        </div>
+      </DrawerContent>
     </Drawer>
   )
 }

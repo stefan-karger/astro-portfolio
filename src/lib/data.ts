@@ -34,7 +34,7 @@ export const personalInfo: PersonalInfo = {
 
   //greeting: "Hi, I'm Stefan!",
   // summary:
-  //   "A Senior Software Engineer specializing in full-stack applications and developing tailored solutions for complex problems. I try to combine deep technical knowledge with hands-on project leadership."
+  //   "A Senior Software Engineer specializing in full-stack applications and developing tailored solutions for complex problems. My goal is to combine deep technical knowledge with hands-on project leadership."
 }
 
 export const socialLinks: SocialLink[] = [
@@ -173,34 +173,22 @@ export const testimonials: Testimonial[] = [
   }
 ]
 
-/**
- * Extracts and sorts all technologies from projects and career history by
- * their occurrence, returning a string array of technology names.
- *
- * @param limit The maximum number of top skills to return.
- * @returns An array of technology names sorted by their occurrence in
- *   descending order, limited by the provided limit.
- */
 export function getTopSkills(limit: number = 20): string[] {
-  const technologyCounts: { [technology: string]: number } = {}
+  // collect all used technologies
+  const technologyCounts = [...projects, ...careerHistory]
+    .flatMap((item) => item.technologies)
+    .reduce(
+      (acc, tech) => {
+        acc[tech] = (acc[tech] || 0) + 1
+        return acc
+      },
+      {} as { [technology: string]: number }
+    )
 
-  // Count technology occurrences
-  for (const project of projects) {
-    for (const technology of project.technologies) {
-      technologyCounts[technology] = (technologyCounts[technology] || 0) + 1
-    }
-  }
-
-  for (const careerItem of careerHistory) {
-    for (const technology of careerItem.technologies) {
-      technologyCounts[technology] = (technologyCounts[technology] || 0) + 1
-    }
-  }
-
-  // Sort technologies by occurrence and extract names
+  // sort technologies by occurrence and extract names
   const sortedTechnologies = Object.entries(technologyCounts)
     .sort(([, countA], [, countB]) => countB - countA)
     .map(([technology]) => technology)
 
-  return sortedTechnologies.slice(0, limit) // Apply the limit
+  return sortedTechnologies.slice(0, limit)
 }

@@ -76,7 +76,7 @@ const DrawerContent = <T extends ValidComponent = "div">(
         )}
         {...others}
       >
-        <div class="mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted group-data-[side=bottom]/drawer-content:block" />
+        <div class="mx-auto mt-4 hidden h-1 w-[80px] shrink-0 rounded-full bg-muted group-data-[side=bottom]/drawer-content:block" />
         {local.children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
