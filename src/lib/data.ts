@@ -76,13 +76,9 @@ export const projects: Project[] = [
       "TypeScript",
       "Tailwind CSS",
       "SolidJS",
-      "Headless UI",
       "DX (Developer Experience)",
-
-      "Monorepo",
-      "CLI Tools",
-      "Component Architecture",
-      "Accessibility"
+      "CI / CD",
+      "CLI Tools"
     ],
     github: "https://github.com/stefan-karger/solid-ui",
     demo: "https://solid-ui.com"

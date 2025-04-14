@@ -1,9 +1,10 @@
 ---
 import Badge from "~/components/badge.astro"
+import Icon from "~/components/icon.astro"
+import { Button } from "~/components/ui/button"
 import { projects } from "~/lib/data"
 
-import Icon from "../icon.astro"
-import { Button } from "../ui/button"
+const maxProjects = 3
 ---
 
 <section id="projects">
@@ -12,7 +13,7 @@ import { Button } from "../ui/button"
   <div class="mx-auto max-w-4xl">
     <div class="flex flex-cols gap-6">
       {
-        projects.slice(0, 3).map((project) => (
+        projects.slice(0, maxProjects).map((project) => (
           <div class="rounded-lg text-card-foreground relative mx-auto max-w-[800px] overflow-hidden border border-border p-6">
             <h3 class="mb-3 text-2xl font-bold">{project.title}</h3>
             <p class="mb-4 text-muted-foreground">{project.description}</p>
