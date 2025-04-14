@@ -1,0 +1,25 @@
+---
+interface Props {
+  name: string
+  class?: string
+}
+
+const { name, class: className = "" } = Astro.props
+
+let svgContent: string | undefined
+try {
+  const svgImport = await import(`../assets/icons/${name}.svg?raw`)
+  svgContent = svgImport.default
+} catch (error) {
+  console.error(`Icon not found: ${name}.svg`)
+  svgContent = undefined
+}
+---
+
+{
+  svgContent ? (
+    <Fragment set:html={svgContent.replace("<svg", `<svg class="${className}"`)} />
+  ) : (
+    <span>Icon not found: {name}</span>
+  )
+}

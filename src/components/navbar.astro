@@ -1,0 +1,28 @@
+---
+import { MobileNav } from "~/components/mobile-nav"
+import { navItems } from "~/lib/data"
+import { ModeToggle } from "~/components/mode-toggle"
+---
+
+<header
+  class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+  <div class="container flex h-14 items-center justify-between m-auto px-4">
+    <MobileNav client:load />
+    <div class="text-xl font-bold hidden md:inline-block">SK</div>
+    <div class="hidden md:flex items-center gap-6">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            title={item.name}
+            class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {item.name}
+          </a>
+        ))
+      }
+      <ModeToggle client:only />
+    </div>
+  </div>
+</header>

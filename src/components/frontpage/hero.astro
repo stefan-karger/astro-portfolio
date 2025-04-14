@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets"
+import ProfilePic from "~/assets/me.jpg"
+import { personalInfo, socialLinks } from "~/lib/data"
+import Icon from "~/components/icon.astro"
+---
+
+<section class="flex flex-col items-center pt-20 md:pt-36">
+  <div class="flex flex-col md:flex-row gap-8 md:gap-12 items-start max-w-2xl">
+    <div class="size-[120px] border-4 border-primary/10 rounded-full">
+      <Image src={ProfilePic} alt="SK" class="rounded-full object-cover" />
+    </div>
+    <div class="flex flex-col items-start text-left">
+      <h1 class="mb-3 text-3xl font-bold tracking-tight md:text-4xl">{personalInfo.greeting}</h1>
+      <p class="mb-4 max-w-md text-muted-foreground md:text-lg">{personalInfo.summary}</p>
+      <div class="flex flex-wrap items-center gap-4">
+        {
+          socialLinks.map((social) => (
+            <a
+              href={social.href}
+              title={social.label}
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+              {...(social.href.startsWith("https://") && {
+                target: "_blank",
+                rel: "noopener noreferrer"
+              })}
+            >
+              <Icon name={social.icon} class="size-6" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
