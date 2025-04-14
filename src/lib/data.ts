@@ -9,10 +9,16 @@ import type {
 
 export const navItems: NavItem[] = [
   { name: "Home", href: "/" },
-  { name: "Projects", href: "/projects" },
+  { name: "Projekte", href: "/projects" },
   { name: "Blog", href: "/blog" },
-  { name: "Photography", href: "/photography" },
+  { name: "Fotografie", href: "/photography" },
   { name: "CV", href: "/cv" }
+
+  // { name: "Home", href: "/" },
+  // { name: "Projects", href: "/projects" },
+  // { name: "Blog", href: "/blog" },
+  // { name: "Photography", href: "/photography" },
+  // { name: "CV", href: "/cv" }
 ]
 
 export const personalInfo: PersonalInfo = {
@@ -22,9 +28,13 @@ export const personalInfo: PersonalInfo = {
   gender: "Male",
   location: "Würzburg, Deutschland",
   email: "kontakt@stefan-karger.de",
-  greeting: "Hi, I'm Stefan",
+  greeting: "Hi! Ich bin Stefan.",
   summary:
-    "Senior Software Engineer specializing in full-stack applications and developing tailored solutions for complex problems. Enthusiastic about conceptual and fantasy photography that tells a story."
+    "Senior Software Engineer mit Fokus auf Full-Stack-Anwendungen und der Entwicklung maßgeschneiderter Lösungen für komplexe Probleme. Mein Ziel ist es, tiefes technisches Know-how mit praktischer Projektleitung zu verbinden."
+
+  //greeting: "Hi, I'm Stefan!",
+  // summary:
+  //   "A Senior Software Engineer specializing in full-stack applications and developing tailored solutions for complex problems. I try to combine deep technical knowledge with hands-on project leadership."
 }
 
 export const socialLinks: SocialLink[] = [
@@ -57,99 +67,25 @@ export const socialLinks: SocialLink[] = [
 
 export const projects: Project[] = [
   {
-    title: "E-commerce Platform",
+    title: "SolidUI",
+
     description:
-      "A full-stack e-commerce platform with real-time inventory management, payment processing, and analytics dashboard.",
-    image: "/placeholder.svg?height=300&width=500",
+      "Eine moderne UI-Komponentenbibliothek für SolidJS, entwickelt mit Kobalte, Corvu und Tailwind CSS. Sie umfasst neben den Komponenten eine Dokumentationsseite und ein CLI-Tool, mit dem neue Ideen und Projekte noch schneller und einfacher umgesetzt werden können.",
+
     technologies: [
-      "React",
-      "Node.js",
-      "MongoDB",
-      "Redux",
-      "Stripe",
-      "AWS",
-      "UX Design",
-      "API Design"
-    ],
-    status: "done",
-    github: "https://github.com/username/ecommerce-platform",
-    demo: "https://ecommerce-demo.example.com"
-  },
-  {
-    title: "AI Content Generator",
-    description:
-      "An AI-powered content generation tool that creates marketing copy, blog posts, and social media content based on user prompts.",
-    image: "/placeholder.svg?height=300&width=500",
-    technologies: [
-      "Python",
-      "TensorFlow",
-      "Next.js",
-      "OpenAI API",
-      "PostgreSQL",
-      "Docker",
-      "System Architecture",
-      "Performance Optimization"
-    ],
-    status: "in progress",
-    github: "https://github.com/username/ai-content-generator",
-    demo: "https://ai-generator.example.com"
-  },
-  {
-    title: "Health Tracking App",
-    description:
-      "A mobile application for tracking fitness goals, nutrition, and health metrics with personalized recommendations.",
-    image: "/placeholder.svg?height=300&width=500",
-    technologies: [
-      "React Native",
-      "Firebase",
-      "GraphQL",
       "TypeScript",
-      "Jest",
-      "Figma",
-      "UX Design",
-      "Data Visualization"
+      "Tailwind CSS",
+      "SolidJS",
+      "Headless UI",
+      "DX (Developer Experience)",
+
+      "Monorepo",
+      "CLI Tools",
+      "Component Architecture",
+      "Accessibility"
     ],
-    status: "backlog",
-    github: "https://github.com/username/health-tracker",
-    demo: null
-  },
-  {
-    title: "Personal Finance Dashboard",
-    description:
-      "A comprehensive dashboard for tracking personal finances, investments, and budgeting with data visualization.",
-    image: "/placeholder.svg?height=300&width=500",
-    technologies: [
-      "React",
-      "TypeScript",
-      "D3.js",
-      "Firebase",
-      "Node.js",
-      "Express",
-      "Data Visualization",
-      "UX Design"
-    ],
-    status: "done",
-    github: "https://github.com/username/finance-dashboard",
-    demo: "https://finance-dashboard.example.com"
-  },
-  {
-    title: "Social Media Scheduler",
-    description:
-      "A tool for scheduling and analyzing social media posts across multiple platforms with analytics.",
-    image: "/placeholder.svg?height=300&width=500",
-    technologies: [
-      "Vue",
-      "Node.js",
-      "PostgreSQL",
-      "Redis",
-      "AWS",
-      "Jest",
-      "API Design",
-      "Performance Optimization"
-    ],
-    status: "done",
-    github: "https://github.com/username/social-scheduler",
-    demo: "https://social-scheduler.example.com"
+    github: "https://github.com/stefan-karger/solid-ui",
+    demo: "https://solid-ui.com"
   }
 ]
 

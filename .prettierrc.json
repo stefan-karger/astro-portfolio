@@ -7,5 +7,18 @@
   "trailingComma": "none",
   "tailwindStylesheet": "./src/styles/global.css",
   "tailwindFunctions": ["cn", "cva"],
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "importOrder": [
+    "<BUILTIN_MODULES>",
+    "",
+    "^(solid-js/(.*)$)|^(solid-js$)",
+    "^(@solidjs/(.*)$)",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^~/(.*)$",
+    "",
+    "^[.]"
+  ],
+  "importOrderCaseSensitive": false,
+  "plugins": ["prettier-plugin-tailwindcss", "@ianvs/prettier-plugin-sort-imports"]
 }

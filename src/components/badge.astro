@@ -1,0 +1,10 @@
+---
+const props = Astro.props
+---
+
+<div
+  class="inline-flex items-center border px-2.5 py-0.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-sm font-normal"
+  {...props}
+>
+  <slot />
+</div>

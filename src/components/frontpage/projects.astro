@@ -1,0 +1,59 @@
+---
+import Badge from "~/components/badge.astro"
+import { projects } from "~/lib/data"
+
+import Icon from "../icon.astro"
+import { Button } from "../ui/button"
+---
+
+<section class="py-28 md:py-32" id="projects">
+  <h2 class="mb-8 text-center text-3xl font-bold tracking-tight md:text-4xl">Aktuelle Projekte</h2>
+
+  <div class="mx-auto max-w-4xl">
+    <div class="flex flex-cols gap-6">
+      {
+        projects.slice(0, 3).map((project) => (
+          <div class="rounded-lg bg-card text-card-foreground relative mx-auto max-w-[800px] overflow-hidden border border-border p-6">
+            <h3 class="mb-3 text-2xl font-bold">{project.title}</h3>
+            <p class="mb-4 text-muted-foreground">{project.description}</p>
+            <div class="mb-4 flex flex-wrap gap-2">
+              {project.technologies.map((technology) => (
+                <Badge>{technology}</Badge>
+              ))}
+            </div>
+            <div class="flex flex-wrap gap-3">
+              {project.demo && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  as={"a"}
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="h-8 flex items-center gap-1"
+                >
+                  <Icon name="external-link" />
+                  Live Demo
+                </Button>
+              )}
+              {project.github && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  as={"a"}
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="h-8 flex items-center gap-1"
+                >
+                  <Icon name="github" />
+                  GitHub
+                </Button>
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

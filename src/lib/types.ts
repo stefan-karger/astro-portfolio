@@ -23,11 +23,9 @@ export type SocialLink = {
 export type Project = {
   title: string
   description: string
-  image: string
   technologies: string[]
-  status: "done" | "in progress" | "backlog"
-  github: string
-  demo: string | null
+  github?: string
+  demo?: string
 }
 
 export type CareerHistoryItem = {

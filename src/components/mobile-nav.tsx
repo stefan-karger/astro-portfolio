@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js"
+
 import { Button } from "~/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer"
 
 export function MobileNav() {
