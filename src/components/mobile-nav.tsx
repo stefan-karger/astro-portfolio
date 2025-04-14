@@ -55,7 +55,7 @@ export function MobileNav() {
         <div class="flex flex-col gap-6 text-xl items-center mt-12">
           <div>SK</div>
           {navItems.map((item) => (
-            <a href={item.href} title={item.name} class="font-medium text-foreground">
+            <a href={item.href} title={item.name} class="font-medium text-muted-foreground">
               {item.name}
             </a>
           ))}
