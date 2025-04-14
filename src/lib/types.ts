@@ -1,5 +1,3 @@
-import type { SvgIcon } from "~/components/icons"
-
 export type NavItem = {
   name: string
   href: string

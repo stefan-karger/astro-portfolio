@@ -10,13 +10,13 @@ import { ModeToggle } from "~/components/mode-toggle"
   <div class="container flex h-14 items-center justify-between m-auto px-4">
     <MobileNav client:load />
     <div class="text-xl font-bold hidden md:inline-block">SK</div>
-    <div class="hidden md:flex items-center gap-6">
+    <div class="flex items-center gap-6">
       {
         navItems.map((item) => (
           <a
             href={item.href}
             title={item.name}
-            class="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            class="hidden md:inline-block text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {item.name}
           </a>
