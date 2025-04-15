@@ -30,7 +30,7 @@ export const personalInfo: PersonalInfo = {
   email: "kontakt@stefan-karger.de",
   greeting: "Hi! Ich bin Stefan.",
   summary:
-    "Senior Software Engineer mit Fokus auf Full-Stack-Anwendungen und der Entwicklung maßgeschneiderter Lösungen für komplexe Probleme. Mein Ziel ist es, tiefes technisches Know-how mit praktischer Projektleitung zu verbinden."
+    "Ein Senior Software Engineer mit Fokus auf Full-Stack-Anwendungen und der Entwicklung maßgeschneiderter Lösungen für komplexe Probleme. Meine Arbeit verbindet tiefes technisches Know-how mit smarter, moderner Umsetzung."
 
   //greeting: "Hi, I'm Stefan!",
   // summary:
@@ -70,12 +70,12 @@ export const projects: Project[] = [
     title: "SolidUI",
 
     description:
-      "Eine moderne UI-Komponentenbibliothek für SolidJS, entwickelt mit Kobalte, Corvu und Tailwind CSS. Sie umfasst neben den Komponenten eine Dokumentationsseite und ein CLI-Tool, mit dem neue Ideen und Projekte noch schneller und einfacher umgesetzt werden können.",
+      "Eine moderne UI-Komponentenbibliothek für SolidJS, entwickelt mit Kobalte, Corvu und Tailwind CSS. Sie umfasst neben den Komponenten eine Dokumentationsseite und ein CLI-Tool, mit dem Ideen noch schneller umgesetzt werden können.",
 
     technologies: [
       "TypeScript",
-      "Tailwind CSS",
       "SolidJS",
+      "Tailwind CSS",
       "DX (Developer Experience)",
       "CI / CD",
       "CLI Tools"
