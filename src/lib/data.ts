@@ -9,9 +9,9 @@ import type {
 
 export const navItems: NavItem[] = [
   { name: "Startseite", href: "/" },
-  { name: "Projekte", href: "/projects" },
-  //{ name: "Blog", href: "/blog" },
-  { name: "Fotografie", href: "/photography" },
+  { name: "Projekte", href: "/projekte" },
+  { name: "Fotografie", href: "/fotos" },
+  { name: "Blog", href: "/blog" },
   { name: "Lebenslauf", href: "/cv" }
 ]
 
@@ -77,40 +77,43 @@ export const projects: Project[] = [
 
 export const careerHistory: CareerHistoryItem[] = [
   {
-    company: "Tech Innovations Inc.",
+    company: "BMW Rhein Gruppe",
     position: "Senior Software Engineer",
-    period: "2021 - Present",
+    period: "2014 - Present",
     description:
-      "Leading the development of cloud-native applications and mentoring junior developers.",
-    technologies: ["Next.js", "TypeScript", "Go", "AWS", "Team Leadership", "System Architecture"]
-  },
-  {
-    company: "DataSphere Solutions",
-    position: "Full Stack Developer",
-    period: "2018 - 2021",
-    description: "Architected and maintained multiple client-facing web applications.",
+      "Verantwortlich für die Entwicklung, Wartung und Weiterentwicklung interner Sales- und After-Sales--Systeme. Konzeption und Umsetzung eines unternehmensweiten Ticketingsystems mit zentraler Verwaltung aller wichtiger Informationen (Nutzer, Geräte, etc...).",
     technologies: [
-      "React",
-      "Node.js",
-      "PostgreSQL",
-      "GraphQL",
-      "API Design",
-      "Performance Optimization"
+      "Delphi",
+      "Java",
+      "TypeScript",
+      "Next.js",
+      "SQL",
+      "Projektleitung",
+      "Softwareentwicklung",
+      "UI Design",
+      "Systemintegration & Datenabgleich"
     ]
   },
   {
-    company: "WebFront Systems",
-    position: "Frontend Developer",
-    period: "2016 - 2018",
-    description: "Crafted responsive user interfaces for enterprise clients.",
-    technologies: ["JavaScript", "CSS", "PHP", "MySQL", "UX Design", "Technical Writing"]
+    company: "PARAGON Systemhaus GmbH",
+    position: "Software Engineer",
+    period: "2013",
+    description: "",
+    technologies: ["Java", "SQL", "Softwareentwicklung", "App-Entwicklung", "UI Design"]
   },
   {
-    company: "CodeCraft Academy",
-    position: "Junior Developer",
-    period: "2014 - 2016",
-    description: "Contributed to educational platforms and learning management systems.",
-    technologies: ["Java", "HTML", "CSS", "jQuery", "Problem Solving", "Communication"]
+    company: "HUK-COBURG",
+    position: "Anwendungsentwickler",
+    period: "2011 - 2013",
+    description: "",
+    technologies: ["Java", "SQL", "Softwareentwicklung"]
+  },
+  {
+    company: "Bausparkasse Schwäbisch Hall",
+    position: "BA Student & Anwendungsentwickler",
+    period: "2008 - 2011",
+    description: "",
+    technologies: ["Java", "PHP", "SQL", "JavaScript", "Cobol", "Softwareentwicklung", "Webdesign"]
   }
 ]
 
@@ -177,4 +180,14 @@ export function getTopSkills(limit: number = 20): string[] {
     .map(([technology]) => technology)
 
   return sortedTechnologies.slice(0, limit)
+}
+
+export function getRandomTestimonials(count: number = 3): Testimonial[] {
+  let idx = testimonials.length
+  while (idx !== 0) {
+    const rnd = Math.floor(Math.random() * idx)
+    idx--
+    ;[testimonials[idx], testimonials[rnd]] = [testimonials[rnd], testimonials[idx]]
+  }
+  return testimonials.slice(0, count)
 }
