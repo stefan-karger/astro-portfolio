@@ -8,17 +8,11 @@ import type {
 } from "~/lib/types.ts"
 
 export const navItems: NavItem[] = [
-  { name: "Home", href: "/" },
+  { name: "Startseite", href: "/" },
   { name: "Projekte", href: "/projects" },
-  { name: "Blog", href: "/blog" },
+  //{ name: "Blog", href: "/blog" },
   { name: "Fotografie", href: "/photography" },
-  { name: "CV", href: "/cv" }
-
-  // { name: "Home", href: "/" },
-  // { name: "Projects", href: "/projects" },
-  // { name: "Blog", href: "/blog" },
-  // { name: "Photography", href: "/photography" },
-  // { name: "CV", href: "/cv" }
+  { name: "Lebenslauf", href: "/cv" }
 ]
 
 export const personalInfo: PersonalInfo = {
@@ -31,8 +25,6 @@ export const personalInfo: PersonalInfo = {
   greeting: "Hi! Ich bin Stefan.",
   summary:
     "Ein Senior Software Engineer mit Fokus auf Full-Stack-Anwendungen und der Entwicklung maßgeschneiderter Lösungen für komplexe Probleme. Meine Arbeit verbindet tiefes technisches Know-how mit smarter, moderner Umsetzung."
-
-  //greeting: "Hi, I'm Stefan!",
   // summary:
   //   "A Senior Software Engineer specializing in full-stack applications and developing tailored solutions for complex problems. My goal is to combine deep technical knowledge with hands-on project leadership."
 }
@@ -68,20 +60,18 @@ export const socialLinks: SocialLink[] = [
 export const projects: Project[] = [
   {
     title: "SolidUI",
-
     description:
       "Eine moderne UI-Komponentenbibliothek für SolidJS, entwickelt mit Kobalte, Corvu und Tailwind CSS. Sie umfasst neben den Komponenten eine Dokumentationsseite und ein CLI-Tool, mit dem Ideen noch schneller umgesetzt werden können.",
-
-    technologies: [
-      "TypeScript",
-      "SolidJS",
-      "Tailwind CSS",
-      "DX (Developer Experience)",
-      "CI / CD",
-      "CLI Tools"
-    ],
+    technologies: ["TypeScript", "SolidJS", "Tailwind CSS", "DX (Developer Experience)", "CI / CD"],
     github: "https://github.com/stefan-karger/solid-ui",
     demo: "https://solid-ui.com"
+  },
+
+  {
+    title: "Lagerabgleich & Preisautomatisierung",
+    description:
+      "Eine Java-basierte Desktop-Anwendung zur Synchronisation von weit über 200.000 Artikeln und den Bestellungen zwischen dem Warenwirtschaftssystem (JTL-Wawi) und der Verkaufsplattform (Cardmarket). Parallel werden über die API Marktdaten ausgelesen und darüber für das Unternehmen optimale Verkaufspreise berechnet.",
+    technologies: ["Java", "SQL", "REST API", "Systemintegration & Datenabgleich"]
   }
 ]
 

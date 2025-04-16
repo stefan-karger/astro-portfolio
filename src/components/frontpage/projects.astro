@@ -11,7 +11,7 @@ const maxProjects = 3
   <h2 class="mb-10 text-center text-3xl font-bold tracking-tight md:text-4xl">Aktuelle Projekte</h2>
 
   <div class="mx-auto max-w-4xl">
-    <div class="flex flex-cols gap-6">
+    <div class="grid grid-cols-1 gap-6">
       {
         projects.slice(0, maxProjects).map((project) => (
           <div class="rounded-lg text-card-foreground relative mx-auto max-w-[800px] overflow-hidden border border-border p-6">
