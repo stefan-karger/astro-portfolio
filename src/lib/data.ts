@@ -81,15 +81,13 @@ export const careerHistory: CareerHistoryItem[] = [
     position: "Senior Software Engineer",
     period: "2014 - Present",
     description:
-      "Verantwortlich für die Entwicklung, Wartung und Weiterentwicklung interner Sales- und After-Sales--Systeme. Konzeption und Umsetzung eines unternehmensweiten Ticketingsystems mit zentraler Verwaltung aller wichtiger Informationen (Nutzer, Geräte, etc...).",
+      "Verantwortlich für die Entwicklung, Wartung und Weiterentwicklung interner Sales- und After-Sales-Systeme. Konzeption und Umsetzung eines unternehmensweiten Ticketingsystems mit zentraler Verwaltung aller wichtiger Informationen (Nutzer, Geräte, etc...).",
     technologies: [
       "Delphi",
       "Java",
-      "TypeScript",
       "Next.js",
       "SQL",
       "Projektleitung",
-      "Softwareentwicklung",
       "UI Design",
       "Systemintegration & Datenabgleich"
     ]
@@ -99,21 +97,21 @@ export const careerHistory: CareerHistoryItem[] = [
     position: "Software Engineer",
     period: "2013",
     description: "",
-    technologies: ["Java", "SQL", "Softwareentwicklung", "App-Entwicklung", "UI Design"]
+    technologies: ["Java", "SQL", "App-Entwicklung", "UI Design"]
   },
   {
     company: "HUK-COBURG",
     position: "Anwendungsentwickler",
     period: "2011 - 2013",
     description: "",
-    technologies: ["Java", "SQL", "Softwareentwicklung"]
+    technologies: ["Java", "SQL"]
   },
   {
     company: "Bausparkasse Schwäbisch Hall",
     position: "BA Student & Anwendungsentwickler",
     period: "2008 - 2011",
     description: "",
-    technologies: ["Java", "PHP", "SQL", "JavaScript", "Cobol", "Softwareentwicklung", "Webdesign"]
+    technologies: ["Java", "PHP", "SQL", "JavaScript", "Cobol", "Webdesign"]
   }
 ]
 
@@ -180,14 +178,4 @@ export function getTopSkills(limit: number = 20): string[] {
     .map(([technology]) => technology)
 
   return sortedTechnologies.slice(0, limit)
-}
-
-export function getRandomTestimonials(count: number = 3): Testimonial[] {
-  let idx = testimonials.length
-  while (idx !== 0) {
-    const rnd = Math.floor(Math.random() * idx)
-    idx--
-    ;[testimonials[idx], testimonials[rnd]] = [testimonials[rnd], testimonials[idx]]
-  }
-  return testimonials.slice(0, count)
 }
