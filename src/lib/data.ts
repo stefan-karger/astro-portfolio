@@ -9,10 +9,10 @@ import type {
 
 export const navItems: NavItem[] = [
   { name: "Startseite", href: "/" },
-  { name: "Projekte", href: "/projekte" },
+  //{ name: "Projekte", href: "/projekte" },
   { name: "Fotografie", href: "/fotos" },
-  { name: "Blog", href: "/blog" },
-  { name: "Lebenslauf", href: "/cv" }
+  { name: "Blog", href: "/blog" }
+  //{ name: "Lebenslauf", href: "/cv" }
 ]
 
 export const personalInfo: PersonalInfo = {
@@ -118,45 +118,45 @@ export const careerHistory: CareerHistoryItem[] = [
 export const testimonials: Testimonial[] = [
   {
     quote:
-      "Stefan's ability to translate complex requirements into elegant solutions is remarkable. His work on our e-commerce platform exceeded our expectations.",
-    author: "Emma Rodriguez",
-    position: "CTO, RetailTech",
-    avatar: "/placeholder.svg?height=80&width=80"
+      "This is where a real testimonial would go, but since this portfolio is still in development, I'm just a placeholder. Stefan's work is probably excellent though!",
+    author: "Max Placeholder",
+    position: "Chief Innovation Officer, Fictional Tech",
+    avatar: "/placeholder.svg"
   },
   {
     quote:
-      "Working with Stefan was a game-changer for our team. His technical expertise and collaborative approach helped us deliver our project ahead of schedule.",
-    author: "Michael Chen",
-    position: "Product Manager, DataSphere",
-    avatar: "/placeholder.svg?height=80&width=80"
+      "I don't actually exist, and neither does my company. But if I did, I'd definitely praise Stefan's coding skills and problem-solving abilities in this testimonial section.",
+    author: "Sarah Template",
+    position: "VP of Product, Demo Industries",
+    avatar: "/placeholder.svg"
   },
   {
     quote:
-      "Stefan brings both technical excellence and creative thinking to every project. His solutions are not just functional but forward-thinking.",
-    author: "Sarah Johnson",
-    position: "Lead Designer, CreativeLabs",
-    avatar: "/placeholder.svg?height=80&width=80"
+      "Once Stefan adds real testimonials, this carousel will look much more impressive. Until then, enjoy this meta-commentary on placeholder content!",
+    author: "Alex Sample",
+    position: "Technical Director, Example Corp",
+    avatar: "/placeholder.svg"
   },
   {
     quote:
-      "I've worked with many developers, but Stefan stands out for his attention to detail and commitment to quality. He's a true professional.",
-    author: "David Park",
-    position: "Engineering Director, TechGrowth",
-    avatar: "/placeholder.svg?height=80&width=80"
+      "This testimonial is intentionally left blank. Well, not actually blank, but filled with text acknowledging that it's just temporary content for layout purposes.",
+    author: "Jamie Mockup",
+    position: "Digital Strategist, Placeholder Brands",
+    avatar: "/placeholder.svg"
   },
   {
     quote:
-      "Stefan's ability to understand business needs and translate them into technical solutions is exceptional. He's been an invaluable asset to our team.",
-    author: "Olivia Martinez",
-    position: "CEO, InnovateNow",
-    avatar: "/placeholder.svg?height=80&width=80"
+      "In a real portfolio, you'd see genuine feedback here from actual clients. For now, just imagine something impressive about Stefan's technical skills.",
+    author: "Taylor Testdata",
+    position: "CTO, Imaginary Solutions",
+    avatar: "/placeholder.svg"
   },
   {
     quote:
-      "Not only is Stefan technically proficient, but he's also a great communicator who keeps stakeholders informed throughout the development process.",
-    author: "James Wilson",
-    position: "Project Manager, DevSolutions",
-    avatar: "/placeholder.svg?height=80&width=80"
+      "When you see this text, it means Stefan is still working on collecting real testimonials. Feel free to contact him to provide one!",
+    author: "Jordan Dummytext",
+    position: "Head of Engineering, Nonexistent Inc.",
+    avatar: "/placeholder.svg"
   }
 ]
 

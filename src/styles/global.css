@@ -171,6 +171,11 @@
   }
 }
 
+::selection {
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }
