@@ -7,16 +7,16 @@ import { navItems } from "~/lib/data"
 <header
   class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
 >
-  <div class="container flex h-14 items-center justify-between m-auto px-4">
+  <div class="container m-auto flex h-14 items-center justify-between px-4">
     <MobileNav client:load />
-    <div class="text-xl font-bold hidden md:inline-block">SK</div>
+    <div class="hidden text-xl font-bold md:inline-block">SK</div>
     <div class="flex items-center gap-6">
       {
         navItems.map((item) => (
           <a
             href={item.href}
             title={item.name}
-            class="hidden md:inline-block font-medium text-muted-foreground transition-colors hover:text-foreground"
+            class="hidden font-medium text-muted-foreground transition-colors hover:text-foreground md:inline-block"
           >
             {item.name}
           </a>

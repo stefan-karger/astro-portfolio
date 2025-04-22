@@ -52,7 +52,7 @@ export function MobileNav() {
         <span class="sr-only">Toggle Menu</span>
       </DrawerTrigger>
       <DrawerContent class="min-h-[80svh]">
-        <div class="flex flex-col gap-6 text-xl items-center mt-12">
+        <div class="mt-12 flex flex-col items-center gap-6 text-xl">
           <div>SK</div>
           {navItems.map((item) => (
             <a href={item.href} title={item.name} class="font-medium text-muted-foreground">

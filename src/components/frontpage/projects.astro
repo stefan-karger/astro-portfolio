@@ -14,10 +14,10 @@ const maxProjects = 3
     <div class="grid grid-cols-1 gap-6">
       {
         projects.slice(0, maxProjects).map((project) => (
-          <div class="rounded-lg text-card-foreground relative overflow-hidden border border-border p-6">
+          <div class="relative overflow-hidden rounded-lg border border-border p-6 text-card-foreground">
             <h3 class="mb-3 text-2xl font-bold">{project.title}</h3>
             <p class="mb-4 text-muted-foreground">{project.description}</p>
-            <div class="mb-4 flex-wrap gap-2 hidden md:flex">
+            <div class="mb-4 hidden flex-wrap gap-2 md:flex">
               {project.technologies.map((technology) => (
                 <Badge>{technology}</Badge>
               ))}
@@ -31,7 +31,7 @@ const maxProjects = 3
                   href={project.demo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="h-8 flex items-center gap-1"
+                  class="flex h-8 items-center gap-1"
                 >
                   <Icon name="external-link" />
                   Live Demo
@@ -45,7 +45,7 @@ const maxProjects = 3
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="h-8 flex items-center gap-1"
+                  class="flex h-8 items-center gap-1"
                 >
                   <Icon name="github" />
                   GitHub

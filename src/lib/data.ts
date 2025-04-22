@@ -24,9 +24,9 @@ export const personalInfo: PersonalInfo = {
   email: "kontakt@stefan-karger.de",
   greeting: "Hi! Ich bin Stefan.",
   summary:
-    "Ein Senior Software Engineer mit Fokus auf Full-Stack-Anwendungen und der Entwicklung maßgeschneiderter Lösungen für komplexe Probleme. Meine Arbeit verbindet tiefes technisches Know-how mit smarter, moderner Umsetzung."
+    "Senior Software Engineer mit Fokus auf Full-Stack-Anwendungen und der Entwicklung maßgeschneiderter Lösungen für komplexe Probleme. Meine Arbeit verbindet tiefes technisches Know-how mit smarter, moderner Umsetzung."
   // summary:
-  //   "A Senior Software Engineer specializing in full-stack applications and developing tailored solutions for complex problems. My goal is to combine deep technical knowledge with hands-on project leadership."
+  //   "Senior Software Engineer specializing in full-stack applications and developing tailored solutions for complex problems. My goal is to combine deep technical knowledge with hands-on project leadership."
 }
 
 export const socialLinks: SocialLink[] = [

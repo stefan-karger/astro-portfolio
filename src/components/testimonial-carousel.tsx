@@ -21,7 +21,7 @@ export function TestimonialCarousel() {
       <CarouselContent>
         {testimonials.map((testimonial) => (
           <CarouselItem class="sm:basis-1/2 lg:basis-1/3">
-            <div class="rounded-lg h-full text-card-foreground relative overflow-hidden border border-border p-6 z-0 flex justify-between flex-col">
+            <div class="relative z-0 flex h-full flex-col justify-between overflow-hidden rounded-lg border border-border p-6 text-card-foreground">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -35,7 +35,7 @@ export function TestimonialCarousel() {
                 <path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" />
                 <path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" />
               </svg>
-              <div class="pl-2 pt-2 text-muted-foreground italic">"{testimonial.quote}"</div>
+              <div class="pt-2 pl-2 text-muted-foreground italic">"{testimonial.quote}"</div>
               <div class="pt-6">
                 <div class="flex items-center gap-3">
                   <img
@@ -53,7 +53,7 @@ export function TestimonialCarousel() {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <div class="flex justify-center gap-2 mt-6">
+      <div class="mt-6 flex justify-center gap-2">
         <CarouselPrevious class="relative inset-auto mx-1" />
         <CarouselNext class="relative inset-auto mx-1" />
       </div>
