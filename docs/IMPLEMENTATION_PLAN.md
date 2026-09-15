@@ -473,7 +473,7 @@ Expected runtime/build dependencies:
 - `photoswipe`
 - `@astrojs/sitemap`
 
-Use Astro's font provider API for self-hosted JetBrains Mono and Atkinson Hyperlegible Next. Do not load fonts from Google or another third-party origin in the browser.
+Use the Fontsource variable packages for JetBrains Mono and Atkinson Hyperlegible Next. Let the build emit their WOFF2 assets. Do not add hand-managed font binaries or load fonts from Google or another third-party origin in the browser.
 
 ### 9.3 Dependencies to remove
 

@@ -1,0 +1,85 @@
+---
+interface Props {
+  locale: "de" | "en"
+}
+
+const { locale } = Astro.props
+const year = new Date().getFullYear()
+
+const copy = {
+  de: {
+    emailLabel: "E-Mail an Stefan Karger",
+    socialLabel: "Profile und Kontakt",
+    legalLabel: "Rechtliches",
+    privacy: "Datenschutz",
+    external: "externes Profil"
+  },
+  en: {
+    emailLabel: "Email Stefan Karger",
+    socialLabel: "Profiles and contact",
+    legalLabel: "Legal information",
+    privacy: "Privacy",
+    external: "external profile"
+  }
+} as const
+
+const current = copy[locale]
+
+const socialLinks = [
+  { label: "X", href: "https://x.com/stefan_e_k/", principal: true },
+  { label: "GitHub", href: "https://github.com/stefan-karger", principal: false },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/eideloth/", principal: false },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/stefans_schatzkammer",
+    principal: false
+  }
+] as const
+---
+
+<footer class="site-footer">
+  <div class="shell site-footer__inner">
+    <div class="footer-contact">
+      <p class="footer-name">Stefan Karger</p>
+      <a
+        class="contact-primary"
+        href="mailto:kontakt@stefan-karger.de"
+        aria-label={current.emailLabel}
+      >
+        kontakt@stefan-karger.de
+      </a>
+    </div>
+
+    <div class="footer-nav">
+      <nav aria-label={current.socialLabel}>
+        <ul class="social-links">
+          {socialLinks.map((link) => (
+            <li>
+              <a
+                class:list={{ "social-link--primary": link.principal }}
+                href={link.href}
+                aria-label={`${link.label}, ${current.external}`}
+                rel="noreferrer"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav aria-label={current.legalLabel}>
+        <ul class="footer-links">
+          <li>
+            <a href="/impressum/">Impressum</a>
+          </li>
+          <li>
+            <a href="/datenschutz/">{current.privacy}</a>
+          </li>
+        </ul>
+      </nav>
+
+      <p class="copyright">© {year} Stefan Karger</p>
+    </div>
+  </div>
+</footer>

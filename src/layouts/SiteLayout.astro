@@ -1,0 +1,50 @@
+---
+import "@fontsource-variable/atkinson-hyperlegible-next/wght.css"
+import "@fontsource-variable/jetbrains-mono/wght.css"
+
+import SiteFooter from "~/components/global/SiteFooter.astro"
+import SiteHeader from "~/components/global/SiteHeader.astro"
+
+import "~/styles/global.css"
+
+interface Props {
+  locale: "de" | "en"
+  alternateHref: string
+  surface?: "light" | "dark"
+  title?: string
+  description?: string
+}
+
+const {
+  locale,
+  alternateHref,
+  surface = "light",
+  title = "Stefan Karger",
+  description = "Stefan Karger, Senior Software Engineer aus Würzburg."
+} = Astro.props
+
+const skipLabel = locale === "de" ? "Zum Inhalt springen" : "Skip to content"
+const themeColor = surface === "light" ? "#EEEDE9" : "#181715"
+---
+
+<!doctype html>
+<html lang={locale} data-surface={surface}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={themeColor} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body data-surface={surface}>
+    <a class="skip-link" href="#main-content">
+      {skipLabel}
+    </a>
+    <SiteHeader locale={locale} alternateHref={alternateHref} />
+    <main id="main-content" class="site-main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter locale={locale} />
+  </body>
+</html>

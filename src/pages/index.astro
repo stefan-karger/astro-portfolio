@@ -1,17 +1,34 @@
 ---
-import "~/styles/global.css"
+import SiteLayout from "~/layouts/SiteLayout.astro"
 ---
 
-<!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Stefan Karger</title>
-  </head>
-  <body>
-    <main>
-      <h1>Stefan Karger</h1>
-    </main>
-  </body>
-</html>
+<SiteLayout locale="de" alternateHref="/en/">
+  <section class="shell page-intro" aria-labelledby="page-title">
+    <h1 id="page-title">Stefan Karger</h1>
+    <p class="lede">Senior Software Engineer aus Würzburg.</p>
+  </section>
+
+  <div class="shell section-list">
+    <section id="projekte" aria-labelledby="projects-title">
+      <h2 id="projects-title">Projekte</h2>
+      <p class="muted">
+        Ausgewählte Softwareprojekte und Softwarearchitekturentscheidungen folgen in der nächsten
+        Ausbaustufe.
+      </p>
+    </section>
+
+    <section id="erfahrung" aria-labelledby="experience-title">
+      <h2 id="experience-title">Erfahrung</h2>
+      <p class="muted">
+        Der berufliche Werdegang wird als kompakte, nachvollziehbare Zeitleiste ergänzt.
+      </p>
+    </section>
+
+    <section id="kontakt" aria-labelledby="contact-title">
+      <h2 id="contact-title">Kontakt</h2>
+      <p class="muted measure">
+        Der direkte Kontakt läuft per E-Mail. Weitere öffentliche Profile stehen im Seitenfuß.
+      </p>
+    </section>
+  </div>
+</SiteLayout>

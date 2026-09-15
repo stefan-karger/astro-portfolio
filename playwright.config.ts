@@ -13,6 +13,7 @@ export default defineConfig({
     reuseExistingServer: false
   },
   use: {
+    channel: "chrome",
     baseURL: "http://127.0.0.1:4321/"
   }
 })

@@ -14,10 +14,13 @@
     "check": "astro check",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
+    "test:contrast": "node --test tests/contrast.test.mjs",
     "test:e2e": "playwright test",
-    "validate": "corepack pnpm format:check && corepack pnpm check && corepack pnpm build && corepack pnpm test:e2e"
+    "validate": "corepack pnpm format:check && corepack pnpm test:contrast && corepack pnpm check && corepack pnpm build && corepack pnpm test:e2e"
   },
   "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.2",
     "sharp": "^0.35.4",

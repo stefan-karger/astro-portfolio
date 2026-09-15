@@ -1,0 +1,45 @@
+:root {
+  --font-display: "JetBrains Mono Variable", ui-monospace, monospace;
+  --font-body: "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-36: 9rem;
+
+  --page-gutter: clamp(1rem, 0.4rem + 2.7vw, 3rem);
+  --page-width: 72rem;
+  --reading-width: 68ch;
+  --control-radius: 0.125rem;
+  --state-duration: 120ms;
+}
+
+[data-surface="light"] {
+  color-scheme: light;
+  --canvas: #eeede9;
+  --surface: #f8f7f3;
+  --text: #1b1a18;
+  --muted-text: #67645e;
+  --rule: #cbc8c0;
+  --focus: #1b1a18;
+  --inverse-surface: #1b1a18;
+  --inverse-text: #f8f7f3;
+}
+
+[data-surface="dark"] {
+  color-scheme: dark;
+  --canvas: #181715;
+  --surface: #201f1c;
+  --text: #e9e7e1;
+  --muted-text: #a7a39b;
+  --rule: #3a3833;
+  --focus: #e9e7e1;
+  --inverse-surface: #e9e7e1;
+  --inverse-text: #201f1c;
+}

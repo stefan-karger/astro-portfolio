@@ -1,0 +1,33 @@
+---
+interface Props {
+  locale: "de" | "en"
+  alternateHref: string
+}
+
+const { locale, alternateHref } = Astro.props
+
+const label = locale === "de" ? "Sprache wechseln" : "Change language"
+const alternateLabel = locale === "de" ? "Switch to English" : "Auf Deutsch wechseln"
+---
+
+<nav class="language-switch" aria-label={label}>
+  {locale === "de" ? (
+    <span lang="de" aria-current="page">
+      DE
+    </span>
+  ) : (
+    <a href={alternateHref} hreflang="de" lang="de" aria-label={alternateLabel}>
+      DE
+    </a>
+  )}
+  <span aria-hidden="true">/</span>
+  {locale === "en" ? (
+    <span lang="en" aria-current="page">
+      EN
+    </span>
+  ) : (
+    <a href={alternateHref} hreflang="en" lang="en" aria-label={alternateLabel}>
+      EN
+    </a>
+  )}
+</nav>

@@ -1,0 +1,53 @@
+---
+import LanguageSwitch from "~/components/global/LanguageSwitch.astro"
+
+interface Props {
+  locale: "de" | "en"
+  alternateHref: string
+}
+
+const { locale, alternateHref } = Astro.props
+
+const copy = {
+  de: {
+    homeHref: "/",
+    navigationLabel: "Hauptnavigation",
+    links: [
+      { label: "Projekte", href: "/#projekte" },
+      { label: "Erfahrung", href: "/#erfahrung" },
+      { label: "Fotografie", href: "/portfolio/" },
+      { label: "Kontakt", href: "/#kontakt" }
+    ]
+  },
+  en: {
+    homeHref: "/en/",
+    navigationLabel: "Main navigation",
+    links: [
+      { label: "Projects", href: "/en/#projects" },
+      { label: "Experience", href: "/en/#experience" },
+      { label: "Photography", href: "/en/portfolio/" },
+      { label: "Contact", href: "/en/#contact" }
+    ]
+  }
+} as const
+
+const current = copy[locale]
+---
+
+<header class="site-header">
+  <div class="shell site-header__inner">
+    <a class="wordmark" href={current.homeHref}>
+      Stefan Karger
+    </a>
+    <nav class="primary-nav" aria-label={current.navigationLabel}>
+      <ul>
+        {current.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <LanguageSwitch locale={locale} alternateHref={alternateHref} />
+  </div>
+</header>
