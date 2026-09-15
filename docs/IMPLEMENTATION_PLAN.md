@@ -193,7 +193,7 @@ Preserve Git history while making the repository the workspace root:
 5. Do not copy `docs/repos/astro-portfolio` into the promoted checkout.
 6. Add `/docs/repos/` and the private photo-intake directory to `.gitignore` as guards.
 7. Verify that the promoted tree contains exactly one `.git` directory.
-8. Rename the present outer workspace to a dated backup and move the verified clone into the canonical `stefan-karger.de` path.
+8. Move the present outer workspace to a dated backup and place the verified clone at the canonical `stefan-karger.de` path. If Windows locks the open root directory, move its verified child entries into the backup and move the clone entries into the empty canonical directory.
 9. Keep the backup until install, build, remote, branch, and file-preservation checks pass.
 10. Continue on `dev/v2`. Do not open a development pull request. A release pull request requires Stefan's explicit release instruction.
 
