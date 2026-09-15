@@ -25,3 +25,12 @@ pnpm-debug.log*
 
 # vscode setting folder
 .vscode/
+
+# local issue tracker
+/.scratch/
+
+# nested reference repositories
+/docs/repos/
+
+# private source photography
+/private/photo-intake/
