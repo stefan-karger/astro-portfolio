@@ -18,12 +18,6 @@ export const siteConfig = {
     phone: "+49 xxx xxxxxxxxx" // Replace before publishing.
   },
 
-  portrait: {
-    src: "https://stefan-karger.de/_astro/me.DGB7hIgB_2e7v48.webp",
-    width: 864,
-    height: 1080
-  },
-
   socialLinks: [
     {
       label: "GitHub",

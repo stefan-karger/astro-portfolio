@@ -20,6 +20,9 @@ importers:
       astro:
         specifier: ^7.3.4
         version: 7.3.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(jiti@2.7.0)(yaml@2.9.1)
+      sharp:
+        specifier: 0.35.4
+        version: 0.35.4
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -3289,8 +3292,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@img/colour@1.1.0':
-    optional: true
+  '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.35.4':
     optionalDependencies:
@@ -5280,7 +5282,6 @@ snapshots:
       '@img/sharp-win32-arm64': 0.35.4
       '@img/sharp-win32-ia32': 0.35.4
       '@img/sharp-win32-x64': 0.35.4
-    optional: true
 
   shebang-command@2.0.0:
     dependencies:

@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # misc
 .eslintcache
+
+# previous photo files kept outside the active image pipeline
+/private/photo-backup/

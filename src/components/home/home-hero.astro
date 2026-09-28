@@ -1,4 +1,7 @@
 ---
+import { Picture } from "astro:assets"
+
+import portrait from "@/assets/hero.jpg"
 import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { siteConfig } from "@/lib/config"
@@ -6,7 +9,6 @@ import EmailButton from "@/components/email-button.astro"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
 const t = getTranslations(locale)
-const { portrait } = siteConfig
 ---
 
 <section
@@ -15,14 +17,18 @@ const { portrait } = siteConfig
 >
   <div class="mx-auto grid w-full max-w-5xl grid-cols-[minmax(15rem,21rem)_minmax(22rem,1fr)] items-center gap-[clamp(3rem,8vw,7.5rem)] max-[45rem]:grid-cols-1 max-[45rem]:gap-6">
     <figure class="m-0 max-[45rem]:w-[min(55vw,13rem)]">
-      <img
-        class="block aspect-[4/5] w-full object-cover object-center [filter:grayscale(0.12)_brightness(1.08)_contrast(0.96)_saturate(0.92)]"
-        src={portrait.src}
+      <Picture
+        src={portrait}
         alt={t.home.hero.imageAlt(siteConfig.name.public)}
-        width={portrait.width}
-        height={portrait.height}
-        loading="eager"
-        fetchpriority="high"
+        formats={["avif", "webp"]}
+        fallbackFormat="jpeg"
+        widths={[240, 320, 420, 640, 840]}
+        sizes="(max-width: 719px) min(55vw, 13rem), (max-width: 52rem) calc(100vw - 29rem), 21rem"
+        width={840}
+        height={1050}
+        quality="high"
+        priority
+        class="block w-full [filter:grayscale(0.12)_brightness(1.08)_contrast(0.96)_saturate(0.92)]"
       />
     </figure>
 
