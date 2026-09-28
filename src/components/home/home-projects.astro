@@ -66,7 +66,7 @@ const recordGridClasses =
         </p>
         <dl class="mt-12 grid grid-cols-2 gap-8 max-[25rem]:grid-cols-1">
           {projects.lager.metrics.map((metric) => (
-            <div class="flex flex-col-reverse border-t border-rule pt-4">
+            <div class="flex flex-col-reverse">
               <dt class="m-0 text-[0.84rem] text-muted">{metric.label}</dt>
               <dd class="m-0 font-mono text-[clamp(1.65rem,2.8vw,2.4rem)] font-bold tracking-[-0.05em]">
                 {metric.value}

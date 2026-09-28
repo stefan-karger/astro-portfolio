@@ -12,6 +12,13 @@
   --text-page-title: clamp(2.25rem, calc(3vw + 1rem), 3.5rem);
 }
 
+@layer base {
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+}
+
 @layer components {
   .site-link {
     @apply font-mono no-underline underline-offset-[0.25em];
