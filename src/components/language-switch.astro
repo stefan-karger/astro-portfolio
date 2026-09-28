@@ -1,0 +1,43 @@
+---
+import { defaultLocale, locales } from "@/i18n/types"
+import { getTranslations } from "@/i18n/translations"
+import { switchLocale } from "@/i18n/url"
+
+const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const t = getTranslations(locale)
+---
+
+<nav
+  aria-label={t.nav.languageLabel}
+  class="flex items-center justify-self-end gap-1 font-mono max-sm:col-start-2 max-sm:row-start-1"
+>
+  {locales.map((target, index) => (
+    <>
+      {index > 0 && (
+        <span aria-hidden="true" class="text-muted">
+          /
+        </span>
+      )}
+
+      {target === locale ? (
+        <span
+          aria-current="true"
+          class="inline-flex min-h-11 min-w-11 items-center justify-center px-2 py-2 font-mono font-semibold"
+        >
+          <span lang={target}>{target.toUpperCase()}</span>
+          <span class="sr-only">, {t.language.current}</span>
+        </span>
+      ) : (
+        <a
+          href={switchLocale(Astro.url.pathname, locale, target)}
+          hreflang={target}
+          rel="alternate"
+          class="site-link inline-flex min-h-11 min-w-11 items-center justify-center px-2 py-2 text-muted underline-offset-4 hover:text-ink"
+          aria-label={`${target.toUpperCase()}, ${target === "de" ? t.language.switchToDe : t.language.switchToEn}`}
+        >
+          <span lang={target}>{target.toUpperCase()}</span>
+        </a>
+      )}
+    </>
+  ))}
+</nav>

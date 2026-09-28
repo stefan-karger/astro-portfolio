@@ -1,0 +1,17 @@
+---
+import { defaultLocale, locales } from "@/i18n/types"
+import { siteConfig } from "@/lib/config"
+
+const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const country =
+  new Intl.DisplayNames([locale], { type: "region" }).of(siteConfig.address.countryCode) ??
+  siteConfig.address.countryCode
+---
+
+{siteConfig.name.legal}
+<br />
+{siteConfig.address.street}
+<br />
+{siteConfig.address.postalCode} {siteConfig.address.city}
+<br />
+{country}

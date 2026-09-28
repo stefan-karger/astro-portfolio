@@ -1,0 +1,28 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro"
+import LegalArticle from "@/components/legal-article.astro"
+import PostalAddress from "@/components/postal-address.astro"
+import { siteConfig } from "@/lib/config"
+---
+
+<BaseLayout title={`Impressum | ${siteConfig.name.public}`}>
+  <LegalArticle>
+    <h1>Impressum</h1>
+
+    <p>
+      <PostalAddress />
+    </p>
+
+    <h2>Kontakt</h2>
+    <p>
+      E-Mail:{" "}
+      <a class="site-link" href={`mailto:${siteConfig.contact.email}`}>
+        {siteConfig.contact.email}
+      </a>
+    </p>
+    <p>Telefon: {siteConfig.contact.phone}</p>
+
+    <h2>Verantwortlich für den Inhalt</h2>
+    <p>{siteConfig.name.legal}, Anschrift wie oben.</p>
+  </LegalArticle>
+</BaseLayout>

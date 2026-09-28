@@ -1,0 +1,67 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro"
+import LegalArticle from "@/components/legal-article.astro"
+import PostalAddress from "@/components/postal-address.astro"
+import { siteConfig } from "@/lib/config"
+---
+
+<BaseLayout title={`Privacy policy | ${siteConfig.name.public}`}>
+  <LegalArticle>
+    <h1>Privacy policy</h1>
+
+    <h2>Controller</h2>
+    <p>
+      <PostalAddress />
+      <br />
+      Email:{" "}
+      <a class="site-link" href={`mailto:${siteConfig.contact.email}`}>
+        {siteConfig.contact.email}
+      </a>
+    </p>
+
+    <h2>Website access and hosting</h2>
+    <p>
+      This website is hosted by Vercel Inc. When you open a page, technically necessary data is
+      processed. This includes your IP address, the time and destination of the request, and browser
+      information. Vercel may also process this data in access logs. The website itself does not
+      keep a visitor database.
+    </p>
+    <p>
+      This processing makes the website available and secure. Its legal basis is Article 6(1)(f) of
+      the GDPR. My legitimate interest is to operate a functional and secure website. Access data is
+      processed only for as long as necessary for operation, troubleshooting, and security. The
+      exact retention period depends on the hosting settings.
+    </p>
+    <p>
+      Vercel may process data in the United States. Vercel states that it is certified under the
+      EU-US Data Privacy Framework. For more information, see{" "}
+      <a class="site-link" href="https://vercel.com/legal/privacy-notice">
+        Vercel's privacy notice
+      </a>
+      .
+    </p>
+
+    <h2>Contact by email</h2>
+    <p>
+      If you email me, I process your address, the message, and its technical details to respond.
+      Depending on the request, the legal basis is Article 6(1)(b) or (f) of the GDPR. I delete the
+      correspondence when it is no longer needed for your request, unless legal retention
+      obligations apply. There is no contact form.
+    </p>
+
+    <h2>Fonts, cookies, and analytics</h2>
+    <p>
+      The font is served with the website, so loading a page does not connect to the font provider.
+      This website does not set its own cookies or use analytics tools, embedded third-party
+      content, comments, or newsletters.
+    </p>
+
+    <h2>Your rights</h2>
+    <p>
+      You may request access to, rectification or erasure of, and restriction of processing of your
+      personal data. Where the legal requirements are met, you also have a right to data portability
+      and may object to processing. Contact me at the email address above to exercise these rights.
+      You may also lodge a complaint with a data protection supervisory authority.
+    </p>
+  </LegalArticle>
+</BaseLayout>

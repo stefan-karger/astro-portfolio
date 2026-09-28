@@ -1,0 +1,70 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro"
+import LegalArticle from "@/components/legal-article.astro"
+import PostalAddress from "@/components/postal-address.astro"
+import { siteConfig } from "@/lib/config"
+---
+
+<BaseLayout title={`Datenschutz | ${siteConfig.name.public}`}>
+  <LegalArticle>
+    <h1>Datenschutz</h1>
+
+    <h2>Verantwortlicher</h2>
+    <p>
+      <PostalAddress />
+      <br />
+      E-Mail:{" "}
+      <a class="site-link" href={`mailto:${siteConfig.contact.email}`}>
+        {siteConfig.contact.email}
+      </a>
+    </p>
+
+    <h2>Aufruf der Website und Hosting</h2>
+    <p>
+      Diese Website wird von Vercel Inc. gehostet. Beim Aufruf einer Seite werden technisch
+      erforderliche Daten verarbeitet. Dazu gehören insbesondere die IP-Adresse, Zeitpunkt und Ziel
+      der Anfrage sowie Angaben zum Browser. Vercel kann diese Daten auch in Zugriffsprotokollen
+      verarbeiten. Die Website selbst führt keine eigene Besucherdatenbank.
+    </p>
+    <p>
+      Die Verarbeitung dient der Auslieferung und Sicherheit der Website. Rechtsgrundlage ist Art. 6
+      Abs. 1 lit. f DSGVO. Mein berechtigtes Interesse ist ein technisch funktionsfähiger und
+      sicherer Betrieb. Zugriffsdaten werden nur so lange verarbeitet, wie dies für Betrieb,
+      Fehleranalyse und Sicherheit erforderlich ist. Die konkrete Speicherdauer hängt von den
+      Hosting-Einstellungen ab.
+    </p>
+    <p>
+      Vercel kann Daten in den USA verarbeiten. Vercel gibt an, nach dem EU-US Data Privacy
+      Framework zertifiziert zu sein. Weitere Informationen stehen in der{" "}
+      <a class="site-link" href="https://vercel.com/legal/privacy-notice">
+        Datenschutzerklärung von Vercel
+      </a>
+      .
+    </p>
+
+    <h2>Kontakt per E-Mail</h2>
+    <p>
+      Wenn du mir eine E-Mail schreibst, verarbeite ich deine Adresse, den Inhalt und die
+      technischen Angaben der Nachricht, um dir zu antworten. Je nach Anliegen beruht das auf Art. 6
+      Abs. 1 lit. b oder lit. f DSGVO. Ich lösche die Korrespondenz, sobald sie für das Anliegen
+      nicht mehr nötig ist, sofern keine gesetzlichen Aufbewahrungspflichten bestehen. Ein
+      Kontaktformular gibt es nicht.
+    </p>
+
+    <h2>Schriftarten, Cookies und Analyse</h2>
+    <p>
+      Die verwendete Schriftart wird mit der Website ausgeliefert. Dafür wird beim Seitenaufruf
+      keine Verbindung zum Schriftanbieter hergestellt. Diese Website setzt selbst keine Cookies und
+      nutzt keine Analysewerkzeuge, eingebetteten Drittinhalte, Kommentare oder Newsletter.
+    </p>
+
+    <h2>Deine Rechte</h2>
+    <p>
+      Du kannst Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung deiner
+      personenbezogenen Daten verlangen. Unter den gesetzlichen Voraussetzungen hast du außerdem ein
+      Recht auf Datenübertragbarkeit und kannst einer Verarbeitung widersprechen. Wende dich dazu an
+      die oben genannte E-Mail-Adresse. Du kannst dich auch bei einer Datenschutzaufsichtsbehörde
+      beschweren.
+    </p>
+  </LegalArticle>
+</BaseLayout>

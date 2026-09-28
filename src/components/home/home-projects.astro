@@ -1,0 +1,80 @@
+---
+import { defaultLocale, locales } from "@/i18n/types"
+import { getTranslations } from "@/i18n/translations"
+
+const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const { projects } = getTranslations(locale)
+const solidUrl = "https://www.solid-ui.com/"
+const sourceUrl = "https://github.com/stefan-karger/solid-ui"
+const recordGridClasses =
+  "grid grid-cols-[minmax(12rem,0.7fr)_minmax(0,1.3fr)] gap-[clamp(2rem,6vw,5rem)] max-[45rem]:grid-cols-1 max-[45rem]:gap-4"
+---
+
+<section class="pb-[clamp(5rem,10vw,9rem)]" aria-labelledby="projects-title">
+  <div class="mx-auto w-[calc(100%_-_2rem)] max-w-6xl">
+    <div class:list={[recordGridClasses, "pb-[clamp(2.5rem,5vw,4rem)]"]}>
+      <h2
+        id="projects-title"
+        class="m-0 font-mono text-[clamp(2.5rem,4.5vw,4rem)] leading-[1.1] font-bold tracking-[-0.045em]"
+      >
+        {projects.title}
+      </h2>
+    </div>
+
+    <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
+      <div>
+        <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-[1.25] font-bold tracking-[-0.04em]">
+          {projects.solid.name}
+        </h3>
+        <p class="mt-3 text-[0.84rem] text-muted">{projects.solid.kind}</p>
+      </div>
+      <div class="max-w-[43rem]">
+        <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">
+          {projects.solid.description}
+        </p>
+        <div class="mt-8 flex flex-wrap gap-x-[1.6rem] gap-y-3">
+          <a
+            href={solidUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
+          >
+            {projects.solid.website}&nbsp;↗
+          </a>
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
+          >
+            {projects.solid.source}&nbsp;↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
+      <div>
+        <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-[1.25] font-bold tracking-[-0.04em]">
+          {projects.lager.name}
+        </h3>
+        <p class="mt-3 text-[0.84rem] text-muted">{projects.lager.kind}</p>
+      </div>
+      <div class="max-w-[43rem]">
+        <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">
+          {projects.lager.description}
+        </p>
+        <dl class="mt-12 grid grid-cols-2 gap-8 max-[25rem]:grid-cols-1">
+          {projects.lager.metrics.map((metric) => (
+            <div class="flex flex-col-reverse border-t border-rule pt-4">
+              <dt class="m-0 text-[0.84rem] text-muted">{metric.label}</dt>
+              <dd class="m-0 font-mono text-[clamp(1.65rem,2.8vw,2.4rem)] font-bold tracking-[-0.05em]">
+                {metric.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </article>
+  </div>
+</section>
