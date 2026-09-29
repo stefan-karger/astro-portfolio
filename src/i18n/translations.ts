@@ -42,6 +42,43 @@ const de = {
     }
   },
 
+  career: {
+    title: "Werdegang",
+    jobs: [
+      {
+        company: "BMW Rhein Gruppe",
+        role: "Senior Software Engineer",
+        period: "2014 — heute",
+        type: "Hauptberuflich",
+        summary:
+          "Interne Sales- und After-Sales-Systeme, Systemintegration und ein unternehmensweites Ticketingsystem."
+      },
+      {
+        company: "JunksPlayGround",
+        role: "Softwareentwickler & Berater",
+        period: "2022 — heute",
+        type: "Nebenberuflich",
+        summary:
+          "Eigenverantwortliche Entwicklung und Beratung rund um Schnittstellen, Automatisierung, Datenmigration und das Intranet."
+      },
+      {
+        company: "PARAGON Systemhaus GmbH",
+        role: "Software Engineer",
+        period: "2013"
+      },
+      {
+        company: "HUK-COBURG",
+        role: "Anwendungsentwickler",
+        period: "2011 — 2013"
+      },
+      {
+        company: "Bausparkasse Schwäbisch Hall",
+        role: "BA Student & Anwendungsentwickler",
+        period: "2008 — 2011"
+      }
+    ]
+  },
+
   contact: {
     emailAction: "E-Mail schreiben"
   },
@@ -117,6 +154,43 @@ const en = {
         { value: ">1,000", label: "Price adjustments per day" }
       ]
     }
+  },
+
+  career: {
+    title: "Career",
+    jobs: [
+      {
+        company: "BMW Rhein Gruppe",
+        role: "Senior Software Engineer",
+        period: "2014 — present",
+        type: "Full time",
+        summary:
+          "Internal sales and after-sales systems, systems integration, and a company-wide ticketing system."
+      },
+      {
+        company: "JunksPlayGround",
+        role: "Software Developer & Consultant",
+        period: "2022 — present",
+        type: "Part time",
+        summary:
+          "Independent development and consulting across integrations, automation, data migration, and the intranet."
+      },
+      {
+        company: "PARAGON Systemhaus GmbH",
+        role: "Software Engineer",
+        period: "2013"
+      },
+      {
+        company: "HUK-COBURG",
+        role: "Application Developer",
+        period: "2011 — 2013"
+      },
+      {
+        company: "Bausparkasse Schwäbisch Hall",
+        role: "Cooperative Student & Application Developer",
+        period: "2008 — 2011"
+      }
+    ]
   },
 
   contact: {

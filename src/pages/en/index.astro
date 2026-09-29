@@ -1,6 +1,7 @@
 ---
 import HomeHero from "@/components/home/home-hero.astro"
 import HomeProjects from "@/components/home/home-projects.astro"
+import HomeCareer from "@/components/home/home-career.astro"
 import { getTranslations } from "@/i18n/translations"
 import BaseLayout from "@/layouts/base-layout.astro"
 import { siteConfig } from "@/lib/config"
@@ -15,4 +16,5 @@ const t = getTranslations("en")
 >
   <HomeHero />
   <HomeProjects />
+  <HomeCareer />
 </BaseLayout>
