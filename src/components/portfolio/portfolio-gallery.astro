@@ -1,0 +1,139 @@
+---
+import type { ImageMetadata } from "astro"
+import "photoswipe/style.css"
+
+import { defaultLocale, locales } from "@/i18n/types"
+import { getTranslations } from "@/i18n/translations"
+import PortfolioImage from "./portfolio-image.astro"
+
+const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const { portfolio } = getTranslations(locale)
+
+const files = Object.keys(import.meta.glob("/src/assets/portfolio/*"))
+const modules = import.meta.glob<ImageMetadata>(
+  "/src/assets/portfolio/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}",
+  { eager: true, import: "default" }
+)
+const prefixes = new Set<string>()
+
+for (const path of files) {
+  const filename = path.split("/").pop()!
+  if (!modules[path]) throw new Error(`Unsupported portfolio source: ${filename}`)
+  if (!/^\d+-[a-z0-9]+(?:[-_][a-z0-9]+)*\.(?:jpe?g|png|webp)$/i.test(filename)) {
+    throw new Error(`Portfolio filenames must use NNN-descriptive-name.ext: ${filename}`)
+  }
+  const prefix = String(Number(filename.split("-")[0]))
+  if (prefixes.has(prefix)) console.warn(`Duplicate portfolio order prefix: ${filename}`)
+  prefixes.add(prefix)
+}
+
+const images = Object.entries(modules)
+  .sort(([a], [b]) => a.localeCompare(b, "en", { numeric: true }))
+  .map(([path, image]) => ({
+    path,
+    image,
+    alt: path
+      .split("/")
+      .pop()!
+      .replace(/^\d+-/, "")
+      .replace(/\.[^.]+$/, "")
+      .replace(/[-_]/g, " ")
+      .toLowerCase()
+  }))
+---
+
+<section class="pt-8 pb-16 sm:pt-12 sm:pb-24" aria-labelledby="portfolio-title">
+  <div class="mx-auto mb-8 w-full max-w-7xl px-4 sm:mb-10 sm:px-6 lg:px-8">
+    <h1
+      id="portfolio-title"
+      class="font-mono text-page-title leading-[1.12] font-bold tracking-[-0.02em]"
+    >
+      {portfolio.title}
+    </h1>
+    <p class="mt-4 max-w-[40rem] text-lg text-muted">{portfolio.intro}</p>
+  </div>
+
+  <script is:inline>
+    document.documentElement.dataset.portfolioJs = ""
+  </script>
+  <div class="mx-auto w-full max-w-[105rem] px-4 sm:px-6 lg:px-8">
+    <div
+      class="portfolio-grid"
+      data-portfolio-gallery
+      data-close-title={portfolio.lightbox.close}
+      data-zoom-title={portfolio.lightbox.zoom}
+      data-previous-title={portfolio.lightbox.previous}
+      data-next-title={portfolio.lightbox.next}
+      data-error-message={portfolio.lightbox.error}
+    >
+      {images.map(({ path, image, alt }, index) => (
+        <PortfolioImage sourcePath={path} image={image} alt={alt} index={index} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import "./portfolio"
+</script>
+
+<style>
+  .portfolio-grid {
+    --portfolio-columns: 1;
+    --portfolio-gap: 12px;
+    column-count: var(--portfolio-columns);
+    column-gap: var(--portfolio-gap);
+  }
+
+  :global(html[data-portfolio-js]) .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--portfolio-columns), minmax(0, 1fr));
+    align-items: start;
+    gap: var(--portfolio-gap);
+  }
+
+  :global(html[data-portfolio-js]) .portfolio-grid :global([data-portfolio-item]) {
+    margin-bottom: 0;
+  }
+
+  :global(html[data-portfolio-js]) .portfolio-grid[data-enhanced] {
+    position: relative;
+    display: block;
+    column-count: auto;
+  }
+
+  .portfolio-grid[data-enhanced] :global([data-portfolio-item]) {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  :global(.portfolio-lightbox) {
+    --pswp-bg: #151513;
+    --pswp-icon-color: #fcfcfb;
+    font-family: var(--font-mono);
+  }
+
+  :global(.portfolio-lightbox .pswp__button:focus-visible) {
+    outline: 2px solid #fcfcfb;
+    outline-offset: -6px;
+  }
+
+  @media (min-width: 640px) {
+    .portfolio-grid {
+      --portfolio-columns: 2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .portfolio-grid {
+      --portfolio-columns: 3;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .portfolio-grid {
+      --portfolio-columns: 4;
+    }
+  }
+</style>

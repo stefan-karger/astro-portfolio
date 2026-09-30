@@ -8,10 +8,24 @@ const de = {
     hero: {
       greeting: "Hi! Ich bin Stefan.",
       intro:
-        "Mich interessieren in der Softwareentwicklung vor allem die Stellen, an denen es kompliziert wird: gewachsene Systeme, die miteinander sprechen müssen, große Datenmengen, die zuverlässig synchronisiert, aufbereitet und ausgewertet werden sollen, und Abläufe, für die es keine Lösung von der Stange gibt.",
+        "Das Spannendste an der Softwareentwicklung sind für mich die Aufgaben, bei denen es kompliziert wird: komplexe Systeme miteinander verbinden und große Datenbestände zusammenführen, abgleichen und auswerten. Besonders reizt es mich, Lösungen für Abläufe zu entwickeln, für die es nichts von der Stange gibt.",
       photography:
         "Die Fotografie schafft Abstand zum Code. Die Werkzeuge ändern sich, aber der Blick fürs Detail bleibt.",
       imageAlt: (name: string) => `${name} in schwarzer Jacke und schwarzer Kappe`
+    }
+  },
+
+  portfolio: {
+    title: "Portfolio",
+    intro: "Eine kleine Auswahl aus 10 Jahren Fotografie.",
+    metaDescription:
+      "Ausgewählte Fotografien von Stefan Karger: Porträts, inszenierte Szenen und persönliche Arbeiten.",
+    lightbox: {
+      close: "Schließen",
+      zoom: "Vergrößern",
+      previous: "Vorheriges Bild",
+      next: "Nächstes Bild",
+      error: "Das Bild konnte nicht geladen werden."
     }
   },
 
@@ -29,7 +43,7 @@ const de = {
       name: "Lagerabgleich & Preisautomatisierung",
       kind: "Kundenprojekt für JunksPlayGround",
       description:
-        "Eine Schnittstelle, die Bestände und Bestellungen zwischen JTL-Wawi und Cardmarket vollautomatisch abgleicht. Anhand individueller Regeln und der aktuellen Preise auf Cardmarket berechnet und aktualisiert sie laufend die Verkaufspreise aller angebundenen Artikel.",
+        "Eine Schnittstellen-Anwendung, die Bestände und Bestellungen zwischen JTL-Wawi und Cardmarket vollautomatisch abgleicht. Anhand individueller Regeln und der aktuellen Preise auf Cardmarket berechnet und aktualisiert sie laufend die Verkaufspreise aller angebundenen Artikel.",
       metrics: [
         { value: "~200.000", label: "Artikelvarianten" },
         { value: "~4 Mio.", label: "Einzelartikel im Bestand" },
@@ -49,34 +63,34 @@ const de = {
       {
         company: "BMW Rhein Gruppe",
         url: "https://www.rhein-bmw.de/",
-        role: "Senior Software Engineer",
+        role: "Senior Softwareentwickler",
         period: "2014 — heute",
         type: "Hauptberuflich",
         summary:
-          "Interne Sales- und After-Sales-Systeme, Systemintegration und ein unternehmensweites Ticketingsystem."
+          "Eigenverantwortliche Konzeption, Entwicklung und langfristige Betreuung interner Software für Vertrieb, Service und IT. Ein Schwerpunkt ist der Aufbau einer zentralen Webanwendung, die Informationen und Funktionen bestehender Fachanwendungen schrittweise zusammenführt."
       },
       {
-        company: "JunksPlayGround",
+        company: "JunksPlayground",
         url: "https://junksplayground.de/",
-        role: "Softwareentwickler & Berater",
+        role: "Softwareentwickler & technischer Berater",
         period: "2022 — heute",
         type: "Nebenberuflich",
         summary:
-          "Eigenverantwortliche Entwicklung und Beratung rund um Schnittstellen, Automatisierung, Datenmigration und das Intranet."
+          "Entwicklung und langfristige Betreuung einer Schnittstelle zwischen JTL-Wawi und Cardmarket für automatisierte Bestands-, Bestell- und Preisabgleiche. Ergänzend technische Beratung der Geschäftsleitung bei Automatisierungen, Systemarchitektur und neuen Softwareprojekten."
       },
       {
         company: "PARAGON Systemhaus GmbH",
-        role: "Software Engineer",
+        role: "Softwareentwickler",
         period: "2013"
       },
       {
         company: "HUK-COBURG",
-        role: "Anwendungsentwickler",
+        role: "Softwareentwickler",
         period: "2011 — 2013"
       },
       {
         company: "Bausparkasse Schwäbisch Hall",
-        role: "BA Student & Anwendungsentwickler",
+        role: "Duales Studium Wirtschaftsinformatik (B.Sc.)",
         period: "2008 — 2011"
       }
     ]
@@ -128,10 +142,24 @@ const en = {
     hero: {
       greeting: "Hi! I'm Stefan.",
       intro:
-        "What interests me most in software development is where things get complicated: existing systems that need to work together, large amounts of data that need to be reliably synchronized, processed and analyzed, and workflows where there simply is no off-the-shelf solution.",
+        "What I find most exciting about software development are the tasks where things get complicated: connecting complex systems and bringing together, synchronizing, and analyzing large datasets. I'm especially drawn to developing solutions for workflows that have no off-the-shelf option.",
       photography:
         "Photography gives me distance from code. The tools change, but the eye for detail remains.",
       imageAlt: (name: string) => `${name} wearing a black jacket and black cap`
+    }
+  },
+
+  portfolio: {
+    title: "Portfolio",
+    intro: "A small selection from 10 years of photography.",
+    metaDescription:
+      "Selected photographs by Stefan Karger: portraits, staged scenes and personal work.",
+    lightbox: {
+      close: "Close",
+      zoom: "Zoom",
+      previous: "Previous image",
+      next: "Next image",
+      error: "The image could not be loaded."
     }
   },
 
@@ -149,7 +177,7 @@ const en = {
       name: "Inventory sync & price automation",
       kind: "Client project for JunksPlayGround",
       description:
-        "An integration that automatically synchronizes stock and orders between JTL-Wawi and Cardmarket. Using custom rules and current Cardmarket prices, it continuously calculates and updates the selling prices of all connected items.",
+        "An integration application that automatically synchronizes stock and orders between JTL-Wawi and Cardmarket. Using custom rules and current Cardmarket prices, it continuously calculates and updates the selling prices of all connected items.",
       metrics: [
         { value: "~200,000", label: "product variants" },
         { value: "~4m", label: "individual items in stock" },
@@ -170,16 +198,16 @@ const en = {
         period: "2014 — present",
         type: "Full time",
         summary:
-          "Internal sales and after-sales systems, systems integration, and a company-wide ticketing system."
+          "Independent design, development, and long-term maintenance of internal software for sales, service, and IT. A key focus is building a central web application that gradually brings together information and functionality from existing business applications."
       },
       {
-        company: "JunksPlayGround",
+        company: "JunksPlayground",
         url: "https://junksplayground.de/",
-        role: "Software Developer & Consultant",
+        role: "Software Engineer & Technical Advisor",
         period: "2022 — present",
         type: "Part time",
         summary:
-          "Independent development and consulting across integrations, automation, data migration, and the intranet."
+          "Development and long-term maintenance of an integration between JTL-Wawi and Cardmarket for automated inventory, order, and price synchronization. Technical advice to company management on automation, system architecture, and new software projects."
       },
       {
         company: "PARAGON Systemhaus GmbH",
@@ -188,12 +216,12 @@ const en = {
       },
       {
         company: "HUK-COBURG",
-        role: "Application Developer",
+        role: "Software Engineer",
         period: "2011 — 2013"
       },
       {
         company: "Bausparkasse Schwäbisch Hall",
-        role: "Cooperative Student & Application Developer",
+        role: "Dual Study Program in Business Information Systems (B.Sc.)",
         period: "2008 — 2011"
       }
     ]

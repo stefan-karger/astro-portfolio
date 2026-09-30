@@ -1,9 +1,16 @@
 ---
 import BaseLayout from "@/layouts/base-layout.astro"
-import PageIntro from "@/components/page-intro.astro"
+import PortfolioGallery from "@/components/portfolio/portfolio-gallery.astro"
+import { getTranslations } from "@/i18n/translations"
 import { siteConfig } from "@/lib/config"
+
+const { portfolio } = getTranslations("en")
 ---
 
-<BaseLayout title={`Portfolio | ${siteConfig.name.public}`}>
-  <PageIntro title="Portfolio" />
+<BaseLayout
+  title={`${portfolio.title} | ${siteConfig.name.public}`}
+  description={portfolio.metaDescription}
+  mainClass="w-full flex-1"
+>
+  <PortfolioGallery />
 </BaseLayout>

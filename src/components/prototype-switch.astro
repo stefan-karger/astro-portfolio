@@ -18,7 +18,7 @@ const t = getTranslations(locale)
 </script>
 
 <nav
-  class="fixed right-[max(1rem,env(safe-area-inset-right))] bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex items-center gap-[0.7rem] rounded-full border border-[#c9c9c9] bg-white/94 pt-[0.4rem] pr-[0.45rem] pb-[0.4rem] pl-3 font-mono text-[0.68rem] text-[#171717] shadow-[0_0.5rem_2rem_rgba(0,0,0,0.14)] backdrop-blur-[12px] max-[27rem]:pl-[0.45rem]"
+  class="fixed right-[max(1rem,env(safe-area-inset-right))] bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex items-center gap-[0.7rem] border border-[#c9c9c9] bg-white/94 pt-[0.4rem] pr-[0.45rem] pb-[0.4rem] pl-3 font-mono text-[0.68rem] text-[#171717] shadow-[0_0.5rem_2rem_rgba(0,0,0,0.14)] backdrop-blur-[12px] max-[27rem]:pl-[0.45rem]"
   aria-label={t.prototype.navigationLabel}
 >
   <span class="text-[#676767] max-[27rem]:sr-only">{t.prototype.label}</span>
@@ -28,7 +28,7 @@ const t = getTranslations(locale)
         <a
           href={`?prototype=${prototype.id}`}
           data-prototype-link={prototype.id}
-          class="grid size-[1.8rem] place-items-center rounded-full text-[#171717] no-underline hover:bg-[#eeeeee] aria-[current=page]:bg-[#171717] aria-[current=page]:text-white aria-[current=page]:hover:bg-[#171717] focus-visible:rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
+          class="grid size-[1.8rem] place-items-center text-[#171717] no-underline hover:bg-[#eeeeee] aria-[current=page]:bg-[#171717] aria-[current=page]:text-white aria-[current=page]:hover:bg-[#171717]"
           aria-label={`${t.prototype.itemLabel} ${prototype.id}`}
           title={`${t.prototype.label} ${prototype.id}`}
         >

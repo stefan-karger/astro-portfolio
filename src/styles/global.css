@@ -13,6 +13,12 @@
 }
 
 @layer base {
+  :focus-visible {
+    border-radius: 0;
+    outline: 2px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+
   ::selection {
     background-color: var(--color-ink);
     color: var(--color-paper);
@@ -25,10 +31,6 @@
 
     &:hover {
       @apply underline;
-    }
-
-    &:focus-visible {
-      @apply rounded-[2px] outline-2 outline-offset-4 outline-current;
     }
   }
 
