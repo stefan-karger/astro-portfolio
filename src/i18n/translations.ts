@@ -45,12 +45,12 @@ const de = {
       description:
         "Eine eigens entwickelte Schnittstelle, die JTL-Wawi und Cardmarket miteinander verbindet. Sie gleicht Bestände und Bestellungen automatisiert ab und aktualisiert die Verkaufspreise eigenständig anhand individueller Regeln und aktueller Marktdaten.",
       metrics: [
-        { value: "ca. 200.000", label: "Artikelvarianten" },
-        { value: "ca. 4 Mio.", label: "Einzelartikel im Bestand" },
-        { value: "ca. 40.000", label: "Cardmarket-Bestellungen seit 2024" },
+        { value: "≈200.000", label: "Artikelvarianten" },
+        { value: "≈4.000.000", label: "Einzelartikel im Bestand" },
+        { value: "≈40.000", label: "Cardmarket-Bestellungen seit 2024" },
         {
-          value: "über 1.000",
-          label: "Preisanpassungen pro Tag"
+          value: ">100.000",
+          label: "Preisabgleiche am Tag"
         }
       ]
     }
@@ -179,10 +179,10 @@ const en = {
       description:
         "A custom-built integration connecting JTL-Wawi and Cardmarket. It automatically synchronizes stock and orders and updates selling prices based on custom rules and current market data.",
       metrics: [
-        { value: "approx. 200,000", label: "Product variants" },
-        { value: "approx. 4M", label: "Individual units in stock" },
-        { value: "approx. 40,000", label: "Cardmarket orders since 2024" },
-        { value: "over 1,000", label: "Price adjustments per day" }
+        { value: "≈200,000", label: "Product variants" },
+        { value: "≈4,000,000", label: "Individual units in stock" },
+        { value: "≈40,000", label: "Cardmarket orders since 2024" },
+        { value: ">100,000", label: "Price comparisons per day" }
       ]
     }
   },
