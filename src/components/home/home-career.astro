@@ -44,7 +44,22 @@ const { career } = getTranslations(locale)
                   : "text-[clamp(1.3rem,2vw,1.75rem)]"
               ]}
             >
-              {job.company}
+              {"url" in job ? (
+                <a
+                  href={job.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="site-link text-ink underline-offset-[0.3em]"
+                >
+                  {job.company}
+                  <span aria-hidden="true" class="text-[0.65em]">
+                    &nbsp;↗
+                  </span>
+                  <span class="sr-only"> ({career.opensInNewTab})</span>
+                </a>
+              ) : (
+                job.company
+              )}
             </h3>
             <p class="mt-2 font-mono text-[clamp(0.9rem,1.25vw,1.05rem)] text-muted">{job.role}</p>
             {"summary" in job && (

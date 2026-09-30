@@ -44,9 +44,11 @@ const de = {
 
   career: {
     title: "Werdegang",
+    opensInNewTab: "öffnet in neuem Tab",
     jobs: [
       {
         company: "BMW Rhein Gruppe",
+        url: "https://www.rhein-bmw.de/",
         role: "Senior Software Engineer",
         period: "2014 — heute",
         type: "Hauptberuflich",
@@ -55,6 +57,7 @@ const de = {
       },
       {
         company: "JunksPlayGround",
+        url: "https://junksplayground.de/",
         role: "Softwareentwickler & Berater",
         period: "2022 — heute",
         type: "Nebenberuflich",
@@ -158,9 +161,11 @@ const en = {
 
   career: {
     title: "Career",
+    opensInNewTab: "opens in a new tab",
     jobs: [
       {
         company: "BMW Rhein Gruppe",
+        url: "https://www.rhein-bmw.de/",
         role: "Senior Software Engineer",
         period: "2014 — present",
         type: "Full time",
@@ -169,6 +174,7 @@ const en = {
       },
       {
         company: "JunksPlayGround",
+        url: "https://junksplayground.de/",
         role: "Software Developer & Consultant",
         period: "2022 — present",
         type: "Part time",
