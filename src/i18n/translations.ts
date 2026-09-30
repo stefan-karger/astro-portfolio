@@ -8,7 +8,7 @@ const de = {
     hero: {
       greeting: "Hi! Ich bin Stefan.",
       intro:
-        "Das Spannendste an der Softwareentwicklung sind für mich die Aufgaben, bei denen es kompliziert wird: komplexe Systeme miteinander verbinden und große Datenbestände zusammenführen, abgleichen und auswerten. Besonders reizt es mich, Lösungen für Abläufe zu entwickeln, für die es nichts von der Stange gibt.",
+        "Das Spannendste an der Softwareentwicklung sind für mich die Aufgaben, bei denen es anspruchsvoll wird: komplexe Systeme miteinander verbinden und große Datenbestände zusammenführen, abgleichen und auswerten. Besonders reizt es mich, Lösungen für Prozesse zu entwickeln, für die es nichts von der Stange gibt.",
       photography:
         "Die Fotografie schafft Abstand zum Code. Die Werkzeuge ändern sich, aber der Blick fürs Detail bleibt.",
       imageAlt: (name: string) => `${name} in schwarzer Jacke und schwarzer Kappe`
@@ -17,7 +17,7 @@ const de = {
 
   portfolio: {
     title: "Portfolio",
-    intro: "Eine kleine Auswahl aus 10 Jahren Fotografie.",
+    intro: "Eine Auswahl meiner Fotografien aus den vergangenen zehn Jahren.",
     metaDescription:
       "Ausgewählte Fotografien von Stefan Karger: Porträts, inszenierte Szenen und persönliche Arbeiten.",
     lightbox: {
@@ -35,21 +35,21 @@ const de = {
       name: "SolidUI",
       kind: "Open Source",
       description:
-        "Eine Komponentenbibliothek für SolidJS mit Kobalte, Corvu und Tailwind CSS. Dazu gehören eine Dokumentationsseite und ein CLI-Tool.",
+        "Ein inoffizieller Port von shadcn/ui für SolidJS: anpassbare UI-Komponenten auf Basis von Kobalte, Corvu und Tailwind CSS. Dazu gehören eine eigene Dokumentation und ein CLI-Tool, mit dem sich die Komponenten direkt in bestehende Projekte übernehmen lassen.",
       website: "solid-ui.com",
       source: "GitHub"
     },
     lager: {
       name: "Lagerabgleich & Preisautomatisierung",
-      kind: "Kundenprojekt für JunksPlayGround",
+      kind: "Projekt bei JunksPlayGround",
       description:
-        "Eine Schnittstellen-Anwendung, die Bestände und Bestellungen zwischen JTL-Wawi und Cardmarket vollautomatisch abgleicht. Anhand individueller Regeln und der aktuellen Preise auf Cardmarket berechnet und aktualisiert sie laufend die Verkaufspreise aller angebundenen Artikel.",
+        "Eine eigens entwickelte Schnittstelle, die JTL-Wawi und Cardmarket miteinander verbindet. Sie gleicht Bestände und Bestellungen automatisiert ab und aktualisiert die Verkaufspreise eigenständig anhand individueller Regeln und aktueller Marktdaten.",
       metrics: [
-        { value: "~200.000", label: "Artikelvarianten" },
-        { value: "~4 Mio.", label: "Einzelartikel im Bestand" },
-        { value: "~40.000", label: "Cardmarket-Bestellungen seit 2024" },
+        { value: "ca. 200.000", label: "Artikelvarianten" },
+        { value: "ca. 4 Mio.", label: "Einzelartikel im Bestand" },
+        { value: "ca. 40.000", label: "Cardmarket-Bestellungen seit 2024" },
         {
-          value: ">1.000",
+          value: "über 1.000",
           label: "Preisanpassungen pro Tag"
         }
       ]
@@ -138,20 +138,20 @@ const en = {
   home: {
     metaTitle: "Software Development & Photography",
     metaDescription:
-      "Software development, systems integration, interfaces, data synchronization, and photography.",
+      "Software development, systems integration, interfaces, data reconciliation, and photography.",
     hero: {
       greeting: "Hi! I'm Stefan.",
       intro:
-        "What I find most exciting about software development are the tasks where things get complicated: connecting complex systems and bringing together, synchronizing, and analyzing large datasets. I'm especially drawn to developing solutions for workflows that have no off-the-shelf option.",
+        "What excites me most about software development is tackling challenging problems: connecting complex systems and combining, reconciling, and analyzing large datasets. I especially enjoy building solutions for workflows where nothing off the shelf quite fits.",
       photography:
-        "Photography gives me distance from code. The tools change, but the eye for detail remains.",
+        "Photography gives me a break from code. The tools change, but the eye for detail remains.",
       imageAlt: (name: string) => `${name} wearing a black jacket and black cap`
     }
   },
 
   portfolio: {
     title: "Portfolio",
-    intro: "A small selection from 10 years of photography.",
+    intro: "A selection of photographs from the past ten years.",
     metaDescription:
       "Selected photographs by Stefan Karger: portraits, staged scenes and personal work.",
     lightbox: {
@@ -169,20 +169,20 @@ const en = {
       name: "SolidUI",
       kind: "Open source",
       description:
-        "A component library for SolidJS built with Kobalte, Corvu and Tailwind CSS. It includes documentation and a CLI tool.",
+        "An unofficial port of shadcn/ui for SolidJS, with customizable UI components built on Kobalte, Corvu, and Tailwind CSS. It comes with its own documentation and a CLI tool for adding components directly to existing projects.",
       website: "solid-ui.com",
       source: "GitHub"
     },
     lager: {
-      name: "Inventory sync & price automation",
-      kind: "Client project for JunksPlayGround",
+      name: "Stock sync & auto-pricing",
+      kind: "Project at JunksPlayGround",
       description:
-        "An integration application that automatically synchronizes stock and orders between JTL-Wawi and Cardmarket. Using custom rules and current Cardmarket prices, it continuously calculates and updates the selling prices of all connected items.",
+        "A custom-built integration connecting JTL-Wawi and Cardmarket. It automatically synchronizes stock and orders and updates selling prices based on custom rules and current market data.",
       metrics: [
-        { value: "~200,000", label: "product variants" },
-        { value: "~4m", label: "individual items in stock" },
-        { value: "~40,000", label: "Cardmarket orders since 2024" },
-        { value: ">1,000", label: "Price adjustments per day" }
+        { value: "approx. 200,000", label: "Product variants" },
+        { value: "approx. 4M", label: "Individual units in stock" },
+        { value: "approx. 40,000", label: "Cardmarket orders since 2024" },
+        { value: "over 1,000", label: "Price adjustments per day" }
       ]
     }
   },
@@ -196,7 +196,7 @@ const en = {
         url: "https://www.rhein-bmw.de/",
         role: "Senior Software Engineer",
         period: "2014 — present",
-        type: "Full time",
+        type: "Full-time",
         summary:
           "Independent design, development, and long-term maintenance of internal software for sales, service, and IT. A key focus is building a central web application that gradually brings together information and functionality from existing business applications."
       },
@@ -205,7 +205,7 @@ const en = {
         url: "https://junksplayground.de/",
         role: "Software Engineer & Technical Advisor",
         period: "2022 — present",
-        type: "Part time",
+        type: "Part-time",
         summary:
           "Development and long-term maintenance of an integration between JTL-Wawi and Cardmarket for automated inventory, order, and price synchronization. Technical advice to company management on automation, system architecture, and new software projects."
       },

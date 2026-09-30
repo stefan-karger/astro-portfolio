@@ -9,6 +9,7 @@ import { siteConfig } from "@/lib/config"
   <LegalArticle>
     <h1>Impressum</h1>
 
+    <h2>Angaben gemäß § 5 DDG</h2>
     <p>
       <PostalAddress />
     </p>
@@ -16,13 +17,20 @@ import { siteConfig } from "@/lib/config"
     <h2>Kontakt</h2>
     <p>
       E-Mail:{" "}
-      <a class="site-link" href={`mailto:${siteConfig.contact.email}`}>
+      <a
+        class="site-link font-normal text-muted hover:text-ink"
+        href={`mailto:${siteConfig.contact.email}`}
+      >
         {siteConfig.contact.email}
       </a>
+      <br />
+      Telefon:{" "}
+      <a
+        class="site-link font-normal text-muted hover:text-ink"
+        href={`tel:${siteConfig.contact.phone.replaceAll(" ", "")}`}
+      >
+        {siteConfig.contact.phone}
+      </a>
     </p>
-    <p>Telefon: {siteConfig.contact.phone}</p>
-
-    <h2>Verantwortlich für den Inhalt</h2>
-    <p>{siteConfig.name.legal}, Anschrift wie oben.</p>
   </LegalArticle>
 </BaseLayout>

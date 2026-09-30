@@ -35,11 +35,11 @@
   }
 
   .legal-content h1 {
-    @apply mb-10 font-mono text-page-title leading-[1.12] font-bold tracking-[-0.02em];
+    @apply mb-14 text-left font-mono text-page-title leading-[1.12] font-bold tracking-[-0.02em] sm:mb-20 sm:text-center;
   }
 
   .legal-content h2 {
-    @apply mt-10 mb-[0.65rem] text-xl leading-relaxed font-bold tracking-[-0.01em];
+    @apply mt-10 mb-[0.65rem] font-mono text-xl leading-relaxed font-bold tracking-[-0.01em];
   }
 
   .legal-content p + p {
@@ -47,6 +47,6 @@
   }
 
   .legal-content a {
-    @apply font-semibold;
+    @apply font-normal text-muted hover:text-ink;
   }
 }

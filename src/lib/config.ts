@@ -15,7 +15,7 @@ export const siteConfig = {
 
   contact: {
     email: contactEmail,
-    phone: "+49 xxx xxxxxxxxx" // Replace before publishing.
+    phone: "+49 15679 365744"
   },
 
   socialLinks: [

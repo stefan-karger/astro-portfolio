@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@/layouts/base-layout.astro"
 import LegalArticle from "@/components/legal-article.astro"
-import PostalAddress from "@/components/postal-address.astro"
+import { routeUrl } from "@/i18n/url"
 import { siteConfig } from "@/lib/config"
 ---
 
@@ -9,34 +9,43 @@ import { siteConfig } from "@/lib/config"
   <LegalArticle>
     <h1>Datenschutz</h1>
 
-    <h2>Verantwortlicher</h2>
+    <h2>Verantwortliche Stelle</h2>
     <p>
-      <PostalAddress />
-      <br />
-      E-Mail:{" "}
-      <a class="site-link" href={`mailto:${siteConfig.contact.email}`}>
-        {siteConfig.contact.email}
+      Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO) ist {siteConfig.name.legal}.
+      Die vollständigen Kontaktdaten, Adressangaben sowie Kontaktmöglichkeiten per E-Mail und
+      Telefon findest du im{" "}
+      <a class="site-link" href={routeUrl("de", "legal")}>
+        Impressum
       </a>
+      .
     </p>
 
     <h2>Aufruf der Website und Hosting</h2>
     <p>
       Diese Website wird von Netlify, Inc. gehostet. Beim Aufruf einer Seite werden technisch
-      erforderliche Daten verarbeitet. Dazu gehören insbesondere die IP-Adresse, Zeitpunkt und Ziel
-      der Anfrage sowie Angaben zum Browser. Netlify kann diese Daten auch in Zugriffsprotokollen
-      verarbeiten. Die Website selbst führt keine eigene Besucherdatenbank.
+      erforderliche Daten verarbeitet. Dazu gehören insbesondere deine IP-Adresse, Zeitpunkt und
+      Ziel der Anfrage sowie Angaben zum Browser. Netlify verarbeitet technische Zugriffsdaten, um
+      die Website auszuliefern, Fehler zu untersuchen und Angriffe abzuwehren. Ich exportiere keine
+      Zugriffsprotokolle und erstelle keine eigenen Besuchsstatistiken.
     </p>
     <p>
       Die Verarbeitung dient der Auslieferung und Sicherheit der Website. Rechtsgrundlage ist Art. 6
       Abs. 1 lit. f DSGVO. Mein berechtigtes Interesse ist ein technisch funktionsfähiger und
-      sicherer Betrieb. Zugriffsdaten werden nur so lange verarbeitet, wie dies für Betrieb,
-      Fehleranalyse und Sicherheit erforderlich ist. Die konkrete Speicherdauer hängt von den
-      Hosting-Einstellungen ab.
+      sicherer Betrieb. Die Aufbewahrung durch Netlify richtet sich nach dem jeweiligen
+      Verarbeitungszweck und den geltenden Lösch- und Aufbewahrungspflichten. Eine einheitliche
+      Speicherfrist für sämtliche technischen Zugriffs- und Sicherheitsprotokolle ist in den unten
+      verlinkten Anbieterunterlagen nicht ausgewiesen.
     </p>
     <p>
       Netlify kann Daten in den USA und anderen Ländern außerhalb des Europäischen Wirtschaftsraums
-      verarbeiten. Netlify gibt an, nach dem EU-US Data Privacy Framework zertifiziert zu sein.
-      Weitere Informationen stehen in den{" "}
+      verarbeiten. Für Übermittlungen in die USA sieht Netlifys Vereinbarung zur
+      Auftragsverarbeitung das{" "}
+      <a class="site-link" href="https://www.dataprivacyframework.gov/">
+        EU-US Data Privacy Framework
+      </a>{" "}
+      vor, für das Netlify nach eigenen Angaben zertifiziert ist. Soweit dieser Mechanismus nicht
+      greift, sieht die Vereinbarung EU-Standardvertragsklauseln vor. Weitere Informationen stehen
+      in den{" "}
       <a class="site-link" href="https://www.netlify.com/privacy/">
         Datenschutzhinweisen von Netlify
       </a>{" "}
@@ -49,27 +58,101 @@ import { siteConfig } from "@/lib/config"
 
     <h2>Kontakt per E-Mail</h2>
     <p>
-      Wenn du mir eine E-Mail schreibst, verarbeite ich deine Adresse, den Inhalt und die
-      technischen Angaben der Nachricht, um dir zu antworten. Je nach Anliegen beruht das auf Art. 6
-      Abs. 1 lit. b oder lit. f DSGVO. Ich lösche die Korrespondenz, sobald sie für das Anliegen
-      nicht mehr nötig ist, sofern keine gesetzlichen Aufbewahrungspflichten bestehen. Ein
-      Kontaktformular gibt es nicht.
+      Wenn du mir eine E-Mail schreibst, verarbeite ich deine Absenderadresse, den Inhalt,
+      gegebenenfalls Anhänge und die technischen Angaben der Nachricht, um deine Anfrage zu
+      bearbeiten. Für Empfang, Speicherung und Versand nutze ich das Postfach bei der STRATO GmbH.
+      Es gibt keine automatische Weiterleitung an ein anderes Postfach und kein Kontaktformular.
+    </p>
+    <p>
+      Betrifft deine Anfrage einen Vertrag oder vorvertragliche Maßnahmen, ist Art. 6 Abs. 1 lit. b
+      DSGVO die Rechtsgrundlage. Bei sonstigen Anfragen beruht die Verarbeitung auf Art. 6 Abs. 1
+      lit. f DSGVO. Mein berechtigtes Interesse ist, deine Anfrage zu bearbeiten und dir zu
+      antworten.
+    </p>
+    <p>
+      Gewöhnliche Anfragen einschließlich meiner Antworten lösche ich direkt nach abschließender
+      Bearbeitung, auch aus dem Papierkorb. Unterlagen, die noch für einen laufenden Vorgang oder
+      zur Erfüllung gesetzlicher Aufbewahrungspflichten benötigt werden, bleiben so lange erhalten,
+      wie dies erforderlich ist. Weitere Informationen zur Verarbeitung durch STRATO findest du in
+      den{" "}
+      <a class="site-link" href="https://www.strato.de/datenschutz/">
+        Datenschutzhinweisen von STRATO
+      </a>{" "}
+      und in der{" "}
+      <a class="site-link" href="https://www.strato.de/agb/avv/">
+        Vereinbarung zur Auftragsverarbeitung
+      </a>
+      .
+    </p>
+    <p>
+      Davon zu unterscheiden ist die Wiederherstellung beim Anbieter. Laut STRATO können aus dem
+      Postfach einschließlich Papierkorb gelöschte Nachrichten noch bis zu 30 Tage wiederhergestellt
+      werden. Einzelheiten stehen in der{" "}
+      <a
+        class="site-link"
+        href="https://www.strato.de/faq/mail/wie-kann-ich-meine-geloeschten-e-mails-wiederherstellen/"
+      >
+        Erläuterung zur E-Mail-Wiederherstellung
+      </a>
+      .
+    </p>
+
+    <h2>Kontakt per Telefon</h2>
+    <p>
+      Wenn du mich anrufst, verarbeite ich deine Telefonnummer, den Zeitpunkt des Anrufs und die
+      Informationen, die du mir mitteilst, um deine Anfrage zu bearbeiten. Für die Telefonie nutze
+      ich satellite Free der sipgate GmbH. Voicemail, Gesprächsaufzeichnungen, Abschriften und
+      KI-Zusammenfassungen nutze ich nicht.
+    </p>
+    <p>
+      Betrifft deine Anfrage einen Vertrag oder vorvertragliche Maßnahmen, ist Art. 6 Abs. 1 lit. b
+      DSGVO die Rechtsgrundlage. Bei sonstigen Anfragen beruht die Verarbeitung auf meinem
+      berechtigten Interesse, deine Anfrage zu bearbeiten und dir zu antworten, gemäß Art. 6 Abs. 1
+      lit. f DSGVO. Soweit ich Daten für die Bearbeitung deiner Anfrage speichere, lösche ich sie
+      nach abschließender Bearbeitung, sofern sie nicht mehr benötigt werden und keine gesetzlichen
+      Aufbewahrungspflichten bestehen.
+    </p>
+    <p>
+      sipgate verarbeitet die für die Telefonie erforderlichen Verbindungsdaten, insbesondere die
+      beteiligten Rufnummern sowie Beginn und Ende eines Anrufs. Die geräteübergreifende Anrufliste
+      wird bei sipgate gespeichert. Laut Anbieter werden diese Einträge gelöscht, wenn ich sie in
+      der App lösche oder der Vertrag endet. Davon zu unterscheiden sind Daten, die sipgate für
+      Abrechnung oder gesetzliche Aufbewahrungspflichten verarbeitet. Weitere Informationen findest
+      du in den{" "}
+      <a class="site-link" href="https://www.satellite.me/datenschutz/">
+        Datenschutzhinweisen von satellite
+      </a>
+      .
     </p>
 
     <h2>Schriftarten, Cookies und Analyse</h2>
     <p>
-      Die verwendete Schriftart wird mit der Website ausgeliefert. Dafür wird beim Seitenaufruf
-      keine Verbindung zum Schriftanbieter hergestellt. Diese Website setzt selbst keine Cookies und
-      nutzt keine Analysewerkzeuge, eingebetteten Drittinhalte, Kommentare oder Newsletter.
+      Die verwendeten Schriftarten, Bilder und die Galerie werden mit der Website ausgeliefert.
+      Dafür wird keine Verbindung zu externen Schrift- oder Bildanbietern hergestellt. Diese Website
+      setzt keine eigenen Cookies und nutzt keine Analysewerkzeuge, eingebetteten Drittinhalte,
+      Kommentare oder Newsletter. Die Galerie nutzt weder Local Storage noch Session Storage. Für
+      die Bildnavigation verwendet sie den lokalen Browserverlauf.
     </p>
 
     <h2>Deine Rechte</h2>
     <p>
       Du kannst Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung deiner
       personenbezogenen Daten verlangen. Unter den gesetzlichen Voraussetzungen hast du außerdem ein
-      Recht auf Datenübertragbarkeit und kannst einer Verarbeitung widersprechen. Wende dich dazu an
-      die oben genannte E-Mail-Adresse. Du kannst dich auch bei einer Datenschutzaufsichtsbehörde
-      beschweren.
+      Recht auf Datenübertragbarkeit. Soweit die Verarbeitung auf berechtigten Interessen beruht,
+      kannst du aus Gründen, die sich aus deiner besonderen Situation ergeben, widersprechen. Wende
+      dich zur Ausübung deiner Rechte über die Kontaktmöglichkeiten im{" "}
+      <a class="site-link" href={routeUrl("de", "legal")}>
+        Impressum
+      </a>{" "}
+      an mich.
+    </p>
+    <p>
+      Du kannst dich bei einer Datenschutzaufsichtsbehörde beschweren, insbesondere beim{" "}
+      <a class="site-link" href="https://www.lda.bayern.de/de/beschwerde.html">
+        Bayerischen Landesamt für Datenschutzaufsicht (BayLDA)
+      </a>
+      . Das Recht, dich an eine andere nach der DSGVO zuständige Aufsichtsbehörde zu wenden, bleibt
+      bestehen.
     </p>
   </LegalArticle>
 </BaseLayout>
