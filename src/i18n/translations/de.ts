@@ -106,6 +106,7 @@ export const de = {
   },
 
   nav: {
+    menu: "Menü",
     home: "Home",
     portfolio: "Fotografie",
     blog: "Blog",

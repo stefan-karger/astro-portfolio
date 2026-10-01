@@ -105,6 +105,7 @@ export const en = {
   },
 
   nav: {
+    menu: "Menu",
     home: "Home",
     portfolio: "Photography",
     blog: "Blog",

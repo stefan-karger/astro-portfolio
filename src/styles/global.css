@@ -8,6 +8,7 @@
   --color-ink-hover: #3d3d39;
   --color-muted: #62625d;
   --color-rule: #d5d5d0;
+  --spacing-header: 3.5rem;
   --text-display: clamp(2.5rem, 5vw, 4.25rem);
   --text-page-title: clamp(2.25rem, calc(3vw + 1rem), 3.5rem);
 }
