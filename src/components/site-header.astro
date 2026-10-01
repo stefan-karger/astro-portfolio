@@ -7,7 +7,7 @@ import LanguageSwitch from "./language-switch.astro"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
 const t = getTranslations(locale)
-const navRoutes = ["home", "portfolio"] as const
+const navRoutes = ["home", "portfolio", "blog"] as const
 
 function normalizePath(path: string) {
   return path.replace(/\/+$/, "") || "/"
