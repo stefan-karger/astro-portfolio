@@ -1,0 +1,78 @@
+---
+import { getImage, Image } from "astro:assets"
+import type { ImageMetadata } from "astro"
+import { imageMetadata } from "astro/assets/utils"
+import { readFile } from "node:fs/promises"
+
+interface Props {
+  sourcePath: string
+  image: ImageMetadata
+  alt: string
+  index: number
+}
+
+const { sourcePath, image, alt, index } = Astro.props
+// Reading imported dimensions directly makes Astro retain the original public asset.
+const { width: sourceWidth, height: sourceHeight } = await imageMetadata(
+  await readFile(`.${sourcePath}`),
+  sourcePath
+)
+const width = Math.min(sourceWidth, 1280)
+const widths = [...new Set([320, 480, 640, 960, 1280].map((size) => Math.min(size, width)))]
+const edge = Math.min(Math.max(sourceWidth, sourceHeight), 3000)
+const edges = [...new Set([1200, 1800, 2400, 3000].map((size) => Math.min(size, edge)))]
+const lightboxImages = await Promise.all(
+  edges.map((size) =>
+    getImage({
+      src: image,
+      width: Math.round((sourceWidth * size) / Math.max(sourceWidth, sourceHeight)),
+      format: "webp",
+      quality: 90
+    })
+  )
+)
+const largest = lightboxImages[lightboxImages.length - 1]
+const srcset = lightboxImages.map((image) => `${image.src} ${image.attributes.width}w`).join(", ")
+---
+
+<a
+  class="portfolio-image"
+  data-portfolio-item
+  data-image-width={sourceWidth}
+  data-image-height={sourceHeight}
+  href={largest.src}
+  data-pswp-width={largest.attributes.width}
+  data-pswp-height={largest.attributes.height}
+  data-pswp-srcset={srcset}
+  lang="en"
+>
+  <Image
+    src={image}
+    alt={alt}
+    lang="en"
+    format="webp"
+    quality={85}
+    width={width}
+    widths={widths}
+    sizes="(min-width: 1680px) 395px, (min-width: 1536px) calc((100vw - 100px) / 4), (min-width: 1024px) calc((100vw - 88px) / 3), (min-width: 640px) calc((100vw - 60px) / 2), calc(100vw - 32px)"
+    loading={index < 2 ? "eager" : "lazy"}
+    decoding="async"
+  />
+</a>
+
+<style>
+  .portfolio-image {
+    display: block;
+    margin-bottom: var(--portfolio-gap);
+    break-inside: avoid;
+    cursor: zoom-in;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .portfolio-image :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

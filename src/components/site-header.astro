@@ -1,0 +1,53 @@
+---
+import { defaultLocale, locales } from "@/i18n/types"
+import { getTranslations } from "@/i18n/translations"
+import { routeUrl } from "@/i18n/url"
+import { siteConfig } from "@/lib/config"
+import LanguageSwitch from "./language-switch.astro"
+
+const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const t = getTranslations(locale)
+const navRoutes = ["home", "portfolio"] as const
+
+function normalizePath(path: string) {
+  return path.replace(/\/+$/, "") || "/"
+}
+---
+
+<header class="bg-paper lg:sticky lg:top-0 lg:z-40">
+  <div class="mx-auto grid min-h-20 w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-x-8 px-4 max-sm:grid-cols-[1fr_auto] max-sm:gap-x-4 max-sm:gap-y-1 max-sm:pt-4 sm:px-6 lg:px-8">
+    <a
+      href={routeUrl(locale, "home")}
+      class="site-link -ml-2 inline-flex min-h-11 min-w-11 items-center justify-center justify-self-start p-2 text-xl leading-none font-bold tracking-[-0.04em]"
+      aria-label={`SK, ${siteConfig.name.public}, ${t.nav.homeLinkLabel}`}
+    >
+      SK.
+    </a>
+
+    <nav
+      aria-label={t.nav.primaryLabel}
+      class="justify-self-center max-sm:col-span-2 max-sm:row-start-2 max-sm:justify-self-start max-sm:pb-2"
+    >
+      <ul class="flex list-none items-center gap-4 sm:gap-6 lg:gap-8">
+        {navRoutes.map((route) => {
+          const href = routeUrl(locale, route)
+          const isCurrent = normalizePath(Astro.url.pathname) === normalizePath(href)
+
+          return (
+            <li>
+              <a
+                href={href}
+                class="site-link inline-flex min-h-11 items-center py-2.5 text-muted underline-offset-[0.45em] hover:text-ink aria-[current=page]:font-bold aria-[current=page]:text-ink"
+                aria-current={isCurrent ? "page" : undefined}
+              >
+                {t.nav[route]}
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+
+    <LanguageSwitch />
+  </div>
+</header>

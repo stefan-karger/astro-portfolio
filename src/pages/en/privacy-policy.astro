@@ -1,0 +1,147 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro"
+import LegalArticle from "@/components/legal-article.astro"
+import { routeUrl } from "@/i18n/url"
+import { siteConfig } from "@/lib/config"
+---
+
+<BaseLayout title={`${siteConfig.name.public} - Privacy Policy`}>
+  <LegalArticle>
+    <h1>Privacy Policy</h1>
+
+    <h2>Controller</h2>
+    <p>
+      The controller under the General Data Protection Regulation (GDPR) is {siteConfig.name.legal}.
+      You can find the full contact details, postal address and ways to contact me by email and
+      phone in the{" "}
+      <a class="text-link" href={routeUrl("en", "legal")}>
+        Legal Notice
+      </a>
+      .
+    </p>
+
+    <h2>Website access and hosting</h2>
+    <p>
+      This website is hosted by Netlify, Inc. When you open a page, technically necessary data is
+      processed. This includes your IP address, the time and destination of the request, and browser
+      information. Netlify processes technical access data to deliver the website, investigate
+      errors and prevent attacks. I do not export access logs or create my own visitor statistics.
+    </p>
+    <p>
+      This processing makes the website available and secure. Its legal basis is Article 6(1)(f) of
+      the GDPR. My legitimate interest is to operate a functional and secure website. Access data is
+      retained by Netlify according to the purpose of the processing and the applicable deletion and
+      retention obligations. The provider documents linked below do not specify a single retention
+      period covering all technical access and security logs.
+    </p>
+    <p>
+      Netlify may process data in the United States and other countries outside the European
+      Economic Area. For transfers to the United States, Netlify's data processing agreement
+      provides for the{" "}
+      <a class="text-link" href="https://www.dataprivacyframework.gov/">
+        EU-US Data Privacy Framework
+      </a>
+      , under which Netlify states it is certified. Where this mechanism does not apply, the
+      agreement provides for EU Standard Contractual Clauses. For more information, see{" "}
+      <a class="text-link" href="https://www.netlify.com/privacy/">
+        Netlify's privacy notice
+      </a>{" "}
+      and the{" "}
+      <a class="text-link" href="https://www.netlify.com/pdf/netlify-dpa.pdf">
+        data processing agreement
+      </a>
+      .
+    </p>
+
+    <h2>Contact by email</h2>
+    <p>
+      If you send us an email, we process your sender address, the message, any attachments, and the
+      technical details to handle your inquiry. I use a mailbox provided by STRATO GmbH to receive,
+      store and send email. There is no automatic forwarding to another mailbox and no contact form.
+    </p>
+    <p>
+      If your inquiry relates to a contract or pre-contractual measures, the legal basis is Article
+      6(1)(b) of the GDPR. For other inquiries, processing is based on Article 6(1)(f) of the GDPR.
+      My legitimate interest is to handle your inquiry and respond to you.
+    </p>
+    <p>
+      Once an inquiry has been fully resolved, I delete the correspondence, including my replies,
+      from the mailbox and trash. Records still needed for an ongoing matter or to meet statutory
+      retention obligations are kept for as long as necessary. For more information about processing
+      by STRATO, see{" "}
+      <a class="text-link" href="https://www.strato.de/datenschutz/">
+        STRATO's privacy notice
+      </a>{" "}
+      and the{" "}
+      <a class="text-link" href="https://www.strato.de/agb/avv/">
+        data processing agreement
+      </a>
+      .
+    </p>
+    <p>
+      The provider's recovery process is separate from this. According to STRATO, messages deleted
+      from the mailbox, including the trash, can still be recovered for up to 30 days. For details,
+      see the{" "}
+      <a
+        class="text-link"
+        href="https://www.strato.de/faq/mail/wie-kann-ich-meine-geloeschten-e-mails-wiederherstellen/"
+      >
+        explanation of email recovery
+      </a>
+      .
+    </p>
+
+    <h2>Contact by phone</h2>
+    <p>
+      If you call me, I process your phone number, the time of the call and the information you
+      provide to handle your inquiry. I use satellite Free, provided by sipgate GmbH, for telephone
+      communication. I do not use voicemail, call recordings, transcriptions or AI summaries.
+    </p>
+    <p>
+      If your inquiry relates to a contract or pre-contractual measures, the legal basis is Article
+      6(1)(b) of the GDPR. For other inquiries, processing is based on my legitimate interest in
+      handling your inquiry and responding to you under Article 6(1)(f) of the GDPR. If I store data
+      to handle your inquiry, I delete it once your inquiry has been fully resolved, provided it is
+      no longer needed and no statutory retention obligations apply.
+    </p>
+    <p>
+      sipgate processes the connection data necessary for telephony, particularly the phone numbers
+      involved and the start and end of a call. The call history used across devices is stored by
+      sipgate. According to the provider, these entries are deleted when I delete them in the app or
+      the contract ends. This is separate from data sipgate processes for billing or statutory
+      retention obligations. For more information, see{" "}
+      <a class="text-link" href="https://www.satellite.me/datenschutz/">
+        satellite's privacy notice
+      </a>
+      .
+    </p>
+
+    <h2>Fonts, cookies, and analytics</h2>
+    <p>
+      The fonts, images and gallery are served with the website. Loading them does not connect to
+      external font or image providers. This website does not set its own cookies or use analytics
+      tools, embedded third-party content, comments or newsletters. The gallery uses neither local
+      storage nor session storage. It uses the local browser history for image navigation.
+    </p>
+
+    <h2>Your rights</h2>
+    <p>
+      You may request access to, rectification or erasure of, and restriction of processing of your
+      personal data. Where the legal requirements are met, you also have a right to data
+      portability. Where processing is based on legitimate interests, you may object on grounds
+      relating to your particular situation. To exercise your rights, contact me using the details
+      in the{" "}
+      <a class="text-link" href={routeUrl("en", "legal")}>
+        Legal Notice
+      </a>
+      .
+    </p>
+    <p>
+      You may lodge a complaint with a data protection supervisory authority, particularly the{" "}
+      <a class="text-link" href="https://www.lda.bayern.de/de/beschwerde.html">
+        Bavarian State Office for Data Protection Supervision (BayLDA)
+      </a>
+      . You retain the right to contact another supervisory authority competent under the GDPR.
+    </p>
+  </LegalArticle>
+</BaseLayout>

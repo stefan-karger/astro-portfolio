@@ -1,0 +1,9 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro"
+import PageIntro from "@/components/page-intro.astro"
+import { siteConfig } from "@/lib/config"
+---
+
+<BaseLayout title={`${siteConfig.name.public} - Blog`}>
+  <PageIntro title="Blog" />
+</BaseLayout>
