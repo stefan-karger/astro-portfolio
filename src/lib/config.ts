@@ -1,6 +1,9 @@
 const contactEmail = "kontakt@stefan-karger.de"
 
 export const siteConfig = {
+  // Publish the project and career entry only after approval.
+  showJunksplayground: false,
+
   name: {
     legal: "Stefan Eideloth-Karger",
     public: "Stefan Karger"

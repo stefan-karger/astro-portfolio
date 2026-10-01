@@ -34,6 +34,20 @@
     }
   }
 
+  .text-link {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+
+    &:hover,
+    &:focus-visible {
+      background-color: color-mix(in srgb, var(--color-ink-hover) 12%, transparent);
+    }
+  }
+
   .legal-content h1 {
     @apply mb-14 text-left font-mono text-page-title leading-[1.12] font-bold tracking-[-0.02em] sm:mb-20 sm:text-center;
   }
@@ -44,9 +58,5 @@
 
   .legal-content p + p {
     @apply mt-[0.85rem];
-  }
-
-  .legal-content a {
-    @apply font-normal text-muted hover:text-ink;
   }
 }

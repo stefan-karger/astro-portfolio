@@ -14,13 +14,15 @@ export const de = {
   },
 
   portfolio: {
-    title: "Portfolio",
+    title: "Fotografie",
     intro: "Eine Auswahl meiner Fotografien aus den vergangenen zehn Jahren.",
     metaDescription:
       "Ausgewählte Fotografien von Stefan Karger: Porträts, inszenierte Szenen und persönliche Arbeiten.",
     lightbox: {
+      label: "Fotogalerie",
       close: "Schließen",
-      zoom: "Vergrößern",
+      zoomIn: "Vergrößern",
+      zoomOut: "Verkleinern",
       previous: "Vorheriges Bild",
       next: "Nächstes Bild",
       error: "Das Bild konnte nicht geladen werden."
@@ -39,7 +41,7 @@ export const de = {
     },
     lager: {
       name: "Lagerabgleich & Preisautomatisierung",
-      kind: "Projekt bei JunksPlayGround",
+      kind: "Projekt bei Junksplayground",
       description:
         "Eine eigens entwickelte Schnittstelle, die JTL-Wawi und Cardmarket miteinander verbindet. Sie gleicht Bestände und Bestellungen automatisiert ab und aktualisiert die Verkaufspreise eigenständig anhand individueller Regeln und aktueller Marktdaten.",
       metrics: [
@@ -68,7 +70,7 @@ export const de = {
           "Eigenverantwortliche Konzeption, Entwicklung und langfristige Betreuung interner Software für Vertrieb, Service und IT. Ein Schwerpunkt ist der Aufbau einer zentralen Webanwendung, die Informationen und Funktionen bestehender Fachanwendungen schrittweise zusammenführt."
       },
       {
-        company: "JunksPlayground",
+        company: "Junksplayground",
         url: "https://junksplayground.de/",
         role: "Softwareentwickler & technischer Berater",
         period: "2022 — heute",
@@ -105,7 +107,7 @@ export const de = {
 
   nav: {
     home: "Home",
-    portfolio: "Portfolio",
+    portfolio: "Fotografie",
     blog: "Blog",
     legal: "Impressum",
     privacy: "Datenschutz",

@@ -60,8 +60,10 @@ const images = Object.entries(modules)
     <div
       class="portfolio-grid"
       data-portfolio-gallery
+      data-dialog-label={portfolio.lightbox.label}
       data-close-title={portfolio.lightbox.close}
-      data-zoom-title={portfolio.lightbox.zoom}
+      data-zoom-in-title={portfolio.lightbox.zoomIn}
+      data-zoom-out-title={portfolio.lightbox.zoomOut}
       data-previous-title={portfolio.lightbox.previous}
       data-next-title={portfolio.lightbox.next}
       data-error-message={portfolio.lightbox.error}

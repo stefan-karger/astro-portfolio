@@ -10,6 +10,11 @@ export default defineConfig({
   },
   site: "https://stefan-karger.de",
 
+  redirects: {
+    "/portfolio": "/fotografie",
+    "/en/portfolio": "/en/photography"
+  },
+
   i18n: {
     defaultLocale: "de",
     locales: ["de", "en"],

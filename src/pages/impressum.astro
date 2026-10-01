@@ -17,18 +17,12 @@ import { siteConfig } from "@/lib/config"
     <h2>Kontakt</h2>
     <p>
       E-Mail:{" "}
-      <a
-        class="site-link font-normal text-muted hover:text-ink"
-        href={`mailto:${siteConfig.contact.email}`}
-      >
+      <a class="text-link" href={`mailto:${siteConfig.contact.email}`}>
         {siteConfig.contact.email}
       </a>
       <br />
       Telefon:{" "}
-      <a
-        class="site-link font-normal text-muted hover:text-ink"
-        href={`tel:${siteConfig.contact.phone.replaceAll(" ", "")}`}
-      >
+      <a class="text-link" href={`tel:${siteConfig.contact.phone.replaceAll(" ", "")}`}>
         {siteConfig.contact.phone}
       </a>
     </p>

@@ -5,8 +5,8 @@ export const routes = {
   },
 
   portfolio: {
-    de: "portfolio",
-    en: "portfolio"
+    de: "fotografie",
+    en: "photography"
   },
 
   blog: {

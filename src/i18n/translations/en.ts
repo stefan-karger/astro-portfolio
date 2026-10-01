@@ -16,13 +16,15 @@ export const en = {
   },
 
   portfolio: {
-    title: "Portfolio",
+    title: "Photography",
     intro: "A selection of photographs from the past ten years.",
     metaDescription:
       "Selected photographs by Stefan Karger: portraits, staged scenes and personal work.",
     lightbox: {
+      label: "Photo gallery",
       close: "Close",
-      zoom: "Zoom",
+      zoomIn: "Zoom in",
+      zoomOut: "Zoom out",
       previous: "Previous image",
       next: "Next image",
       error: "The image could not be loaded."
@@ -41,14 +43,14 @@ export const en = {
     },
     lager: {
       name: "Stock sync & auto-pricing",
-      kind: "Project at JunksPlayGround",
+      kind: "Project at Junksplayground",
       description:
         "A custom-built integration connecting JTL-Wawi and Cardmarket. It automatically synchronizes stock and orders and updates selling prices based on custom rules and current market data.",
       metrics: [
         { value: "≈200,000", label: "Product variants" },
         { value: "≈4,000,000", label: "Individual units in stock" },
         { value: "≈40,000", label: "Cardmarket orders since 2024" },
-        { value: ">100,000", label: "Price comparisons per day" }
+        { value: ">100,000", label: "Price evaluation per day" }
       ]
     }
   },
@@ -62,16 +64,16 @@ export const en = {
         url: "https://www.rhein-bmw.de/",
         role: "Senior Software Engineer",
         period: "2014 — present",
-        type: "Full-time",
+        type: "Day job",
         summary:
           "Independent design, development, and long-term maintenance of internal software for sales, service, and IT. A key focus is building a central web application that gradually brings together information and functionality from existing business applications."
       },
       {
-        company: "JunksPlayground",
+        company: "Junksplayground",
         url: "https://junksplayground.de/",
         role: "Software Engineer & Technical Advisor",
         period: "2022 — present",
-        type: "Part-time",
+        type: "Side job",
         summary:
           "Development and long-term maintenance of an integration between JTL-Wawi and Cardmarket for automated inventory, order, and price synchronization. Technical advice to company management on automation, system architecture, and new software projects."
       },
@@ -104,7 +106,7 @@ export const en = {
 
   nav: {
     home: "Home",
-    portfolio: "Portfolio",
+    portfolio: "Photography",
     blog: "Blog",
     legal: "Legal Notice",
     privacy: "Privacy Policy",

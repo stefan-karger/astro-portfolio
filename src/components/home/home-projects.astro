@@ -1,6 +1,7 @@
 ---
 import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
+import { siteConfig } from "@/lib/config"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
 const { projects } = getTranslations(locale)
@@ -53,28 +54,30 @@ const recordGridClasses =
       </div>
     </article>
 
-    <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
-      <div>
-        <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-[1.25] font-bold tracking-[-0.04em]">
-          {projects.lager.name}
-        </h3>
-        <p class="mt-3 text-[0.84rem] text-muted">{projects.lager.kind}</p>
-      </div>
-      <div class="max-w-[43rem]">
-        <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">
-          {projects.lager.description}
-        </p>
-        <dl class="mt-12 grid grid-cols-2 gap-8 max-[25rem]:grid-cols-1">
-          {projects.lager.metrics.map((metric) => (
-            <div class="@container flex flex-col-reverse">
-              <dt class="m-0 text-[0.84rem] text-muted">{metric.label}</dt>
-              <dd class="m-0 font-mono text-[min(clamp(1.65rem,2.8vw,2.4rem),12cqw)] font-bold tracking-[-0.05em] whitespace-nowrap">
-                {metric.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-    </article>
+    {siteConfig.showJunksplayground && (
+      <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
+        <div>
+          <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-[1.25] font-bold tracking-[-0.04em]">
+            {projects.lager.name}
+          </h3>
+          <p class="mt-3 text-[0.84rem] text-muted">{projects.lager.kind}</p>
+        </div>
+        <div class="max-w-[43rem]">
+          <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">
+            {projects.lager.description}
+          </p>
+          <dl class="mt-12 grid grid-cols-2 gap-8 max-[25rem]:grid-cols-1">
+            {projects.lager.metrics.map((metric) => (
+              <div class="@container flex flex-col-reverse">
+                <dt class="m-0 text-[0.84rem] text-muted">{metric.label}</dt>
+                <dd class="m-0 font-mono text-[min(clamp(1.65rem,2.8vw,2.4rem),12cqw)] font-bold tracking-[-0.05em] whitespace-nowrap">
+                  {metric.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </article>
+    )}
   </div>
 </section>
