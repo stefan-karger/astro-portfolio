@@ -3,7 +3,6 @@ import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import { siteConfig } from "@/lib/config"
-import EmailButton from "./email-button.astro"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
 const t = getTranslations(locale)
@@ -15,8 +14,8 @@ const legalLinks = [
 ]
 ---
 
-<footer class="border-t border-rule bg-paper text-ink">
-  <div class="mx-auto grid w-full max-w-7xl grid-cols-[minmax(12rem,0.8fr)_minmax(0,1.7fr)] gap-x-[clamp(3rem,8vw,8rem)] gap-y-10 px-4 py-[clamp(3rem,7vw,6rem)] max-[50rem]:grid-cols-1 sm:px-6 lg:px-8">
+<footer class="@container border-t border-rule bg-paper text-ink">
+  <div class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-x-[clamp(3rem,8vw,8rem)] gap-y-10 px-4 py-[clamp(3rem,7vw,6rem)] @min-[50rem]:grid-cols-[minmax(0,0.8fr)_minmax(0,1.7fr)] sm:px-6 lg:px-8">
     <div class="flex flex-col items-start justify-between gap-10">
       <span
         aria-hidden="true"
@@ -29,44 +28,69 @@ const legalLinks = [
       </p>
     </div>
 
-    <div class="grid grid-cols-[minmax(10rem,1fr)_minmax(8rem,0.7fr)_minmax(8rem,0.7fr)] gap-x-8 gap-y-10 max-[38rem]:grid-cols-2 max-[23rem]:grid-cols-1">
-      <div class="max-[38rem]:col-span-2 max-[23rem]:col-span-1">
-        <h2 class="m-0 mb-7 font-mono text-xl font-bold">{t.footer.contact}</h2>
-        <EmailButton />
+    <div class="@container min-w-0">
+      <div class="grid grid-cols-1 gap-x-8 gap-y-10 @min-[18rem]:grid-cols-2 @min-[38rem]:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)_minmax(0,0.7fr)]">
+        <div class="min-w-0 @min-[18rem]:col-span-2 @min-[38rem]:col-span-1">
+          <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.footer.contact}</h2>
+          <ul class="m-0 list-none p-0">
+            <li>
+              <a
+                class="site-link inline-flex min-h-11 max-w-full items-center text-muted [overflow-wrap:anywhere] hover:text-ink"
+                href={`mailto:${siteConfig.contact.email}`}
+              >
+                {siteConfig.contact.email}
+              </a>
+            </li>
+            <li>
+              <a
+                class="site-link inline-flex min-h-11 max-w-full items-center text-muted [overflow-wrap:anywhere] hover:text-ink"
+                href={`tel:${siteConfig.contact.phone.replaceAll(" ", "")}`}
+              >
+                {siteConfig.contact.phone}
+              </a>
+            </li>
+          </ul>
+        </div>
+        <nav aria-label={t.nav.socialLinksLabel}>
+          <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.footer.elsewhere}</h2>
+          <ul class="m-0 list-none p-0">
+            {siteConfig.socialLinks.map((social) => (
+              <li>
+                <a
+                  class="site-link inline-flex min-h-11 items-center text-muted hover:text-ink"
+                  href={social.href}
+                  target={social.external ? "_blank" : undefined}
+                  rel={social.external ? "me noopener noreferrer" : undefined}
+                >
+                  {social.label}
+                  {social.external && (
+                    <>
+                      <span aria-hidden="true">&nbsp;↗</span>
+                      <span class="sr-only"> ({t.links.opensInNewTab})</span>
+                    </>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <nav aria-label={t.nav.legalLabel}>
+          <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.nav.legalLabel}</h2>
+          <ul class="m-0 list-none p-0">
+            {legalLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  aria-current={currentPath === link.href.replace(/\/+$/, "") ? "page" : undefined}
+                  class="site-link inline-flex min-h-11 items-center text-muted hover:text-ink aria-[current=page]:font-bold aria-[current=page]:text-ink"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
-      <nav aria-label={t.nav.socialLinksLabel}>
-        <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.footer.elsewhere}</h2>
-        <ul class="m-0 list-none p-0">
-          {siteConfig.socialLinks.map((social) => (
-            <li>
-              <a
-                class="site-link inline-flex min-h-11 items-center text-muted hover:text-ink"
-                href={social.href}
-                target={social.external ? "_blank" : undefined}
-                rel={social.external ? "me noopener noreferrer" : undefined}
-              >
-                {social.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      <nav aria-label={t.nav.legalLabel}>
-        <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.nav.legalLabel}</h2>
-        <ul class="m-0 list-none p-0">
-          {legalLinks.map((link) => (
-            <li>
-              <a
-                href={link.href}
-                aria-current={currentPath === link.href.replace(/\/+$/, "") ? "page" : undefined}
-                class="site-link inline-flex min-h-11 items-center text-muted hover:text-ink aria-[current=page]:font-bold aria-[current=page]:text-ink"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
     </div>
   </div>
 </footer>

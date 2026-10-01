@@ -4,6 +4,7 @@ import "photoswipe/style.css"
 
 import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
+import PageIntro from "@/components/page-intro.astro"
 import PortfolioImage from "./portfolio-image.astro"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
@@ -29,29 +30,22 @@ for (const path of files) {
 
 const images = Object.entries(modules)
   .sort(([a], [b]) => a.localeCompare(b, "en", { numeric: true }))
-  .map(([path, image]) => ({
-    path,
-    image,
-    alt: path
+  .map(([path, image]) => {
+    const key = path
       .split("/")
       .pop()!
       .replace(/^\d+-/, "")
       .replace(/\.[^.]+$/, "")
-      .replace(/[-_]/g, " ")
       .toLowerCase()
-  }))
+    if (!Object.hasOwn(portfolio.imageAlts, key)) {
+      throw new Error(`Missing ${locale} portfolio image translation: ${key}`)
+    }
+    return { path, image, alt: portfolio.imageAlts[key as keyof typeof portfolio.imageAlts] }
+  })
 ---
 
-<section class="pt-8 pb-16 sm:pt-12 sm:pb-24" aria-labelledby="portfolio-title">
-  <div class="mx-auto mb-[clamp(2.5rem,5vw,4rem)] w-[calc(100%_-_2rem)] max-w-6xl">
-    <h1
-      id="portfolio-title"
-      class="m-0 font-mono text-[clamp(2.5rem,4.5vw,4rem)] leading-[1.1] font-bold tracking-[-0.045em]"
-    >
-      {portfolio.title}
-    </h1>
-    <p class="mt-4 max-w-[40rem] text-lg text-muted">{portfolio.intro}</p>
-  </div>
+<section class="pt-[clamp(2.5rem,7vw,7rem)] pb-16 sm:pb-24" aria-labelledby="portfolio-title">
+  <PageIntro id="portfolio-title" title={portfolio.title} description={portfolio.intro} />
 
   <script is:inline>
     document.documentElement.dataset.portfolioJs = ""

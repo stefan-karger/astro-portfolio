@@ -4,6 +4,8 @@ import PageIntro from "@/components/page-intro.astro"
 import { siteConfig } from "@/lib/config"
 ---
 
-<BaseLayout title={`${siteConfig.name.public} - Blog`}>
-  <PageIntro title="Blog" />
+<BaseLayout title={`${siteConfig.name.public} - Blog`} mainClass="w-full flex-1">
+  <section class="pt-[clamp(2.5rem,7vw,7rem)] pb-16 sm:pb-24" aria-labelledby="blog-title">
+    <PageIntro id="blog-title" title="Blog" />
+  </section>
 </BaseLayout>

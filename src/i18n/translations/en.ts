@@ -8,7 +8,7 @@ export const en = {
     hero: {
       greeting: "Hi! I'm Stefan.",
       intro:
-        "What excites me most about software development is tackling challenging problems: connecting complex systems and combining, reconciling, and analyzing large datasets. I especially enjoy building solutions for workflows where nothing off the shelf quite fits.",
+        "I'm drawn to the challenging side of software development: making complex systems work together, bringing large datasets into a coherent whole, and building solutions for workflows that off-the-shelf software can't handle.",
       photography:
         "Photography gives me a break from code. The tools change, but the eye for detail remains.",
       imageAlt: (name: string) => `${name} wearing a black jacket and black cap`
@@ -20,6 +20,25 @@ export const en = {
     intro: "A selection of photographs from the past ten years.",
     metaDescription:
       "Selected photographs by Stefan Karger: portraits, staged scenes and personal work.",
+    imageAlts: {
+      "bathtub-in-meadow": "bathtub in meadow",
+      "maternity-portrait-in-poppy-field": "maternity portrait in poppy field",
+      "seated-portrait-in-ruins": "seated portrait in ruins",
+      "shield-portrait-with-raven": "shield portrait with raven",
+      "portrait-with-owl": "portrait with owl",
+      "portrait-with-raven-and-spear": "portrait with raven and spear",
+      "portrait-on-stone-stairs": "portrait on stone stairs",
+      "winged-pair-by-tree": "winged pair by tree",
+      "sword-portrait-in-sandstone": "sword portrait in sandstone",
+      "maternity-portrait-on-bed": "maternity portrait on bed",
+      "bridal-portrait-outdoors": "bridal portrait outdoors",
+      "tattooed-portrait-by-mural": "tattooed portrait by mural",
+      "portrait-facing-mirror": "portrait facing mirror",
+      "seated-portrait-by-window": "seated portrait by window",
+      "antler-portrait-in-forest": "antler portrait in forest",
+      "maternity-portrait-by-window": "maternity portrait by window",
+      "silhouette-above-city-at-night": "silhouette above city at night"
+    },
     lightbox: {
       label: "Photo gallery",
       close: "Close",
@@ -57,7 +76,6 @@ export const en = {
 
   career: {
     title: "Career",
-    opensInNewTab: "opens in a new tab",
     jobs: [
       {
         company: "BMW Rhein Gruppe",
@@ -97,6 +115,10 @@ export const en = {
 
   contact: {
     emailAction: "Email me"
+  },
+
+  links: {
+    opensInNewTab: "opens in a new tab"
   },
 
   footer: {

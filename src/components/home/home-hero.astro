@@ -12,18 +12,18 @@ const t = getTranslations(locale)
 ---
 
 <section
-  class="min-h-[calc(100svh-var(--spacing-header))] px-[clamp(1rem,4vw,4rem)] pt-[clamp(5rem,11vw,10rem)] pb-[clamp(7rem,10vw,9rem)] max-[45rem]:min-h-[auto] max-[45rem]:pt-10 max-[45rem]:pb-16"
+  class="@container px-[clamp(1rem,4vw,4rem)] pt-[clamp(2.5rem,7vw,7rem)] pb-[clamp(4rem,8vw,8rem)] lg:pb-[clamp(6rem,10vw,10rem)]"
   aria-labelledby="home-hero-title"
 >
-  <div class="mx-auto grid w-full max-w-5xl grid-cols-[minmax(15rem,21rem)_minmax(22rem,1fr)] items-center gap-[clamp(3rem,8vw,7.5rem)] max-[45rem]:grid-cols-1 max-[45rem]:gap-6">
-    <figure class="m-0 max-[45rem]:w-[min(55vw,13rem)]">
+  <div class="mx-auto grid w-full max-w-5xl grid-cols-1 items-center gap-6 @min-[45rem]:grid-cols-[minmax(0,21rem)_minmax(0,1fr)] @min-[45rem]:gap-[clamp(3rem,8vw,7.5rem)]">
+    <figure class="m-0 w-[min(55vw,11.25rem)] @min-[45rem]:w-full">
       <Picture
         src={portrait}
         alt={t.home.hero.imageAlt(siteConfig.name.public)}
         formats={["avif", "webp"]}
         fallbackFormat="jpeg"
         widths={[240, 320, 420, 640, 840]}
-        sizes="(max-width: 719px) min(55vw, 13rem), (max-width: 52rem) calc(100vw - 29rem), 21rem"
+        sizes="(width < 49rem) min(55vw, 11.25rem), 21rem"
         width={840}
         height={1050}
         quality="high"
@@ -32,14 +32,14 @@ const t = getTranslations(locale)
       />
     </figure>
 
-    <div>
+    <div class="min-w-0">
       <h1
         id="home-hero-title"
         class="m-0 max-w-[12ch] font-mono text-display leading-[1.08] font-bold tracking-[-0.02em]"
       >
         {t.home.hero.greeting}
       </h1>
-      <p class="mt-[1.8rem] max-w-[40rem] text-lg leading-[1.6] text-muted max-[45rem]:mt-6">
+      <p class="mt-6 max-w-[40rem] text-lg leading-[1.6] text-muted @min-[45rem]:mt-[1.8rem]">
         {t.home.hero.intro}
       </p>
       <p class="mt-4 max-w-[40rem] text-lg leading-[1.6] text-muted">{t.home.hero.photography}</p>

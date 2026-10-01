@@ -6,7 +6,7 @@ export const de = {
     hero: {
       greeting: "Hi! Ich bin Stefan.",
       intro:
-        "Das Spannendste an der Softwareentwicklung sind für mich die Aufgaben, bei denen es anspruchsvoll wird: komplexe Systeme miteinander verbinden und große Datenbestände zusammenführen, abgleichen und auswerten. Besonders reizt es mich, Lösungen für Prozesse zu entwickeln, für die es nichts von der Stange gibt.",
+        "Das Spannendste an der Softwareentwicklung sind für mich die Aufgaben, bei denen es anspruchsvoll wird: komplexe Systeme verbinden, große Datenbestände zusammenführen und Lösungen für Prozesse entwickeln, für die es nichts von der Stange gibt.",
       photography:
         "Die Fotografie schafft Abstand zum Code. Die Werkzeuge ändern sich, aber der Blick fürs Detail bleibt.",
       imageAlt: (name: string) => `${name} in schwarzer Jacke und schwarzer Kappe`
@@ -18,6 +18,25 @@ export const de = {
     intro: "Eine Auswahl meiner Fotografien aus den vergangenen zehn Jahren.",
     metaDescription:
       "Ausgewählte Fotografien von Stefan Karger: Porträts, inszenierte Szenen und persönliche Arbeiten.",
+    imageAlts: {
+      "bathtub-in-meadow": "Badewanne auf einer Wiese",
+      "maternity-portrait-in-poppy-field": "Schwangerschaftsporträt im Mohnfeld",
+      "seated-portrait-in-ruins": "Porträt im Sitzen zwischen Ruinen",
+      "shield-portrait-with-raven": "Porträt mit Schild und Rabe",
+      "portrait-with-owl": "Porträt mit Eule",
+      "portrait-with-raven-and-spear": "Porträt mit Rabe und Speer",
+      "portrait-on-stone-stairs": "Porträt auf einer Steintreppe",
+      "winged-pair-by-tree": "Paar mit Flügeln an einem Baum",
+      "sword-portrait-in-sandstone": "Porträt mit Schwert vor Sandstein",
+      "maternity-portrait-on-bed": "Schwangerschaftsporträt auf einem Bett",
+      "bridal-portrait-outdoors": "Brautporträt im Freien",
+      "tattooed-portrait-by-mural": "Porträt mit Tattoos vor einem Wandbild",
+      "portrait-facing-mirror": "Porträt vor einem Spiegel",
+      "seated-portrait-by-window": "Porträt im Sitzen am Fenster",
+      "antler-portrait-in-forest": "Porträt mit Geweih im Wald",
+      "maternity-portrait-by-window": "Schwangerschaftsporträt am Fenster",
+      "silhouette-above-city-at-night": "Silhouette über der nächtlichen Stadt"
+    },
     lightbox: {
       label: "Fotogalerie",
       close: "Schließen",
@@ -58,7 +77,6 @@ export const de = {
 
   career: {
     title: "Werdegang",
-    opensInNewTab: "öffnet in neuem Tab",
     jobs: [
       {
         company: "BMW Rhein Gruppe",
@@ -98,6 +116,10 @@ export const de = {
 
   contact: {
     emailAction: "E-Mail schreiben"
+  },
+
+  links: {
+    opensInNewTab: "öffnet in neuem Tab"
   },
 
   footer: {

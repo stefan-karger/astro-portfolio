@@ -3,7 +3,7 @@ import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
-const { projects } = getTranslations(locale)
+const { projects, links } = getTranslations(locale)
 const solidUrl = "https://www.solid-ui.com/"
 const sourceUrl = "https://github.com/stefan-karger/solid-ui"
 const recordGridClasses =
@@ -39,7 +39,9 @@ const recordGridClasses =
             rel="noopener noreferrer"
             class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
           >
-            {projects.solid.website}&nbsp;↗
+            {projects.solid.website}
+            <span aria-hidden="true">&nbsp;↗</span>
+            <span class="sr-only"> ({links.opensInNewTab})</span>
           </a>
           <a
             href={sourceUrl}
@@ -47,7 +49,9 @@ const recordGridClasses =
             rel="noopener noreferrer"
             class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
           >
-            {projects.solid.source}&nbsp;↗
+            {projects.solid.source}
+            <span aria-hidden="true">&nbsp;↗</span>
+            <span class="sr-only"> ({links.opensInNewTab})</span>
           </a>
         </div>
       </div>

@@ -1,13 +1,19 @@
 ---
 interface Props {
+  id: string
   title: string
+  description?: string
 }
 
-const { title } = Astro.props
+const { id, title, description } = Astro.props
 ---
 
-<div class="py-16 sm:py-24 lg:py-36">
-  <h1 class="max-w-[22ch] font-mono text-page-title leading-[1.12] font-bold tracking-[-0.02em]">
+<div class="mx-auto mb-[clamp(2.5rem,5vw,4rem)] w-[calc(100%_-_2rem)] max-w-6xl">
+  <h1
+    id={id}
+    class="m-0 font-mono text-[clamp(2.5rem,4.5vw,4rem)] leading-[1.1] font-bold tracking-[-0.045em]"
+  >
     {title}
   </h1>
+  {description && <p class="mt-4 max-w-[40rem] text-lg text-muted">{description}</p>}
 </div>

@@ -8,14 +8,15 @@ Der Hero importiert `hero.jpg` in Astros `<Picture />`. Beim Build erzeugt Astro
 
 Die aktiven Portfolio-Quellen liegen unter `src/assets/portfolio/`. Beide Sprachversionen lesen diesen Ordner beim Build automatisch ein. Es gibt keine separate Bildliste oder Sortierdatei.
 
-Dateinamen bestimmen Reihenfolge und kurze englische Bildbeschreibung. Zum Beispiel wird `001-bathtub-in-meadow.jpg` als `bathtub in meadow` beschrieben. Für neue Bilder:
+Dateinamen bestimmen die Reihenfolge und den Schlüssel für die Bildübersetzungen. Der beschreibende Teil ohne Nummer und Dateiendung verweist auf `portfolio.imageAlts` in `src/i18n/translations/de.ts` und `en.ts`. Die Texte sind vorerst kurze Motivbezeichnungen aus den Dateinamen: `001-bathtub-in-meadow.jpg` hat den Schlüssel `bathtub-in-meadow`, englisch `bathtub in meadow` und deutsch `Badewanne auf einer Wiese`. Für neue Bilder:
 
 1. Das Original außerhalb der aktiven Bildpipeline sichern. `private/photo-backup/` ist bereits von Git ausgeschlossen.
 2. Einen fertigen Export mit korrekter Orientierung und möglichst eingebettetem sRGB-Profil ablegen. JPG, JPEG, PNG und WebP werden unterstützt. Vorhandene kleine Exporte dürfen ihre Auflösung behalten.
 3. Einen Namen wie `018-short-description.jpg` vergeben. Das numerische Präfix legt die Reihenfolge fest. Bindestriche oder Unterstriche trennen die Wörter der Beschreibung.
-4. `pnpm validate` ausführen und beide Portfolio-Seiten prüfen. Für eine andere Reihenfolge die Präfixe umbenennen.
+4. Den beschreibenden Dateinamenteil als Schlüssel in beiden `portfolio.imageAlts`-Zuordnungen ergänzen. Englisch die lesbare Dateinamenfassung verwenden, Deutsch sinngemäß übertragen.
+5. `pnpm validate` ausführen und beide Portfolio-Seiten prüfen. Für eine andere Reihenfolge die Präfixe umbenennen; die Übersetzungsschlüssel bleiben dabei gleich.
 
-Ungültige Dateinamen und nicht unterstützte Dateien im aktiven Ordner führen zu einem Buildfehler. Doppelte numerische Präfixe erzeugen eine Warnung. Bei gleichem Präfix entscheidet der restliche Dateiname.
+Ungültige Dateinamen, nicht unterstützte Dateien im aktiven Ordner und fehlende Bildübersetzungen führen zu einem Buildfehler. Doppelte numerische Präfixe erzeugen eine Warnung. Bei gleichem Präfix entscheidet der restliche Dateiname.
 
 Die Originale des ersten Bildsatzes und ein Importprotokoll mit SHA-256-Prüfsummen liegen unter `private/photo-backup/portfolio/`. Vorhandene JPEGs wurden unverändert kopiert. PNGs wurden ohne Größenänderung in JPEG mit Qualität 95 und 4:4:4-Farbabtastung umgewandelt. Vier PNGs hatten kein Farbprofil, hier wurde sRGB angenommen.
 

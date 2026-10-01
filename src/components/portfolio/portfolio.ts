@@ -180,10 +180,6 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
     }
   })
 
-  lightbox.on("contentAppend", ({ content }) => {
-    if (content.element) content.element.lang = "en"
-  })
-
   lightbox.on("close", () => {
     if (historyIndex() !== undefined) window.history.back()
   })

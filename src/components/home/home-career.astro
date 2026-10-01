@@ -3,10 +3,10 @@ import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
-const { career } = getTranslations(locale)
+const { career, links } = getTranslations(locale)
 ---
 
-<section class="pb-[clamp(6rem,11vw,10rem)]" aria-labelledby="career-title">
+<section class="pb-[clamp(9rem,calc(12vw+1rem),13rem)]" aria-labelledby="career-title">
   <div class="mx-auto w-[calc(100%_-_2rem)] max-w-6xl">
     <div class="pb-[clamp(2.5rem,5vw,4rem)]">
       <h2
@@ -55,7 +55,7 @@ const { career } = getTranslations(locale)
                   <span aria-hidden="true" class="text-[0.65em]">
                     &nbsp;↗
                   </span>
-                  <span class="sr-only"> ({career.opensInNewTab})</span>
+                  <span class="sr-only"> ({links.opensInNewTab})</span>
                 </a>
               ) : (
                 job.company
