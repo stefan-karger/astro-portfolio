@@ -2,7 +2,7 @@ export const de = {
   home: {
     metaTitle: "Softwareentwicklung & Fotografie",
     metaDescription:
-      "Softwareentwicklung, Systemintegration, Schnittstellen, Datenabgleich und Fotografie.",
+      "Stefan Karger entwickelt Software für Systemintegration und Datenabgleich. Einblicke in seine Projekte, seinen Werdegang und seine Fotografie.",
     hero: {
       greeting: "Hi! Ich bin Stefan.",
       intro:
@@ -115,7 +115,7 @@ export const de = {
   },
 
   contact: {
-    emailAction: "E-Mail schreiben"
+    emailAction: "Schreib mir"
   },
 
   links: {
@@ -146,6 +146,36 @@ export const de = {
     current: "aktuelle Sprache",
     switchToDe: "zur deutschen Version wechseln",
     switchToEn: "zur englischen Version wechseln"
+  },
+
+  seo: {
+    imageAlt: "SK.-Wordmark von Stefan Karger"
+  },
+
+  legal: {
+    metaDescription: "Impressum und Kontaktangaben zur Website von Stefan Karger."
+  },
+
+  privacy: {
+    metaDescription:
+      "Informationen zur Verarbeitung personenbezogener Daten beim Besuch dieser Website und bei der Kontaktaufnahme mit Stefan Karger."
+  },
+
+  blog: {
+    description: "Notizen zu Software, Webentwicklung und den Dingen, die ich dabei lerne.",
+    empty: "Noch keine Beiträge veröffentlicht.",
+    draft: "Entwurf",
+    tags: "Tags",
+    language: { de: "Deutsch", en: "Englisch" },
+    contents: "Auf dieser Seite",
+    back: "Zur Blogübersicht",
+    navigation: "Weitere Beiträge",
+    previous: "Vorheriger Beitrag",
+    next: "Nächster Beitrag",
+    copy: "Code kopieren",
+    copied: "Code in die Zwischenablage kopiert",
+    copyError: "Kopieren fehlgeschlagen. Bitte den Code markieren und manuell kopieren.",
+    typeInfo: "Typinformationen"
   },
 
   prototype: {

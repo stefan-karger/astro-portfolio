@@ -4,7 +4,7 @@ export const en = {
   home: {
     metaTitle: "Software Development & Photography",
     metaDescription:
-      "Software development, systems integration, interfaces, data reconciliation, and photography.",
+      "Stefan Karger develops software for systems integration and data reconciliation. Explore his projects, career, and photography.",
     hero: {
       greeting: "Hi! I'm Stefan.",
       intro:
@@ -145,6 +145,36 @@ export const en = {
     current: "current language",
     switchToDe: "switch to the German version",
     switchToEn: "switch to the English version"
+  },
+
+  seo: {
+    imageAlt: "Stefan Karger's SK. wordmark"
+  },
+
+  legal: {
+    metaDescription: "Legal information and contact details for Stefan Karger's website."
+  },
+
+  privacy: {
+    metaDescription:
+      "How personal data is processed when you visit this website or contact Stefan Karger."
+  },
+
+  blog: {
+    description: "Notes on software, web development and what I learn along the way.",
+    empty: "No posts published yet.",
+    draft: "Draft",
+    tags: "Tags",
+    language: { de: "German", en: "English" },
+    contents: "On this page",
+    back: "Back to the blog",
+    navigation: "More posts",
+    previous: "Previous post",
+    next: "Next post",
+    copy: "Copy code",
+    copied: "Code copied to clipboard",
+    copyError: "Copy failed. Please select the code and copy it manually.",
+    typeInfo: "Type information"
   },
 
   prototype: {

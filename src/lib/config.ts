@@ -18,6 +18,13 @@ export const siteConfig = {
     phone: "+49 15679 365744"
   },
 
+  socialImage: {
+    path: "/social/sk-wordmark.png",
+    type: "image/png",
+    width: 1200,
+    height: 630
+  },
+
   socialLinks: [
     {
       label: "GitHub",

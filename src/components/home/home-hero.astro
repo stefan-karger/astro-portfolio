@@ -28,7 +28,7 @@ const t = getTranslations(locale)
         height={1050}
         quality="high"
         priority
-        class="block w-full [filter:grayscale(0.12)_brightness(1.08)_contrast(0.96)_saturate(0.92)]"
+        class="block w-full filter-[grayscale(0.12)_brightness(1.08)_contrast(0.96)_saturate(0.92)]"
       />
     </figure>
 
@@ -39,10 +39,10 @@ const t = getTranslations(locale)
       >
         {t.home.hero.greeting}
       </h1>
-      <p class="mt-6 max-w-[40rem] text-lg leading-[1.6] text-muted @min-[45rem]:mt-[1.8rem]">
+      <p class="mt-6 max-w-160 text-lg leading-[1.6] text-muted @min-[45rem]:mt-[1.8rem]">
         {t.home.hero.intro}
       </p>
-      <p class="mt-4 max-w-[40rem] text-lg leading-[1.6] text-muted">{t.home.hero.photography}</p>
+      <p class="mt-4 max-w-160 text-lg leading-[1.6] text-muted">{t.home.hero.photography}</p>
       <EmailButton class="mt-6" />
     </div>
   </div>

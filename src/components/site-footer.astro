@@ -1,10 +1,14 @@
 ---
-import { defaultLocale, locales } from "@/i18n/types"
+import type { Locale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import { siteConfig } from "@/lib/config"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
 const t = getTranslations(locale)
 const year = new Date().getFullYear()
 const currentPath = Astro.url.pathname.replace(/\/+$/, "")
@@ -35,7 +39,7 @@ const legalLinks = [
           <ul class="m-0 list-none p-0">
             <li>
               <a
-                class="site-link inline-flex min-h-11 max-w-full items-center text-muted [overflow-wrap:anywhere] hover:text-ink"
+                class="site-link inline-flex min-h-11 max-w-full items-center text-muted wrap-anywhere hover:text-ink"
                 href={`mailto:${siteConfig.contact.email}`}
               >
                 {siteConfig.contact.email}
@@ -43,7 +47,7 @@ const legalLinks = [
             </li>
             <li>
               <a
-                class="site-link inline-flex min-h-11 max-w-full items-center text-muted [overflow-wrap:anywhere] hover:text-ink"
+                class="site-link inline-flex min-h-11 max-w-full items-center text-muted wrap-anywhere hover:text-ink"
                 href={`tel:${siteConfig.contact.phone.replaceAll(" ", "")}`}
               >
                 {siteConfig.contact.phone}

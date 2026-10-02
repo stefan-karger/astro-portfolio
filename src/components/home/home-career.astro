@@ -7,7 +7,7 @@ const { career, links } = getTranslations(locale)
 ---
 
 <section class="pb-[clamp(9rem,calc(12vw+1rem),13rem)]" aria-labelledby="career-title">
-  <div class="mx-auto w-[calc(100%_-_2rem)] max-w-6xl">
+  <div class="mx-auto w-[calc(100%-2rem)] max-w-6xl">
     <div class="pb-[clamp(2.5rem,5vw,4rem)]">
       <h2
         id="career-title"
@@ -18,7 +18,7 @@ const { career, links } = getTranslations(locale)
     </div>
 
     <div class="border-t border-rule pt-[clamp(3rem,5vw,5rem)]">
-      <div class="mx-auto w-full max-w-[50rem] border-l border-rule pl-[clamp(1.4rem,3vw,2.5rem)]">
+      <div class="mx-auto w-full max-w-200 border-l border-rule pl-[clamp(1.4rem,3vw,2.5rem)]">
         {career.jobs.map((job, index) => (
           <article class="relative border-t border-rule pt-6 pb-9 first:border-t-0 first:pt-0 last:pb-0">
             <span
@@ -38,7 +38,7 @@ const { career, links } = getTranslations(locale)
             </div>
             <h3
               class:list={[
-                "mt-3 font-mono leading-[1.18] font-bold tracking-[-0.05em] [overflow-wrap:anywhere]",
+                "mt-3 font-mono leading-[1.18] font-bold tracking-tighter wrap-anywhere",
                 index < 2
                   ? "text-[clamp(1.65rem,2.8vw,2.35rem)]"
                   : "text-[clamp(1.3rem,2vw,1.75rem)]"

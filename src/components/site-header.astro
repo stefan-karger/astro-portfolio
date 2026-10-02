@@ -1,11 +1,16 @@
 ---
-import { defaultLocale, locales } from "@/i18n/types"
+import type { Locale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import { siteConfig } from "@/lib/config"
 import LanguageSwitch from "./language-switch.astro"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+interface Props {
+  locale: Locale
+  isErrorPage?: boolean
+}
+
+const { locale, isErrorPage = false } = Astro.props
 const t = getTranslations(locale)
 const navRoutes = ["home", "portfolio", "blog"] as const
 
@@ -15,11 +20,17 @@ function normalizePath(path: string) {
 
 const navItems = navRoutes.map((route) => {
   const href = routeUrl(locale, route)
+  const path = normalizePath(Astro.url.pathname)
+  const isCurrent = path === normalizePath(href)
 
   return {
     href,
     label: t.nav[route],
-    isCurrent: normalizePath(Astro.url.pathname) === normalizePath(href)
+    current: isCurrent
+      ? ("page" as const)
+      : route === "blog" && path.startsWith(`${normalizePath(href)}/`)
+        ? ("location" as const)
+        : undefined
   }
 })
 ---
@@ -48,12 +59,12 @@ const navItems = navRoutes.map((route) => {
 
     <nav aria-label={t.nav.primaryLabel} class="hidden justify-self-center sm:block">
       <ul class="flex list-none items-center gap-4 sm:gap-6 lg:gap-8">
-        {navItems.map(({ href, label, isCurrent }) => (
+        {navItems.map(({ href, label, current }) => (
           <li>
             <a
               href={href}
-              class="site-link inline-flex min-h-11 items-center py-2 text-muted underline-offset-[0.45em] hover:text-ink aria-[current=page]:font-bold aria-[current=page]:text-ink"
-              aria-current={isCurrent ? "page" : undefined}
+              class="site-link inline-flex min-h-11 items-center py-2 text-muted underline-offset-[0.45em] hover:text-ink aria-[current]:font-bold aria-[current]:text-ink"
+              aria-current={current}
             >
               {label}
             </a>
@@ -62,7 +73,7 @@ const navItems = navRoutes.map((route) => {
       </ul>
     </nav>
 
-    <LanguageSwitch />
+    {!isErrorPage && <LanguageSwitch />}
 
     <nav
       id="mobile-nav"
@@ -78,12 +89,12 @@ const navItems = navRoutes.map((route) => {
         SK.
       </a>
       <ul class="flex list-none flex-col gap-3">
-        {navItems.map(({ href, label, isCurrent }) => (
+        {navItems.map(({ href, label, current }) => (
           <li>
             <a
               href={href}
-              class="site-link flex min-h-11 items-center py-2 text-2xl text-muted hover:text-ink aria-[current=page]:font-bold aria-[current=page]:text-ink"
-              aria-current={isCurrent ? "page" : undefined}
+              class="site-link flex min-h-11 items-center py-2 text-2xl text-muted hover:text-ink aria-[current]:font-bold aria-[current]:text-ink"
+              aria-current={current}
             >
               {label}
             </a>

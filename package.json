@@ -11,11 +11,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test:blog": "node --experimental-strip-types --test tests/code-block.test.mjs",
+    "test:seo": "node --experimental-strip-types --test tests/seo.spec.mjs",
     "lint": "eslint . --cache --max-warnings 0",
     "lint:fix": "eslint . --cache --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "validate": "pnpm format:check && pnpm lint && pnpm check && pnpm build"
+    "validate": "pnpm format:check && pnpm lint && pnpm test:blog && pnpm check && pnpm build && pnpm test:seo"
   },
   "dependencies": {
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
@@ -32,6 +34,9 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@eslint/js": "^10.0.1",
+    "@shikijs/transformers": "4.4.3",
+    "@shikijs/twoslash": "4.4.3",
+    "@types/hast": "3.0.4",
     "@types/node": "^24.19.0",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
@@ -40,6 +45,7 @@
     "prettier": "^3.9.8",
     "prettier-plugin-astro": "^1.0.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "shiki": "4.4.3",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.1"
   }

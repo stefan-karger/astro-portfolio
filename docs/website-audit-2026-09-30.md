@@ -1,44 +1,18 @@
-# Website-Abnahme: Design, Nutzerführung und Copy DE/EN
+# Website-Abnahme: offene Befunde DE/EN
 
-Erstprüfung: 30. September 2026. Aktualisiert: 1. Oktober 2026. Geprüft wurde der lokale Repository-Stand, einschließlich des erzeugten Produktions-Builds. Dieser Bericht führt nur noch offene Befunde und Empfehlungen; die inzwischen behobenen Punkte wurden entfernt.
+Erstprüfung: 30. September 2026. Aktualisiert: 2. Oktober 2026.
 
-**Abnahmeurteil: noch nicht ohne Nachbesserungen freigeben.** Die ruhige Gestaltung, die Bildauswahl und die sparsame Technik bilden eine brauchbare Grundlage. Offen bleibt insbesondere die Bestätigung der tatsächlichen Datenschutzkonfiguration. Der Überlauf bei vergrößerter Schrift wurde behoben und nachgeprüft. Auch die Verbindung zwischen Softwareentwicklung und Fotografie sowie die Gewichtung des mobilen Footers benötigen noch eine redaktionelle beziehungsweise gestalterische Entscheidung.
+Die verbleibenden nummerierten Befunde betreffen den lokalen Repository-Stand, den Produktions-Build und noch offene Deployment-Prüfungen. Die ursprünglichen IDs bleiben erhalten. Gestalterische und redaktionelle Empfehlungen sind von technischen Fehlern und ungeklärten Sachfragen getrennt.
 
-Die 41 verbleibenden nummerierten Befunde und Empfehlungen unterscheiden ausdrücklich zwischen Fehlern, redaktionellen Entscheidungen und offenen Sachfragen. Vier dieser Punkte betreffen das im aktuellen Stand wieder sichtbare Junksplayground-Projekt und seinen Werdegangseintrag. Die ursprünglichen Befund-IDs bleiben zur Wiedererkennung erhalten. Gestalterische Präferenzen sind keine technischen Defekte. Die Betreiberkonten bei Netlify, STRATO und satellite wurden nicht eingesehen; Aussagen zur tatsächlichen Konfiguration bleiben deshalb offen, soweit sie nicht im Repository belegt sind.
+Vor einer Freigabe ist insbesondere die tatsächliche Datenschutzkonfiguration zu bestätigen. Weitere Entscheidungen betreffen die Verbindung zwischen Softwareentwicklung und Fotografie, die Gewichtung des mobilen Footers und die Junksplayground-Inhalte.
 
-## Prüfgrundlage und Reichweite
+## Prüfgrenzen und offene Nachprüfungen
 
-| Deutsch         | Englisch              | Prüfung                                                                     |
-| --------------- | --------------------- | --------------------------------------------------------------------------- |
-| `/`             | `/en/`                | Einstieg, SolidUI, Werdegang, Kontakt                                       |
-| `/fotografie/`  | `/en/photography/`    | Alle 17 Fotos, Reihenfolge, Alternativtexte, Galerie und Lightbox           |
-| `/impressum/`   | `/en/legal-notice/`   | Gesamter Text, Anschrift, Kontaktlinks, Titel und Layout                    |
-| `/datenschutz/` | `/en/privacy-policy/` | Gesamter Text, inhaltliche Entsprechung, Anbieterlinks und Lesbarkeit       |
-| `/blog/`        | `/en/blog/`           | Leere Blogseiten; im aktuellen Stand wieder in der Hauptnavigation verlinkt |
+- Die tatsächliche Netlify-Auslieferung und die Betreiberkonten bei Netlify, STRATO und satellite sind noch zu prüfen. Die offenen Betreiberprüfungen stehen in [datenschutz.md](datenschutz.md).
+- Ein Test mit einem echten Screenreader sowie Touch-Gesten auf echter Hardware stehen noch aus. Die manuellen Screenreader-Prüfschritte stehen im [Galerie-Prüfprotokoll](website-audit-2026-09-30/c03-verification.json).
+- Reale Core-Web-Vitals-Feldwerte wurden nicht erhoben.
 
-Bei der Erstprüfung wurden alle zehn Seiten im Browser bei 320, 390, 768, 1280 und 1920 CSS-Pixeln geprüft: **50 Layoutprüfungen im Produktions-Build, ohne horizontalen Überlauf bei normaler Schriftgröße.** Zusätzlich erfolgten Prüfungen des Entwicklungsstands bei 1024 Pixeln, der Tastaturbedienung, des Browserverlaufs, des Betriebs ohne JavaScript und einer vergrößerten Basisschrift.
-
-Die Schriftvergrößerung wurde mit `html { font-size: 200% }` bei 1280 Pixeln geprüft. Das ist ein gezielter Belastungstest für die Textanpassung, keine identische Nachbildung des Browser-Zooms und keine vollständige WCAG-Zertifizierung. Touch-Gesten auf echter Hardware und die tatsächliche Netlify-Auslieferung wurden nicht geprüft. Es wurden keine Lighthouse- oder realen Core-Web-Vitals-Messwerte erhoben.
-
-Während der Prüfung wurden parallel die Übersetzungen in `src/i18n/translations/de.ts` und `en.ts` aufgeteilt und die Browser-Titel auf „Stefan Karger - …“ vereinheitlicht. Diese Änderungen sind berücksichtigt; Astro-Prüfung und Build wurden danach erneut erfolgreich ausgeführt. Eine zuvor vorhandene unterschiedliche Reihenfolge von Name und Seitenthema wird deshalb nicht als aktueller Mangel geführt.
-
-Die Nachprüfung am 1. Oktober 2026 kontrollierte Header und Copy auf allen zehn Seiten bei 320 und 1280 CSS-Pixeln. Die Zoom-Beschriftung wurde in beiden Sprachen bei 1280 und 390 Pixeln geprüft, einschließlich Button, Tastatur, Bildklick, Bildwechsel und erneutem Öffnen; die mobile Prüfung verwendete reduzierte Bewegung. Für alle 24 Fließtext-Links der Rechtsseiten wurden bei 320 und 1280 Pixeln vererbte Typografie und Farbe, dauerhafte Unterstreichung sowie Hover und Tastaturfokus bestätigt. Die Formatprüfung der geänderten Dateien, Lint, Astro-Prüfung und Produktionsbuild bestanden.
-
-Zusätzlich wurden am 1. Oktober 2026 im lokalen Produktionsbuild sechs Abläufe der Galerie geprüft: Zurück während des Öffnens, Vorwärts mit sofortigem Zurück, Zurück mit sofortigem Vorwärts, Vorwärts während des Schließens, Bildwechsel mit Escape sowie Zurück/Vorwärts/Escape bei simulierter reduzierter Bewegung. Alle Abläufe bestanden; Lightbox, Verlauf und Fokus blieben synchron.
-
-Die anschließende Nachprüfung von C03 bestand 23 Browserfälle in Chromium: Deutsch bei 1280×800 und Englisch bei 390×844, zusätzlich englisches Öffnen mit Enter in einem frischen Dokument. Dialogname, Modalität und ausgeschlossener Hintergrund waren bereits beim ersten Dialogfokus korrekt. Native Tab-/Shift+Tab-Bedienung, Maus und Enter, Schließbutton, Escape, Bildwechsel, Fokus-Rückgabe, Erhalt zuvor gesetzter `inert`-Zustände und die schnellen Verlaufwechsel bestanden. Bei simulierter reduzierter Bewegung wurden Animationsdauern von null bestätigt. Der Accessibility-Baum enthielt in beiden Sprachen den benannten modalen Dialog und keine Hintergrundbereiche. Es gab keine JavaScript-Fehler. C03 wurde nach Umsetzung und erfolgreicher Browserprüfung aus den offenen Befunden entfernt. Ein echter Screenreader-Test war mangels NVDA nicht möglich; diese Prüfgrenze und die ergänzenden manuellen Prüfschritte bleiben im [Prüfprotokoll mit Messzuständen](website-audit-2026-09-30/c03-verification.json) dokumentiert.
-
-Die zwischenzeitliche Veröffentlichungsfassung mit ausgeblendeten Inhalten wurde anschließend auf allen zehn Seiten bei 320 und 1280 CSS-Pixeln geprüft. Der Blog-Link fehlt in der Hauptnavigation, der Prototyp-Schalter wird nicht ausgegeben und der Skip-Link ist der erste Tastaturfokus. Junksplayground-Projektkarte und Werdegangseintrag fehlen auf beiden Startseiten auch im HTML-Quelltext; ihre Daten und die Prototyp-Komponente bleiben im Repository erhalten. Die übrigen Werdegangseinträge behalten Reihenfolge und Schriftgrößen. Es gab keinen horizontalen Überlauf bei normaler Schriftgröße und keine JavaScript-Fehler. Lint, Astro-Prüfung und Produktionsbuild bestanden erneut.
-
-Die abschließende Nachprüfung dieses Umsetzungspakets am 1. Oktober 2026 bestand 76 Browserfälle im lokalen Produktionsbuild: alle zehn Seiten bei 320, 390, 768, 1280 und 1920 CSS-Pixeln (50 Layoutfälle), zusätzlich alle zehn Seiten mit 200 % Basisschrift bei 1280 Pixeln sowie mit echtem 200-%-Browser-Zoom (20 weitere Layoutfälle). Der Browser-Zoom wurde über Chromiums `chrome.tabs.setZoom` in einem isolierten temporären Profil gesetzt; bei einem 1280-Pixel-Fenster wurden 640 CSS-Pixel und `devicePixelRatio: 2` bestätigt. Es gab keinen horizontalen Überlauf und keine JavaScript-Fehler. Auf allen Seiten wurden gleiche Footer-Abstände, E-Mail- und Telefonlinks, lokalisierte Hinweise auf neue Tabs und der erste Tastaturfokus geprüft. Sechs zusätzliche Fälle bestätigten Kontakt-Fokusfolge, Hover und auswählbare E-Mail-Adresse, Fotografie-Zugriff über den dauerhaft sichtbaren Header, alle 17 Bildalternativen je Sprache, ihre Übernahme samt Seitensprache in die Lightbox, Bildwechsel, Escape, Fokus-Rückgabe und den Bildzugriff ohne JavaScript. Ein echter Screenreader und die Netlify-Auslieferung wurden dabei nicht geprüft. `pnpm validate` mit globaler Formatprüfung, Lint, Astro-Prüfung und Produktionsbuild bestand vollständig.
-
-Nach diesen Prüfungen wurden A09, A10, A12, C01, E01 und E06 aus den offenen Befunden entfernt. B04 wurde mit der bewussten Entscheidung geschlossen, Fotografie über den dauerhaft erreichbaren Header zugänglich zu machen. C02 bleibt als ausdrücklich zurückgestellte redaktionelle Verbesserung offen: Die DE/EN-Bildalternativen sind vorerst kurze Motivbezeichnungen aus den Dateinamen. Blog-Link und Junksplayground-Inhalte sind im aktuellen Stand wieder sichtbar; die früher dokumentierte Ausblendung beschreibt einen zwischenzeitlichen Stand.
-
-Belege der Nachprüfung: [Messwerte und Interaktionsfälle](website-audit-2026-09-30/batch-verification.json), [Footer Desktop](website-audit-2026-09-30/batch-footer-de-1280.png), [Footer Mobil](website-audit-2026-09-30/batch-footer-de-390.png), [200 % Basisschrift](website-audit-2026-09-30/batch-home-font-200-percent.png).
-
-Belege der Erstprüfung vom 30. September 2026: [Browserdaten und Interaktionsprüfungen](website-audit-2026-09-30/evidence.json), [Startseite Desktop](website-audit-2026-09-30/home-1280.png), [Startseite Mobil](website-audit-2026-09-30/home-390.png), [Portfolio Desktop](website-audit-2026-09-30/portfolio-1280.png), [Impressum](website-audit-2026-09-30/impressum-1280.png), [Datenschutz Mobil](website-audit-2026-09-30/datenschutz-390.png), [Privacy Policy](website-audit-2026-09-30/en-privacy-policy-1280.png), [Blog](website-audit-2026-09-30/blog-1280.png).
-
-Die verlinkten Browserdaten und Screenshots dokumentieren den Stand der Erstprüfung. Sie bilden die späteren Copy-, Navigations-, Linkstil- und Lightbox-Änderungen sowie das Ausblenden des Junksplayground-Projekts nicht ab.
+Die Belege der Erstprüfung zeigen den Stand vom 30. September 2026; spätere Änderungen sind darin nicht abgebildet: [Browserdaten](website-audit-2026-09-30/evidence.json), [Startseite Desktop](website-audit-2026-09-30/home-1280.png), [Startseite Mobil](website-audit-2026-09-30/home-390.png), [Portfolio Desktop](website-audit-2026-09-30/portfolio-1280.png), [Impressum](website-audit-2026-09-30/impressum-1280.png), [Datenschutz Mobil](website-audit-2026-09-30/datenschutz-390.png), [Privacy Policy](website-audit-2026-09-30/en-privacy-policy-1280.png), [Blog](website-audit-2026-09-30/blog-1280.png). Für den offenen Footer-Befund A08 sind zusätzlich [Desktop](website-audit-2026-09-30/batch-footer-de-1280.png) und [Mobil](website-audit-2026-09-30/batch-footer-de-390.png) dokumentiert.
 
 ## Prioritäten
 
@@ -50,12 +24,12 @@ Die verlinkten Browserdaten und Screenshots dokumentieren den Stand der Erstprü
 
 ## A. Gesamtauftritt, Navigation und gemeinsames UI
 
-| ID  | Priorität / Art | Befund und Begründung                                                                                                                                                                                                                                                                                            | Möglicher Fix                                                                                                                                                                                               |
-| --- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A05 | P2 · Konsistenz | Die Seitentitel verwenden verschiedene Skalen und Laufweiten: bei 1280 Pixeln Portfolio 57,6 px, Rechtstexte 54,4 px; bei 390 Pixeln 40 gegenüber 36 px. Portfolio verwendet zudem `-0.045em`, Rechtstexte `-0.02em`. Die Dokumentation behauptet dieselbe Titeltypografie, tatsächlich ist sie unterschiedlich. | Einen gemeinsamen Standard für Titel auf Unterseiten verwenden. Eine besondere Größe für den persönlichen Hero kann bleiben. Unterschiede bei Textspalten sind davon getrennt zu entscheiden.               |
-| A06 | P2 · Empfehlung | Die Portfolio-Überschrift und die Fotos teilen keine linke Kante: bei 1920 Pixeln liegt der Titel bei x=384, die Galerie bei x=152; bei 1280 Pixeln bei x≈56,5 gegenüber x=32. Bei großen Fenstern wirkt der Titel einem anderen Raster zugeordnet.                                                              | Titel und Galerie in denselben Außencontainer stellen oder die schmalere Einleitung ausdrücklich als eigene, zentrierte Zone gestalten. Die schmale Lesespalte der Rechtstexte darf bewusst anders bleiben. |
-| A07 | P2 · Empfehlung | Fotografie und Blog verwenden inzwischen denselben linksbündigen Einstieg. Rechtstext-Titel stehen ab 640 Pixeln weiterhin mittig, darunter links, und ihre Start- und Inhaltsabstände folgen einer anderen Regel.                                                                                               | Für normale Unterseiten Ausrichtung, Startabstand und Abstand zum ersten Inhalt festlegen. Ich würde linksbündige Titel bevorzugen; eine einheitliche zentrierte Alternative ist ebenfalls vertretbar.      |
-| A08 | P2 · Empfehlung | Auf dem Handy nimmt der aktuelle Footer bei 390 Pixeln ungefähr 661 px, bei 320 Pixeln etwa 837 px Höhe ein. Zuerst kommen das große „SK.“ und Copyright, danach der Kontakt. Eine fast bildschirmfüllende Schlusszone priorisiert die Initialen stärker als die nutzbaren Links.                                | Mobil Kontakt zuerst, Marke kleiner, Copyright am Ende. Social- und Legal-Links bei ausreichender Breite nebeneinander lassen. Die ruhige Desktop-Gestaltung kann größer bleiben.                           |
+| ID  | Priorität / Art | Befund und Begründung                                                                                                                                                                                                                                                             | Möglicher Fix                                                                                                                                                                                               |
+| --- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A05 | P2 · Konsistenz | Die Seitentitel verwenden verschiedene Skalen und Laufweiten: bei 1280 Pixeln Portfolio 57,6 px, Rechtstexte 54,4 px; bei 390 Pixeln 40 gegenüber 36 px. Portfolio verwendet zudem `-0.045em`, Rechtstexte `-0.02em`.                                                             | Einen gemeinsamen Standard für Titel auf Unterseiten verwenden. Eine besondere Größe für den persönlichen Hero kann bleiben. Unterschiede bei Textspalten sind davon getrennt zu entscheiden.               |
+| A06 | P2 · Empfehlung | Die Portfolio-Überschrift und die Fotos teilen keine linke Kante: bei 1920 Pixeln liegt der Titel bei x=384, die Galerie bei x=152; bei 1280 Pixeln bei x≈56,5 gegenüber x=32. Bei großen Fenstern wirkt der Titel einem anderen Raster zugeordnet.                               | Titel und Galerie in denselben Außencontainer stellen oder die schmalere Einleitung ausdrücklich als eigene, zentrierte Zone gestalten. Die schmale Lesespalte der Rechtstexte darf bewusst anders bleiben. |
+| A07 | P2 · Empfehlung | Fotografie und Blog verwenden denselben linksbündigen Einstieg. Rechtstext-Titel stehen ab 640 Pixeln weiterhin mittig, darunter links, und ihre Start- und Inhaltsabstände folgen einer anderen Regel.                                                                           | Für normale Unterseiten Ausrichtung, Startabstand und Abstand zum ersten Inhalt festlegen. Ich würde linksbündige Titel bevorzugen; eine einheitliche zentrierte Alternative ist ebenfalls vertretbar.      |
+| A08 | P2 · Empfehlung | Auf dem Handy nimmt der aktuelle Footer bei 390 Pixeln ungefähr 661 px, bei 320 Pixeln etwa 837 px Höhe ein. Zuerst kommen das große „SK.“ und Copyright, danach der Kontakt. Eine fast bildschirmfüllende Schlusszone priorisiert die Initialen stärker als die nutzbaren Links. | Mobil Kontakt zuerst, Marke kleiner, Copyright am Ende. Social- und Legal-Links bei ausreichender Breite nebeneinander lassen. Die ruhige Desktop-Gestaltung kann größer bleiben.                           |
 
 Umsetzungspunkte: [BaseLayout](../src/layouts/base-layout.astro), [Header](../src/components/site-header.astro), [Footer](../src/components/site-footer.astro), [globale Stile](../src/styles/global.css).
 
@@ -74,7 +48,7 @@ Umsetzungspunkte: [BaseLayout](../src/layouts/base-layout.astro), [Header](../sr
 
 ### Junksplayground: Kennzahlen und parallele Tätigkeit
 
-Projektkarte und zugehöriger Werdegangseintrag werden im aktuellen Stand wieder in beiden Sprachen ausgegeben. Die folgenden vier Befunde betreffen damit wieder sichtbare Inhalte und sind für die Veröffentlichung zu berücksichtigen.
+Die folgenden vier Befunde betreffen die Junksplayground-Projektkarte und den zugehörigen Werdegangseintrag in beiden Sprachen.
 
 | ID  | Priorität / Art | Befund und Begründung                                                                                                                                                                                                                                                                                               | Möglicher Fix                                                                                                                                                                                                                                                                     |
 | --- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -122,14 +96,12 @@ Umsetzungspunkte: [Impressum](../src/pages/impressum.astro), [Legal Notice](../s
 
 ## E. Technische Präsentation, Metadaten und Verifikation
 
-| ID  | Priorität / Art | Befund und Begründung                                                                                                                                                                                                                                                                                                                                           | Möglicher Fix                                                                                                                                                                                                    |
-| --- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E02 | P2 · Empfehlung | Es fehlen Open-Graph- und Social-Card-Metadaten. Beim Teilen ist deshalb weder ein bewusst gewähltes Vorschaubild noch eine kontrollierte Kurzbeschreibung hinterlegt. Gerade für eine bildorientierte persönliche Seite ist die Linkvorschau Teil des Auftritts.                                                                                               | Titel, Beschreibung, Bild, Bildalternativtext und Locale pro Seite festlegen. Ein vorhandenes geeignetes Porträt oder echtes Foto verwenden; für rechtliche Seiten genügt eine neutrale Markenansicht.           |
-| E03 | P2 · Copy       | Die Startseiten-Meta-Descriptions sind reine Stichwortlisten: Softwareentwicklung, Systemintegration, Schnittstellen, Datenabgleich, Fotografie. Sie nennen keinen Namen und erklären wenig Eigenständiges. „Interfaces“ ist im Englischen außerdem unspezifisch.                                                                                               | Eine kurze natürliche Beschreibung mit Name und Schwerpunkt schreiben. Nicht nur denselben Themenbegriff in mehreren Varianten wiederholen. Beispiele folgen unten.                                              |
-| E04 | P3 · Empfehlung | Die vier Rechtstextseiten haben keine Meta-Description. Das ist kein gravierender SEO-Mangel, führt aber zu einer unkontrollierten Snippet-Auswahl. Auch die im aktuellen Stand wieder in der Hauptnavigation verlinkten Blogseiten haben keine Meta-Description; diese sollten vor ihrer späteren Veröffentlichung mit tatsächlichem Inhalt abgestimmt werden. | Für Rechtstexte eine sachliche kurze Description ergänzen, wenn sie indexiert bleiben sollen. Keine Marketingtexte oder Keyword-Listen einsetzen. Die Blog-Metadaten zusammen mit den ersten Inhalten festlegen. |
-| E05 | P2 · Offen      | Im Repository und im Produktions-Build gibt es keine eigene 404-Seite. Die tatsächliche Fehlerdarstellung hängt damit vom Hosting ab und wurde auf Netlify nicht geprüft. Veraltete oder falsch geschriebene Links können den gestalteten Auftritt verlassen.                                                                                                   | Eine kleine lokalisierte Fehlerseite mit Rückweg zu Startseite und Fotografie ergänzen und die tatsächliche Auslieferung mit HTTP-Status 404 prüfen. Keine komplexe Fehlerarchitektur nötig.                     |
+| ID  | Priorität / Art | Befund und Begründung                                                                                                | Möglicher Fix                                                                                                                                                            |
+| --- | --------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| E02 | P2 · Offen      | Die öffentliche Auslieferung der Social-Metadaten und der SK.-Wordmark wurde für den neuen Stand noch nicht geprüft. | Nach Deployment den tatsächlich referenzierten Bild-Link, alle Seitenmetadaten und mindestens einen verfügbaren Linkvorschau-Inspector prüfen.                           |
+| E05 | P2 · Offen      | Die zentrale deutsche Fehlerseite wurde noch nicht mit echten Netlify-Antworten geprüft.                             | Nach Deployment unbekannte deutsche und englische URLs einschließlich tiefer Pfade und fehlender Assets auf HTTP 404 prüfen. Die angeforderte URL muss erhalten bleiben. |
 
-Umsetzungspunkte für verbleibende Metadatenfragen: [BaseLayout](../src/layouts/base-layout.astro).
+Offene Abnahme: [SEO-Checkliste nach Deployment](seo-implementation-plan.md).
 
 ## Sprachlicher Feinschliff bis auf Begriffe und Satzzeichen
 
@@ -157,7 +129,7 @@ Die folgenden Vorschläge sind zusätzliche konkrete Formulierungen zu den Befun
 
 ### Feinschliff der Junksplayground-Projekt-Copy
 
-Diese Formulierungen stehen in den aktuell wieder ausgegebenen Junksplayground-Inhalten.
+Diese Formulierungen betreffen die Junksplayground-Inhalte.
 
 | Stelle                   | Aktuell                                                              | Bewertung                                                                                                                                                                 | Vorschlag                                                                                                                                                   |
 | ------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -182,8 +154,6 @@ Ich entwickle Software, die komplexe Systeme verbindet und große Datenbestände
 
 In der Fotografie beschäftige ich mich mit Porträts und inszenierten Szenen. Sie gibt mir Abstand zum Code und Raum für einen anderen Blick auf Details.
 
-Aktionen: **E-Mail schreiben** · **Fotografien ansehen**
-
 ### Einstieg Englisch
 
 **Stefan Karger · Software engineer**
@@ -193,8 +163,6 @@ Aktionen: **E-Mail schreiben** · **Fotografien ansehen**
 I build software that connects complex systems and brings together large datasets for reconciliation and analysis. I especially enjoy solving workflow problems that off-the-shelf software cannot handle.
 
 My photography focuses on portraits and staged scenes. It gives me a break from code and a different way to explore detail.
-
-Actions: **Email me** · **View photographs**
 
 ### SolidUI
 
@@ -219,20 +187,6 @@ DE, persönlich: „Porträts, inszenierte Szenen und persönliche Arbeiten. Ein
 EN: “Portraits, staged scenes, and personal work. A selection of my photographs.”
 
 Eine Beschreibung der tatsächlichen Arbeitsweise wäre stärker, sobald dafür eine vom Fotografen bestätigte Formulierung vorliegt. Ein neues fotografisches Selbstverständnis sollte nicht allein aus den Bildern erfunden werden.
-
-### Meta-Descriptions
-
-DE Start: „Stefan Karger entwickelt Software für Systemintegration und Datenabgleich. Einblicke in seine Projekte, seinen Werdegang und seine Fotografie.“
-
-EN Home: “Stefan Karger develops software for systems integration and data reconciliation. Explore his projects, career, and photography.”
-
-DE Impressum: „Impressum und Kontaktangaben zur Website von Stefan Karger.“
-
-EN Legal Notice: “Legal information and contact details for Stefan Karger’s website.”
-
-DE Datenschutz: „Informationen zur Verarbeitung personenbezogener Daten beim Besuch dieser Website und bei der Kontaktaufnahme mit Stefan Karger.“
-
-EN Privacy Policy: “How personal data is processed when you visit this website or contact Stefan Karger.”
 
 ## Zurückgestellte redaktionelle Vorschläge für alle 17 Bildalternativen
 
@@ -260,27 +214,6 @@ Die Bildbeschreibungen sind auf Grundlage der sichtbaren Fotos formuliert. Sie v
 
 Bildbelege: [Galerie 1](website-audit-2026-09-30/gallery-1920-0.png), [Galerie 2](website-audit-2026-09-30/gallery-1920-700.png), [Galerie 3](website-audit-2026-09-30/gallery-1920-1350.png).
 
-## Was die Prüfung ausdrücklich bestätigt
-
-- Beide Sprachen haben alle fünf Seitentypen. Der Sprachwechsel führt jeweils auf die entsprechende Seite, auch bei den unterschiedlich benannten Legal-Routen.
-- HTML-Sprachkennzeichnung, sprachspezifische Canonicals und DE/EN-/x-default-Alternativen sind im Produktions-Build vorhanden. Der bisherige Browser-Titel-Wechsel wurde während der Prüfung vereinheitlicht.
-- Alle geprüften Seiten besitzen genau eine H1; Projekte und Karriere haben eine nachvollziehbare Überschriftenhierarchie. Die internen Links im aktuellen Produktions-Build verweisen auf vorhandene Seiten oder Dateien.
-- Die Schriftfarben sind auf dem hellen Hintergrund ausreichend kontrastreich: `#62625d` auf `#fcfcfb` ungefähr 5,97:1, die Hauptfarbe ungefähr 17,81:1. Das helle Liniengrau ist dekorativ; daraus ergibt sich hier kein eigener Textkontrastmangel.
-- Hauptnavigation, Sprachwahl und Kontaktaktionen haben großzügige Höhen. Der aktuelle Header bleibt beim Scrollen sichtbar; auf kleinen Fenstern führt ein Menübutton zur Fotografie. Der Zugriff wurde auf beiden Startseiten geprüft.
-- Der Skip-Link ist auf allen zehn Seiten der erste Tastaturfokus und führt mit Enter korrekt in den Hauptinhalt.
-- Die Galerie funktioniert mit Enter, Pfeiltasten und Escape. Fokus kehrt zum ursprünglich geöffneten Bild zurück. Vorwärts stellt den zuletzt betrachteten Bildindex wieder her; Zurück schließt auch dann korrekt, wenn es während des Öffnens eintrifft. Schnelle Wechsel zwischen Zurück und Vorwärts halten Lightbox und Verlauf synchron.
-- Der Lightbox-Dialog hat einen lokalisierten zugänglichen Namen und ist als modal gekennzeichnet. Der Hintergrund bleibt bis zum vollständigen Schließen `inert`; zuvor gesetzte `inert`-Zustände bleiben erhalten. Tab und Shift+Tab führen zyklisch durch die verfügbaren Buttons.
-- Galeriebuttons und Fehlermeldung sind in beiden Sprachen lokalisiert. Tooltip und zugänglicher Name des Zoom-Buttons beschreiben jeweils die nächste Aktion. Alle 17 kurzen Bildalternativen sind für DE/EN lokalisiert; Galerie und Lightbox erben die jeweilige Seitensprache. Die ausführlicheren redaktionellen Beschreibungen bleiben unter C02 zurückgestellt.
-- Ohne JavaScript stehen alle 17 Bildlinks zur Verfügung, und ein Bild lässt sich als eigenständige optimierte Datei öffnen. Es gibt keinen vollständigen Funktionsausfall der Galerie ohne JavaScript.
-- Im isolierten Produktionsbrowser waren Cookies, Local Storage und Session Storage vor und nach der regulären Galeriebedienung leer. Die Galerie verwendet tatsächlich den Browserverlauf. Das bestätigt den lokalen Build, nicht automatisch Netlify-Einstellungen.
-- Schriftarten und Fotos werden lokal ausgeliefert. Die großen Originale werden nicht einfach als Gallery-Thumbnails verwendet; responsive Bildvarianten und Lazy Loading sind vorhanden.
-- Öffnungs-, Schließ- und Zoomanimationen berücksichtigen `prefers-reduced-motion` im Code. Ein echter Geräte-/Screenreader-Test bleibt davon getrennt.
-- Vollständiger juristischer Name, Anschrift, E-Mail und Telefonnummer stimmen zwischen den beiden Impressumsfassungen überein. „Stefan Karger“ als öffentlicher Name und „Stefan Eideloth-Karger“ als juristischer Name sind eine bewusste, zentral gepflegte Unterscheidung, kein Tippfehler.
-- `mailto:` und `tel:` sind korrekt vorhanden. Dass die Adresse im Englischen nicht übersetzt wird, ist richtig; das Land wird korrekt als „Germany“ dargestellt.
-- Die Datenschutzfassungen beschreiben dieselben Verarbeitungsthemen und enthalten passende Verweise auf die jeweils lokalisierte Impressumsseite. Die im Quellcode separat stehenden Punkte und Kommas erzeugen im gerenderten Text keine festgestellten Leerzeichenfehler vor Satzzeichen.
-- Die STRATO-Aussage zur Wiederherstellung bis zu 30 Tage stimmt mit der verlinkten Anbietererklärung überein. Die DPF-/SCC-Aussage ist im aktuellen Netlify-DPA enthalten. [STRATO](https://www.strato.de/faq/mail/wie-kann-ich-meine-geloeschten-e-mails-wiederherstellen/), [Netlify-DPA](https://www.netlify.com/pdf/netlify-dpa.pdf).
-- Es gibt keine Grundlage, pauschal einen Cookiebanner, ein Kontaktformular, zusätzliche UI-Bibliotheken, Dark Mode oder ein großes CMS zu verlangen. Der gegenwärtige Funktionsumfang rechtfertigt das nicht.
-
 ## Reihenfolge für die Nachbesserung
 
 1. Offene Betriebsangaben und Netlify-Aufbewahrung klären; den tatsächlichen Datenschutzstand bestätigen.
@@ -289,6 +222,6 @@ Bildbelege: [Galerie 1](website-audit-2026-09-30/gallery-1920-0.png), [Galerie 2
 4. Portfolio-Einleitung und Bildfolge ausarbeiten; vorhandene bessere Bildexporte prüfen. Ausführlichere DE/EN-Bildbeschreibungen bleiben zunächst ausdrücklich zurückgestellt (C02).
 5. Footer mobil gewichten und Linkvorschauen ergänzen. Die technische Validierung bei weiteren Änderungen erneut ausführen.
 
-Für das aktuell wieder sichtbare Junksplayground-Projekt zusätzlich Kennzahlen, Nutzenbeschreibung, Wiederholungen und die Darstellung paralleler Tätigkeiten prüfen (B10, B11, B12, B14).
+Für das Junksplayground-Projekt zusätzlich Kennzahlen, Nutzenbeschreibung, Wiederholungen und die Darstellung paralleler Tätigkeiten prüfen (B10, B11, B12, B14).
 
 Eine Abnahme kann anschließend anhand dieser konkreten Änderungen erfolgen. Die meisten Nachbesserungen benötigen Text, HTML, CSS und kleine Ergänzungen im bestehenden Galeriecode; ein grundlegender Technologiewechsel ist dafür nicht erforderlich.
