@@ -1,14 +1,13 @@
 ---
 import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
-import { siteConfig } from "@/lib/config"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
-const { career } = getTranslations(locale)
+const { career, links } = getTranslations(locale)
 ---
 
-<section class="pb-[clamp(6rem,11vw,10rem)]" aria-labelledby="career-title">
-  <div class="mx-auto w-[calc(100%_-_2rem)] max-w-6xl">
+<section class="pb-[clamp(9rem,calc(12vw+1rem),13rem)]" aria-labelledby="career-title">
+  <div class="mx-auto w-[calc(100%-2rem)] max-w-6xl">
     <div class="pb-[clamp(2.5rem,5vw,4rem)]">
       <h2
         id="career-title"
@@ -19,58 +18,53 @@ const { career } = getTranslations(locale)
     </div>
 
     <div class="border-t border-rule pt-[clamp(3rem,5vw,5rem)]">
-      <div class="mx-auto w-full max-w-[50rem] border-l border-rule pl-[clamp(1.4rem,3vw,2.5rem)]">
-        {career.jobs.map(
-          (job, index) =>
-            (siteConfig.showJunksplayground || job.company !== "Junksplayground") && (
-              <article class="relative border-t border-rule pt-6 pb-9 first:border-t-0 first:pt-0 last:pb-0">
-                <span
-                  class:list={[
-                    "absolute -left-[calc(clamp(1.4rem,3vw,2.5rem)+0.3rem)] size-[0.55rem] rounded-full bg-ink",
-                    index === 0 ? "top-[0.4rem]" : "top-[1.85rem]"
-                  ]}
-                  aria-hidden="true"
-                />
-                <div class="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1">
-                  <p class="m-0 font-mono text-[0.8rem] text-muted">{job.period}</p>
-                  {"type" in job && (
-                    <span class="font-mono text-[0.7rem] tracking-[0.08em] text-muted uppercase">
-                      {job.type}
-                    </span>
-                  )}
-                </div>
-                <h3
-                  class:list={[
-                    "mt-3 font-mono leading-[1.18] font-bold tracking-[-0.05em] [overflow-wrap:anywhere]",
-                    index < 2
-                      ? "text-[clamp(1.65rem,2.8vw,2.35rem)]"
-                      : "text-[clamp(1.3rem,2vw,1.75rem)]"
-                  ]}
+      <div class="mx-auto w-full max-w-200 border-l border-rule pl-[clamp(1.4rem,3vw,2.5rem)]">
+        {career.jobs.map((job, index) => (
+          <article class="relative border-t border-rule pt-6 pb-9 first:border-t-0 first:pt-0 last:pb-0">
+            <span
+              class:list={[
+                "absolute -left-[calc(clamp(1.4rem,3vw,2.5rem)+0.3rem)] size-[0.55rem] rounded-full bg-ink",
+                index === 0 ? "top-[0.4rem]" : "top-[1.85rem]"
+              ]}
+              aria-hidden="true"
+            />
+            <div class="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1">
+              <p class="m-0 font-mono text-[0.8rem] text-muted">{job.period}</p>
+              {"type" in job && (
+                <span class="font-mono text-[0.7rem] tracking-[0.08em] text-muted uppercase">
+                  {job.type}
+                </span>
+              )}
+            </div>
+            <h3
+              class:list={[
+                "mt-3 font-mono leading-[1.18] font-bold tracking-tighter wrap-anywhere",
+                index < 2
+                  ? "text-[clamp(1.65rem,2.8vw,2.35rem)]"
+                  : "text-[clamp(1.3rem,2vw,1.75rem)]"
+              ]}
+            >
+              {"url" in job ? (
+                <a
+                  href={job.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="site-link text-ink underline-offset-[0.3em]"
                 >
-                  {"url" in job ? (
-                    <a
-                      href={job.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="site-link text-ink underline-offset-[0.3em]"
-                    >
-                      {job.company}
-                      <span aria-hidden="true" class="text-[0.65em]">
-                        &nbsp;↗
-                      </span>
-                      <span class="sr-only"> ({career.opensInNewTab})</span>
-                    </a>
-                  ) : (
-                    job.company
-                  )}
-                </h3>
-                <p class="mt-2 font-mono text-[clamp(0.9rem,1.25vw,1.05rem)] text-muted">
-                  {job.role}
-                </p>
-                {"summary" in job && <p class="mt-4 leading-[1.65] text-ink">{job.summary}</p>}
-              </article>
-            )
-        )}
+                  {job.company}
+                  <span aria-hidden="true" class="text-[0.65em]">
+                    &nbsp;↗
+                  </span>
+                  <span class="sr-only"> ({links.opensInNewTab})</span>
+                </a>
+              ) : (
+                job.company
+              )}
+            </h3>
+            <p class="mt-2 font-mono text-[clamp(0.9rem,1.25vw,1.05rem)] text-muted">{job.role}</p>
+            {"summary" in job && <p class="mt-4 leading-[1.65] text-ink">{job.summary}</p>}
+          </article>
+        ))}
       </div>
     </div>
   </div>

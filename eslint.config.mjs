@@ -7,7 +7,7 @@ import astro from "eslint-plugin-astro"
 import ts from "typescript-eslint"
 
 export default defineConfig(
-  globalIgnores(["dist/**", ".astro/**", "coverage/**"]),
+  globalIgnores(["dist/**", ".astro/**", "coverage/**", ".scratch/**", "test-results/**"]),
 
   {
     files: ["**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],

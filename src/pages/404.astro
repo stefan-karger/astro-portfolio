@@ -1,0 +1,35 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro"
+import PageIntro from "@/components/page-intro.astro"
+import { defaultLocale } from "@/i18n/types"
+import { routeUrl } from "@/i18n/url"
+import { siteConfig } from "@/lib/config"
+
+const description =
+  "Die gesuchte Seite wurde nicht gefunden. Über die Startseite oder das Fotografie-Portfolio kannst du weitergehen."
+---
+
+<BaseLayout
+  title={`${siteConfig.name.public} - Seite nicht gefunden`}
+  {description}
+  mainClass="w-full flex-1"
+  isErrorPage
+>
+  <section class="py-12 sm:py-20" aria-labelledby="error-title">
+    <PageIntro id="error-title" title="Seite nicht gefunden" {description} />
+    <nav
+      aria-label="Weitergehen"
+      class="mx-auto flex w-[calc(100%-2rem)] max-w-6xl flex-wrap gap-x-8 gap-y-3"
+    >
+      <a class="text-link inline-flex min-h-11 items-center" href={routeUrl(defaultLocale, "home")}>
+        Zur Startseite
+      </a>
+      <a
+        class="text-link inline-flex min-h-11 items-center"
+        href={routeUrl(defaultLocale, "portfolio")}
+      >
+        Fotografien ansehen
+      </a>
+    </nav>
+  </section>
+</BaseLayout>

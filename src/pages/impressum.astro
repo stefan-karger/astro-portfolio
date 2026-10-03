@@ -3,9 +3,14 @@ import BaseLayout from "@/layouts/base-layout.astro"
 import LegalArticle from "@/components/legal-article.astro"
 import PostalAddress from "@/components/postal-address.astro"
 import { siteConfig } from "@/lib/config"
+import { getTranslations } from "@/i18n/translations"
 ---
 
-<BaseLayout title={`${siteConfig.name.public} - Impressum`}>
+<BaseLayout
+  title={`${siteConfig.name.public} - Impressum`}
+  description={getTranslations("de").legal.metaDescription}
+  noindex
+>
   <LegalArticle>
     <h1>Impressum</h1>
 

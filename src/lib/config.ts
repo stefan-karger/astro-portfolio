@@ -1,9 +1,6 @@
 const contactEmail = "kontakt@stefan-karger.de"
 
 export const siteConfig = {
-  // Publish the project and career entry only after approval.
-  showJunksplayground: false,
-
   name: {
     legal: "Stefan Eideloth-Karger",
     public: "Stefan Karger"
@@ -19,6 +16,13 @@ export const siteConfig = {
   contact: {
     email: contactEmail,
     phone: "+49 15679 365744"
+  },
+
+  socialImage: {
+    path: "/social/sk-wordmark.png",
+    type: "image/png",
+    width: 1200,
+    height: 630
   },
 
   socialLinks: [

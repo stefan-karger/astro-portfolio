@@ -2,5 +2,7 @@ node_modules
 dist
 .astro
 coverage
+.scratch
+test-results
 
 pnpm-lock.yaml

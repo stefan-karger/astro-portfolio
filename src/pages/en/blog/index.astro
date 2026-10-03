@@ -1,0 +1,14 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro"
+import BlogIndex from "@/components/blog/blog-index.astro"
+import { getTranslations } from "@/i18n/translations"
+import { siteConfig } from "@/lib/config"
+---
+
+<BaseLayout
+  title={`${siteConfig.name.public} - Blog`}
+  description={getTranslations("en").blog.description}
+  mainClass="w-full flex-1"
+>
+  <BlogIndex />
+</BaseLayout>

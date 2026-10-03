@@ -18,7 +18,7 @@ const { width: sourceWidth, height: sourceHeight } = await imageMetadata(
   sourcePath
 )
 const width = Math.min(sourceWidth, 1280)
-const widths = [...new Set([320, 480, 640, 960, 1280].map((size) => Math.min(size, width)))]
+const widths = [...new Set([320, 480, 640, 768, 960, 1280].map((size) => Math.min(size, width)))]
 const edge = Math.min(Math.max(sourceWidth, sourceHeight), 3000)
 const edges = [...new Set([1200, 1800, 2400, 3000].map((size) => Math.min(size, edge)))]
 const lightboxImages = await Promise.all(
@@ -44,18 +44,17 @@ const srcset = lightboxImages.map((image) => `${image.src} ${image.attributes.wi
   data-pswp-width={largest.attributes.width}
   data-pswp-height={largest.attributes.height}
   data-pswp-srcset={srcset}
-  lang="en"
 >
   <Image
     src={image}
     alt={alt}
-    lang="en"
     format="webp"
     quality={85}
     width={width}
     widths={widths}
     sizes="(min-width: 1680px) 395px, (min-width: 1536px) calc((100vw - 100px) / 4), (min-width: 1024px) calc((100vw - 88px) / 3), (min-width: 640px) calc((100vw - 60px) / 2), calc(100vw - 32px)"
     loading={index < 2 ? "eager" : "lazy"}
+    fetchpriority={index < 2 ? "high" : undefined}
     decoding="async"
   />
 </a>

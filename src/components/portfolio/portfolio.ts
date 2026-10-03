@@ -1,4 +1,5 @@
 import PhotoSwipeLightbox from "photoswipe/lightbox"
+import photoSwipeStyles from "photoswipe/style.css?url"
 
 const gallery = document.querySelector<HTMLElement>("[data-portfolio-gallery]")
 
@@ -48,15 +49,29 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
   let openingIndex = 0
   let inertElements: HTMLElement[] = []
+  let stylesPromise: Promise<void> | undefined
   const lightbox: PhotoSwipeLightbox = new PhotoSwipeLightbox({
     gallery,
     children: "[data-portfolio-item]",
-    pswpModule: () =>
-      import("photoswipe").catch((error: unknown) => {
+    pswpModule: async () => {
+      stylesPromise ??= new Promise<void>((resolve, reject) => {
+        const stylesheet = document.createElement("link")
+        stylesheet.rel = "stylesheet"
+        stylesheet.href = photoSwipeStyles
+        stylesheet.onload = () => resolve()
+        stylesheet.onerror = () => reject(new Error("PhotoSwipe stylesheet could not be loaded"))
+        document.head.appendChild(stylesheet)
+      })
+
+      try {
+        const [, photoswipe] = await Promise.all([stylesPromise, import("photoswipe")])
+        return photoswipe
+      } catch (error) {
         const item = items[lightbox.options.index ?? 0]
         if (item) window.location.assign(item.href)
         throw error
-      }),
+      }
+    },
     mainClass: "portfolio-lightbox",
     bgOpacity: 1,
     loop: false,
@@ -178,10 +193,6 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
       button.title = title
       button.setAttribute("aria-label", title)
     }
-  })
-
-  lightbox.on("contentAppend", ({ content }) => {
-    if (content.element) content.element.lang = "en"
   })
 
   lightbox.on("close", () => {

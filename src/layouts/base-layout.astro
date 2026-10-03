@@ -3,50 +3,48 @@ import "@fontsource-variable/jetbrains-mono/wght.css"
 import "@fontsource-variable/ibm-plex-sans/wght.css"
 import "@/styles/global.css"
 
-import { defaultLocale, locales } from "@/i18n/types"
+import { defaultLocale, locales, type Locale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
-import { switchLocale } from "@/i18n/url"
 import SiteHeader from "@/components/site-header.astro"
 import SiteFooter from "@/components/site-footer.astro"
+import SeoHead from "@/components/seo-head.astro"
 
 interface Props {
   title: string
-  description?: string
+  description: string
   mainClass?: string
+  canonicalPath?: string
+  noindex?: boolean
+  article?: {
+    language: Locale
+    publishedTime: string
+  }
+  isErrorPage?: boolean
 }
 
 const {
   title,
   description,
+  canonicalPath,
+  noindex = false,
+  article,
+  isErrorPage = false,
   mainClass = "mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8"
 } = Astro.props
 
-const locale = locales.find((locale) => locale === Astro.currentLocale) ?? defaultLocale
+const locale = isErrorPage
+  ? defaultLocale
+  : (locales.find((locale) => locale === Astro.currentLocale) ?? defaultLocale)
 const t = getTranslations(locale)
-
-if (!Astro.site) {
-  throw new Error("Missing `site` in astro.config.mjs")
-}
-
-const canonical = new URL(Astro.url.pathname, Astro.site).href
-
-const alternates = locales.map((target) => ({
-  locale: target,
-  href: new URL(switchLocale(Astro.url.pathname, locale, target), Astro.site).href
-}))
-
-const xDefault = new URL(switchLocale(Astro.url.pathname, locale, defaultLocale), Astro.site).href
 ---
 
 <!doctype html>
-<html lang={locale} class="lg:scroll-pt-24">
+<html lang={locale} class="scroll-pt-[calc(var(--spacing-header)+1rem)]">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
 
-    <title>{title}</title>
-
-    {description && <meta name="description" content={description} />}
+    <SeoHead {title} {description} {locale} {canonicalPath} {noindex} {article} {isErrorPage} />
 
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
@@ -54,14 +52,6 @@ const xDefault = new URL(switchLocale(Astro.url.pathname, locale, defaultLocale)
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/site.webmanifest" />
-
-    <link rel="canonical" href={canonical} />
-
-    {alternates.map(({ locale, href }) => (
-      <link rel="alternate" hreflang={locale} href={href} />
-    ))}
-
-    <link rel="alternate" hreflang="x-default" href={xDefault} />
 
     <slot name="head" />
   </head>
@@ -73,10 +63,10 @@ const xDefault = new URL(switchLocale(Astro.url.pathname, locale, defaultLocale)
     >
       {t.nav.skipLink}
     </a>
-    <SiteHeader />
+    <SiteHeader {locale} {isErrorPage} />
     <main id="main-content" class={mainClass} tabindex="-1">
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter {locale} />
   </body>
 </html>

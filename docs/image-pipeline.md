@@ -8,23 +8,26 @@ Der Hero importiert `hero.jpg` in Astros `<Picture />`. Beim Build erzeugt Astro
 
 Die aktiven Portfolio-Quellen liegen unter `src/assets/portfolio/`. Beide Sprachversionen lesen diesen Ordner beim Build automatisch ein. Es gibt keine separate Bildliste oder Sortierdatei.
 
-Dateinamen bestimmen Reihenfolge und kurze englische Bildbeschreibung. Zum Beispiel wird `001-bathtub-in-meadow.jpg` als `bathtub in meadow` beschrieben. Für neue Bilder:
+Dateinamen bestimmen die Reihenfolge und den Schlüssel für die Bildübersetzungen. Der beschreibende Teil ohne Nummer und Dateiendung verweist auf `portfolio.imageAlts` in `src/i18n/translations/de.ts` und `en.ts`. Die Texte sind vorerst kurze Motivbezeichnungen aus den Dateinamen: `001-bathtub-in-meadow.jpg` hat den Schlüssel `bathtub-in-meadow`, englisch `bathtub in meadow` und deutsch `Badewanne auf einer Wiese`. Für neue Bilder:
 
 1. Das Original außerhalb der aktiven Bildpipeline sichern. `private/photo-backup/` ist bereits von Git ausgeschlossen.
 2. Einen fertigen Export mit korrekter Orientierung und möglichst eingebettetem sRGB-Profil ablegen. JPG, JPEG, PNG und WebP werden unterstützt. Vorhandene kleine Exporte dürfen ihre Auflösung behalten.
 3. Einen Namen wie `018-short-description.jpg` vergeben. Das numerische Präfix legt die Reihenfolge fest. Bindestriche oder Unterstriche trennen die Wörter der Beschreibung.
-4. `pnpm validate` ausführen und beide Portfolio-Seiten prüfen. Für eine andere Reihenfolge die Präfixe umbenennen.
+4. Den beschreibenden Dateinamenteil als Schlüssel in beiden `portfolio.imageAlts`-Zuordnungen ergänzen. Englisch die lesbare Dateinamenfassung verwenden, Deutsch sinngemäß übertragen.
+5. `pnpm validate` ausführen und beide Portfolio-Seiten prüfen. Für eine andere Reihenfolge die Präfixe umbenennen; die Übersetzungsschlüssel bleiben dabei gleich.
 
-Ungültige Dateinamen und nicht unterstützte Dateien im aktiven Ordner führen zu einem Buildfehler. Doppelte numerische Präfixe erzeugen eine Warnung. Bei gleichem Präfix entscheidet der restliche Dateiname.
+Ungültige Dateinamen, nicht unterstützte Dateien im aktiven Ordner und fehlende Bildübersetzungen führen zu einem Buildfehler. Doppelte numerische Präfixe erzeugen eine Warnung. Bei gleichem Präfix entscheidet der restliche Dateiname.
 
-Die Originale des ersten Bildsatzes und ein Importprotokoll mit SHA-256-Prüfsummen liegen unter `private/photo-backup/portfolio/`. Vorhandene JPEGs wurden unverändert kopiert. PNGs wurden ohne Größenänderung in JPEG mit Qualität 95 und 4:4:4-Farbabtastung umgewandelt. Vier PNGs hatten kein Farbprofil, hier wurde sRGB angenommen.
+Die Originale des ersten Bildsatzes und ein Importprotokoll mit SHA-256-Prüfsummen liegen unter `private/photo-backup/portfolio/`.
 
 Astro erzeugt beim Build ausschließlich optimierte Portfolio-WebP-Dateien in `dist/_astro/`:
 
-- Galerie mit Qualität 85 und Breiten von 320, 480, 640, 960 und höchstens 1280 Pixeln.
+- Galerie mit Qualität 85 und Breiten von 320, 480, 640, 768, 960 und höchstens 1280 Pixeln.
 - Lightbox mit Qualität 90 und längsten Kanten von 1200, 1800, 2400 und höchstens 3000 Pixeln.
 - Alle Varianten bleiben innerhalb der jeweiligen Quellauflösung. Kleinere Quellen werden nicht hochskaliert. Seitenverhältnis und Bildausschnitt bleiben erhalten.
 
-Die Galerie verwendet responsive `srcset`- und `sizes`-Angaben. Die ersten zwei Bilder laden sofort, die übrigen mit nativem Lazy Loading. Große Lightbox-Dateien und der PhotoSwipe-Kern laden erst beim Öffnen, anschließend auch benachbarte Bilder. Die Bildlinks führen auf optimierte Varianten und funktionieren ohne JavaScript.
+Die Galerie verwendet responsive `srcset`- und `sizes`-Angaben. Die 768-Pixel-Variante vermeidet bei 380 CSS-Pixeln und einer Pixeldichte von 1,75 oder 2 den Sprung von 640 auf 960 Pixel. Die ersten zwei Bilder laden sofort mit `fetchpriority="high"`, weil beide je nach Viewport das größte sichtbare Bild sein können. Die übrigen laden mit nativem Lazy Loading.
+
+Große Lightbox-Dateien, der PhotoSwipe-Kern und dessen CSS laden erst beim Öffnen, anschließend auch benachbarte Bilder. Die Lightbox wartet auf den Kern und das CSS, damit sie vollständig gestylt öffnet. Wenn das Laden fehlschlägt, führt der auslösende Bildlink direkt auf die optimierte große Variante. Die Bildlinks funktionieren auch ohne JavaScript.
 
 Die Portfolio-Komponente liest Quelldimensionen über Astros `imageMetadata()` aus den Dateien. Direkter Zugriff auf die importierten Dimensionen würde Astro dazu veranlassen, zusätzlich die Originaldateien im öffentlichen Build zu behalten. Nach Änderungen an diesem Bereich prüfen, dass `dist/_astro/` keine Portfolio-Originale enthält und die ausgelieferten Bilder keine EXIF-, GPS- oder Bearbeitungsmetadaten tragen.
