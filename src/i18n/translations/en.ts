@@ -167,7 +167,7 @@ export const en = {
     tags: "Tags",
     language: { de: "German", en: "English" },
     contents: "On this page",
-    back: "Back to the blog",
+    back: "Back to overview",
     navigation: "More posts",
     previous: "Previous post",
     next: "Next post",

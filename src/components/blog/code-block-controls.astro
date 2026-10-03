@@ -87,6 +87,7 @@ const t = getTranslations(locale)
       const rect = trigger.getBoundingClientRect()
       const gap = 8
       popup.style.transform = "none"
+      popup.style.left = `${gap}px`
       const maxLeft = Math.max(gap, window.innerWidth - popup.offsetWidth - gap)
       const top =
         rect.bottom + gap + popup.offsetHeight <= window.innerHeight - gap

@@ -259,9 +259,13 @@ test("An isolated build checks English articles, drafts, escaping and invalid me
     )
     const title = 'English SEO fixture & "quotes" <text>'
     const description = 'A description with & "quotes" and <markup>.'
-    const post = `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\npubDate: 2026-10-01\nlanguage: en\ndraft: false\n---\n\nFixture content.\n`
+    const post = `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\npubDate: 2026-10-01\nlanguage: en\ntags: "Astro, TypeScript, Astro, , TypeScript "\ndraft: false\n---\n\nFixture content.\n`
     const content = path.join(temporary, "src/content/blog")
     await writeFile(path.join(content, "__seo-english.md"), post)
+    await writeFile(
+      path.join(content, "__seo-older.md"),
+      post.replace("pubDate: 2026-10-01", "pubDate: 2026-09-30")
+    )
     await writeFile(
       path.join(content, "__seo-draft.md"),
       post.replace("draft: false", "draft: true")
@@ -284,6 +288,29 @@ test("An isolated build checks English articles, drafts, escaping and invalid me
       assert.ok(!article.meta.has("robots"))
       const index = await readPage(`${prefix}blog/index.html`, fixtureDist)
       assert.ok(!index.html.includes("__seo-draft"))
+      const tagList = article.html.match(/<ul\b[^>]*aria-label="Tags"[^>]*>([\s\S]*?)<\/ul>/)?.[1]
+      assert.ok(tagList, "Article tags are rendered")
+      assert.deepEqual(
+        [...tagList.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1].trim()),
+        ["Astro", "TypeScript"],
+        "Tag order is preserved while duplicates, whitespace and empty tags are removed"
+      )
+      const articleLinks = tags(index.html, "a")
+        .map((link) => link.href.replace(/\/+$/, ""))
+        .filter((href) => href.startsWith(`/${prefix}blog/`))
+      const position = articleLinks.indexOf(`/${prefix}blog/__seo-english`)
+      const olderPosition = articleLinks.indexOf(`/${prefix}blog/__seo-older`)
+      assert.ok(position >= 0 && olderPosition > position, "Newest articles appear first")
+      const navigation = article.html.match(
+        /<nav\b[^>]*aria-label="(?:Weitere Beiträge|More posts)"[^>]*>([\s\S]*?)<\/nav>/
+      )?.[1]
+      assert.ok(navigation, "Article navigation is rendered")
+      const neighbors = tags(navigation, "a").map((link) => link.href.replace(/\/+$/, ""))
+      assert.ok(
+        neighbors.includes(articleLinks[position + 1]),
+        "Previous links to the older article"
+      )
+      assert.ok(neighbors.includes(articleLinks[position - 1]), "Next links to the newer article")
     }
     assert.ok(!(await htmlFiles(fixtureDist)).some((file) => file.includes("__seo-draft")))
     const escaped = await readPage("seo-fixture/index.html", fixtureDist)

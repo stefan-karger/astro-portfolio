@@ -1,356 +1,424 @@
 ---
-title: "Codeblöcke mit Astro, Shiki und Twoslash"
-description: "Von einfachem Markdown bis zu Typinformationen: So entstehen die Codeblöcke dieses Blogs, und so lassen sie sich ausprobieren."
+title: "Astro und Markdown für Entwicklerblogs"
+description: "Vom Setup bis zum Praxisbeispiel: So entsteht dieser Blog mit Astro-Collections, Markdown und Codeblöcken mit Shiki und Twoslash."
 pubDate: 2026-10-02
 language: de
 tags: "Astro, Markdown, Shiki, TypeScript"
 draft: false
 ---
 
-Dieser Beitrag zeigt die Funktionen, die hier tatsächlich eingebaut sind. Jeder
-Codeblock lässt sich direkt prüfen: Markierung ansehen, Code kopieren und bei
-Twoslash die Typinformationen öffnen. Die Beispiele bauen aufeinander auf.
+Ein Entwicklerblog braucht gut lesbare Texte und Code, den man verstehen und
+übernehmen kann. Für diesen Blog schreibe ich Beiträge in Markdown. Astro erzeugt
+daraus die Seiten; Shiki übernimmt die Syntaxfarben und Twoslash ergänzt bei Bedarf
+TypeScript-Typinformationen.
 
-## Ein Beitrag, zwei Oberflächen
+Hier zeige ich den Stack, die Einrichtung im Projekt und praktische Beispiele aus
+einem Blog: Entwürfe vor der Veröffentlichung filtern, Release-Notizen erzeugen und
+Veröffentlichungsdaten typsicher formatieren. Die Codeblöcke lassen sich direkt
+kopieren und ausprobieren.
 
-Alle Beiträge liegen als `.md`-Dateien in einer gemeinsamen Astro-Collection unter
-`src/content/blog`. Ein Beitrag hat eine eigene Inhaltssprache. Die Seiten
-`/blog` und `/en/blog` zeigen dieselben Beiträge; Navigation, Datumsformat und
-Bedienmeldungen folgen der Sprache der URL.
+## Der Stack
 
-Auch dieser Artikel ist unter beiden Sprachpräfixen erreichbar. Beim Sprachwechsel
-bleiben Text und Beispiele erhalten. Es gibt keine automatisch erzeugte Übersetzung.
+Die Aufgaben sind auf wenige Bausteine verteilt:
 
-Das Frontmatter dieses Beitrags sieht so aus:
+| Baustein                                                         | Aufgabe in diesem Blog                                                                    |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [Astro](https://docs.astro.build/en/guides/content-collections/) | Lädt und validiert Beiträge über Content Collections und erzeugt statische Seiten.        |
+| [Markdown](https://docs.astro.build/en/guides/markdown-content/) | Beschreibt Texte, Überschriften, Listen, Tabellen, Links und Codeblöcke.                  |
+| [Shiki](https://docs.astro.build/en/guides/syntax-highlighting/) | Erzeugt beim Build die Syntaxfarben für Code. Astro bringt die Integration bereits mit.   |
+| [Shiki-Transformer](https://shiki.style/packages/transformers)   | Kennzeichnen hinzugefügte, entfernte und hervorgehobene Zeilen.                           |
+| [Twoslash](https://shiki.style/packages/twoslash)                | Prüft ausgewählte TypeScript-Beispiele und erzeugt Typinformationen, JSDoc und Diagnosen. |
+| Tailwind CSS und Astro-Komponenten                               | Gestalten Beiträge, Codeblöcke und die Navigation.                                        |
 
-```yaml title="src/content/blog/astro-shiki-codebloecke.md"
-title: "Codeblöcke mit Astro, Shiki und Twoslash"
-description: "Von einfachem Markdown bis zu Typinformationen."
+Ein eigener Shiki-Transformer ergänzt **Dateititel**, **Zeilennummern** und den
+Quelltext für **Copy**. Diese Ergänzungen sind Konventionen dieses Projekts; sie
+gehören nicht automatisch zu jedem Astro-Blog.
+
+Syntaxfarben, Diffs und Typausgaben entstehen beim Build. Im Browser übernimmt ein
+kleines Script das Kopieren und die Bedienung der Typ-Popups. Ein weiteres markiert
+den aktuellen Abschnitt in der Inhaltsübersicht. Für den Text und die Codefarben
+ist keine hydratisierte UI-Komponente nötig.
+
+## Das Setup
+
+### Pakete und Projektstruktur
+
+Der folgende Auszug aus `package.json` zeigt die für den Blog relevanten Pakete.
+Die Versionsangaben entsprechen dem Stand dieses Projekts:
+
+```json title="package.json · Blog-Auszug"
+{
+  "type": "module",
+  "engines": {
+    "node": "^22.13.0 || >=24.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro build"
+  },
+  "dependencies": {
+    "astro": "^7.3.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@shikijs/transformers": "4.4.3",
+    "@shikijs/twoslash": "4.4.3",
+    "@types/hast": "3.0.4",
+    "shiki": "4.4.3",
+    "typescript": "~6.0.3"
+  }
+}
+```
+
+Die Dateien für Inhalte, Darstellung und Codeverarbeitung liegen getrennt:
+
+```
+src/
+  content.config.ts
+  content/blog/
+    astro-shiki-codebloecke.md
+  pages/blog/
+    index.astro
+    [...slug].astro
+  layouts/
+    blog-layout.astro
+  components/blog/
+    blog-index.astro
+    code-block-controls.astro
+  lib/
+    blog.ts
+    shiki/code-block.ts
+  styles/
+    global.css
+```
+
+Ein Block ohne Sprachangabe wie dieser Dateibaum bleibt ohne Syntaxfarben. Auch
+hier funktioniert Copy. Die englischen Blogseiten liegen zusätzlich unter
+`src/pages/en/blog`.
+
+Die Imports mit `@/` verwenden den Alias aus der TypeScript-Konfiguration:
+
+```json title="tsconfig.json"
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] },
+    "ignoreDeprecations": "6.0"
+  }
+}
+```
+
+### Markdown und Shiki konfigurieren
+
+In `astro.config.mjs` werden die Transformer an Astros Markdown-Verarbeitung
+übergeben. Hier der Blog-Auszug der Konfiguration:
+
+```js title="astro.config.mjs · Blog-Auszug"
+import { defineConfig } from "astro/config"
+import tailwindcss from "@tailwindcss/vite"
+import {
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerRemoveNotationEscape
+} from "@shikijs/transformers"
+import { rendererRich, transformerTwoslash } from "@shikijs/twoslash"
+import { transformerCodeBlock } from "./src/lib/shiki/code-block.ts"
+
+export default defineConfig({
+  site: "https://stefan-karger.de",
+  vite: {
+    plugins: [tailwindcss()]
+  },
+  markdown: {
+    shikiConfig: {
+      themes: { light: "github-light", dark: "github-dark" },
+      transformers: [
+        transformerTwoslash({
+          explicitTrigger: true,
+          renderer: rendererRich({
+            queryRendering: "line",
+            errorRendering: "line"
+          })
+        }),
+        transformerNotationDiff(),
+        transformerNotationHighlight(),
+        transformerRemoveNotationEscape(),
+        transformerCodeBlock()
+      ]
+    }
+  },
+  i18n: {
+    defaultLocale: "de",
+    locales: ["de", "en"],
+    routing: { prefixDefaultLocale: false }
+  }
+})
+```
+
+`explicitTrigger: true` aktiviert die Typprüfung nur für Fences mit dem Zusatz
+`twoslash`. Gewöhnliche `ts`-Blöcke bleiben damit auch für unvollständige Ausschnitte
+geeignet. Query- und Fehlerausgaben erscheinen direkt im Codeblock.
+
+`transformerCodeBlock()` ist der eigene Renderer in `src/lib/shiki/code-block.ts`.
+Er übernimmt drei Aufgaben:
+
+- Die Fence-Zusätze für Dateititel und Zeilennummern lesen und den Copy-Button anlegen.
+- Nach den anderen Transformern den Kopiertext ermitteln. Entfernte Diff-Zeilen,
+  Twoslash-Ausgaben und Zeilennummern werden dabei ausgeschlossen.
+- Typ-Popups neben das scrollbare `pre` setzen, damit sie nicht an dessen Rand
+  abgeschnitten werden.
+
+Die Styles in `src/styles/global.css` importieren Tailwind und die Twoslash-Styles.
+Sie gestalten zusätzlich das erzeugte Markdown und die Klassen für Diffs und
+Hervorhebungen. `code-block-controls.astro` verbindet die Copy-Buttons mit der
+Clipboard-API und ergänzt Hover, Fokus und Antippen für die nativen Popovers.
+
+Das verwendete Theme ist hell. Shiki erzeugt bereits zusätzliche Farbvariablen für
+`github-dark`; eine Dark-Mode-Umschaltung ist in dieser Version nicht eingerichtet.
+
+### Die Content Collection anlegen
+
+Die Collection lädt `.md`-Dateien aus `src/content/blog`. Ihr Schema prüft das
+Frontmatter und wandelt Veröffentlichungsdaten in `Date`-Objekte um:
+
+```ts title="src/content.config.ts"
+import { defineCollection } from "astro:content"
+import { glob } from "astro/loaders"
+import { z } from "astro/zod"
+
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
+  schema: z.object({
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    pubDate: z.coerce.date(),
+    language: z.enum(["de", "en"]),
+    tags: z
+      .string()
+      .default("")
+      .transform((value) => [
+        ...new Set(
+          value
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+        )
+      ]),
+    draft: z.boolean().default(false)
+  })
+})
+
+export const collections = { blog }
+```
+
+Ein neuer Beitrag beginnt beispielsweise so:
+
+```md title="src/content/blog/datumsformatierung.md"
+---
+title: "Veröffentlichungsdaten zuverlässig formatieren"
+description: "Warum eine feste Zeitzone Datumsangaben im Blog stabil hält."
 pubDate: 2026-10-02
 language: de
-tags: "Astro, Markdown, Shiki, TypeScript"
+tags: "Astro, TypeScript, Astro"
 draft: false
+---
+
+Datumsangaben sollen für alle Leser denselben Veröffentlichungstag zeigen.
 ```
 
-`tags` ist eine kommaseparierte Zeichenkette. Die Collection entfernt überflüssige
-Leerzeichen, leere Einträge und doppelte Tags. Tags stehen bereits am Artikel und
-in der Übersicht. Eine spätere Filterung kann darauf sowie auf Sprache und Datum
-zugreifen. Eine Filteroberfläche gibt es zunächst noch nicht.
-
-`draft: true` zeigt einen Entwurf während der lokalen Entwicklung, schließt ihn
-aber vom Produktionsbuild aus. Der Dateipfad bestimmt den Slug; auch Unterordner
-sind möglich.
-
-## 1. Die Grundlage: Markdown
-
-Für Überschriften, Absätze, Listen und Links reicht Markdown. Das Layout kümmert
-sich um Abstände und Lesbarkeit. Die Regeln stehen mit Tailwinds `@apply` in
-`global.css`, weil der Markdown-Prozessor das HTML erzeugt.
-
-### Eine kleine Schreibprobe
-
-**Fett**, _kursiv_ und `Inline-Code` helfen, einzelne Stellen zu betonen. Ein
-[Link zur Astro-Dokumentation](https://docs.astro.build/en/guides/markdown-content/)
-führt zur Beschreibung des Markdown-Verhaltens.
-
-- Listen erhalten Abstand und sichtbare Aufzählungszeichen.
-- Inline-Code verwendet dieselbe Monospace-Schrift wie die Codeblöcke.
-- Überschriften erscheinen im Inhaltsverzeichnis dieses Artikels.
-
-1. Markdown schreiben.
-2. Lokal ansehen.
-3. Den Produktionsbuild prüfen.
-
-> Ein Zitatblock bleibt eine einfache Markdown-Struktur. Dafür ist keine
-> hydratisierte Komponente nötig.
-
-| Eingabe                  | Darstellung |
-| ------------------------ | ----------- |
-| `**fett**`               | **fett**    |
-| `_kursiv_`               | _kursiv_    |
-| Backticks um einen Namen | `name`      |
-
-Ein Fence ohne Sprachangabe bleibt ein schlichter Textblock. Auch er bekommt Copy:
-
-```
-Ein Codeblock ohne Syntax-Highlighting.
-
-Die Leerzeile gehört zum kopierten Inhalt.
-```
-
-## 2. Shiki: Syntax farbig darstellen
-
-Eine Sprachangabe nach den drei Backticks aktiviert das passende Shiki-Highlighting.
-Die Autorenfassung:
-
-````md title="Markdown-Eingabe"
-```ts
-const greeting = "Hallo Blog"
-console.log(greeting)
-```
-````
-
-Das Ergebnis:
-
-```ts
-const greeting = "Hallo Blog"
-console.log(greeting)
-```
-
-Astro rendert die Farben beim Build. Der Browser braucht dafür keine
-Highlighting-Bibliothek. Als helles Theme wird `github-light` verwendet;
-`github-dark` liefert schon zusätzliche Farbvariablen für einen späteren Dark Mode.
-Die Seite bleibt auch bei dunkler Systemeinstellung hell.
-
-## 3. Dateititel und Copy
-
-Mit `title="..."` bekommt ein Fence eine Kopfzeile. Das funktioniert mit und ohne
-Twoslash und benötigt keine MDX-Komponente:
-
-````md title="Markdown-Eingabe"
-```ts title="src/lib/greeting.ts"
-export const greeting = "Hallo Blog"
-```
-````
-
-```ts title="src/lib/greeting.ts"
-export const greeting = "Hallo Blog"
-```
-
-Die Kopfzeile, Rahmen und dezenten Flächen orientieren sich an der
-[shadcn-Dokumentation](https://ui.shadcn.com/docs/components/base/badge). Die
-Schriften und Farben bleiben die dieser Website. Astro-Komponenten und die
-erzeugten Bedienelemente verwenden direkt Tailwind-Utilities; Regeln für das
-generierte Markdown und Shiki-HTML stehen gesammelt in `global.css`.
-
-Der Copy-Button kopiert ausschließlich den sichtbaren Quellcode. Titel und
-Typinformationen gehören nicht dazu. Ein Häkchen und eine für Screenreader
-lesbare Statusmeldung bestätigen den Vorgang. Bei verweigertem Clipboard-Zugriff
-erscheint eine Fehlermeldung; der Code lässt sich weiterhin manuell markieren.
-
-### Sonderzeichen und Leerzeilen
-
-Dieses Beispiel prüft Anführungszeichen, Backticks, HTML-Zeichen und Backslashes.
-Copy muss denselben Text liefern, einschließlich der Leerzeile:
-
-```ts title="copy-roundtrip.ts"
-const html = '<span title="Hallo">A & B</span>'
-const template = `Hallo ${html}`
-
-const path = "C:\\Blog\\Beispiele"
-console.log(template, path)
-```
-
-### Optionale Zeilennummern
-
-Der Fence-Marker `showLineNumbers` ergänzt Zeilennummern. Er lässt sich mit
-`title="..."`, Notationen und `twoslash` kombinieren. Nummeriert werden nur die
-sichtbaren Quellcodezeilen, einschließlich Leerzeilen; Query- und Diagnoseausgaben
-bekommen keine zusätzliche Nummer. Die Nummern gehören nicht zum kopierten Code.
-
-````md title="Markdown-Eingabe"
-```ts showLineNumbers
-const values = [1, 2, 3]
-
-console.log(values.length)
-```
-````
-
-```ts showLineNumbers
-const values = [1, 2, 3]
-
-console.log(values.length)
-```
-
-Blöcke ohne Titel haben denselben Abstand oben, links und unten. Rechts bleibt
-Platz für Copy. Ein Dateititel fügt darüber eine eigene, durch eine Linie getrennte
-Kopfzeile hinzu.
-
-## 4. Diff: den neuen Stand kopieren
-
-`[!code --]` markiert eine entfernte Zeile, `[!code ++]` eine hinzugefügte. Im
-Quelltext stehen diese Marker in Kommentaren. Im Eingabebeispiel werden sie mit
-`[\!code ...]` maskiert, damit die Dokumentation die Syntax wörtlich zeigt:
-
-````md title="Markdown-Eingabe"
-```ts title="greeting.ts" showLineNumbers
-const greeting = "Hallo" // [\!code --]
-const greeting = "Hallo Blog" // [\!code ++]
-
-console.log(greeting)
-```
-````
-
-Das aktive Beispiel:
-
-```ts title="greeting.ts" showLineNumbers
-const greeting = "Hallo" // [!code --]
-const greeting = "Hallo Blog" // [!code ++]
-
-console.log(greeting)
-```
-
-Copy übernimmt hier den **neuen Stand**: die hinzugefügte Deklaration, die
-Leerzeile und `console.log(greeting)`. Die entfernte Deklaration sowie die aktiven
-Notationskommentare fehlen. Die Plus- und Minuszeichen ergänzen die farbliche
-Kennzeichnung.
-
-## 5. Zeilen hervorheben
-
-### Einzelne Zeilen hervorheben
-
-`// [!code highlight]` legt eine Hintergrundfläche hinter die betreffende Zeile:
-
-```ts title="highlight.ts"
-const price = 24
-const quantity = 3
-const total = price * quantity // [!code highlight]
-console.log(total)
-```
-
-Copy enthält alle vier Codezeilen und lässt den aktiven Marker weg.
-
-### Notation wörtlich zeigen
-
-Shiki erkennt seine Notation auch in Beispielen über die Notation selbst.
-Mit einem Backslash nach der öffnenden Klammer wird der Marker maskiert. Die
-Ausgabe und Copy enthalten dann den wörtlichen Marker:
-
-```ts title="literal-notation.ts"
-const literal = "[\!code ++]"
-```
-
-Der kopierte Wert ist `const literal = "[!code ++]"`. Diese Zeile ist keine
-Diff-Zeile.
-
-## 6. Twoslash: TypeScript im Beitrag prüfen
-
-Erst der zusätzliche Fence-Marker `twoslash` aktiviert die TypeScript-Auswertung.
-Normale `ts`-Fences werden nur hervorgehoben. Dadurch kann ein Beitrag auch
-unvollständige Codeausschnitte zeigen, ohne dass sie typgeprüft werden.
-
-Twoslash läuft beim Build. Unerwartete TypeScript-Fehler stoppen den Build. Für
-bewusst gezeigte Fehler wird die erwartete Fehlernummer ausdrücklich angegeben.
-Der Artikelrenderer prüft zusätzlich, ob Astro den Markdown-Inhalt erfolgreich
-erzeugt hat, damit kein leerer Artikel veröffentlicht wird.
-
-### Typinferenz und eine dauerhafte Query
-
-`// ^?` fragt nach dem Typ an der Position direkt darüber. Die Typausgabe bleibt
-auch ohne JavaScript sichtbar. Unterstrichene Bezeichner lassen sich per Hover,
-Tastaturfokus oder Antippen öffnen; Escape schließt das Popup.
-
-Popup, Pfeil und mehrzeilige Typinformationen verwenden dieselbe graue Fläche.
-Die Popup-Inhalte bekommen keinen zusätzlichen weißen Codehintergrund.
-
-````md title="Markdown-Eingabe"
-```ts twoslash title="inference.ts"
-const message = "Hallo Twoslash"
-//    ^?
-const length = message.length
-//    ^?
-```
-````
-
-```ts twoslash title="inference.ts"
-const message = "Hallo Twoslash"
-//    ^?
-const length = message.length
-//    ^?
-```
-
-Copy liefert nur die beiden Deklarationen. Die Query-Kommentare und die
-zusätzlichen Typausgaben werden nicht kopiert. TypeScript-Typen und Diagnosen
-bleiben in ihrer ursprünglichen englischen Sprache; die Blog-Oberfläche wird
-dadurch nicht übersetzt.
-
-### JSDoc als Typinformation
-
-Öffne die Typinformation von `greet`, um neben der Signatur die Beschreibung aus
-dem JSDoc-Kommentar zu sehen. JSDoc wird als Text ausgegeben, ohne zusätzlichen
-Markdown-Renderer:
-
-```ts twoslash title="jsdoc.ts"
-/** Returns a greeting for the given name. */
-function greet(name: string): string {
-  return `Hello, ${name}`
+Aus den Tags werden hier `Astro` und `TypeScript`: Leerzeichen, leere Einträge und
+Dopplungen werden entfernt. Der Dateipfad bestimmt den Slug. Unterordner sind
+ebenfalls möglich; `language` beschreibt die Sprache des Beitrags.
+
+### Beiträge rendern und veröffentlichen
+
+Die dynamische Route erzeugt für jeden veröffentlichten Beitrag eine Seite und
+übergibt ihn an das gemeinsame Layout:
+
+```astro title="src/pages/blog/[...slug].astro"
+---
+import type { CollectionEntry } from "astro:content"
+import BlogLayout from "@/layouts/blog-layout.astro"
+import { getPosts } from "@/lib/blog"
+
+export async function getStaticPaths() {
+  return (await getPosts()).map((post) => ({
+    params: { slug: post.id },
+    props: { post }
+  }))
 }
 
-const greeting = greet("Astro")
-//    ^?
+interface Props {
+  post: CollectionEntry<"blog">
+}
+const { post } = Astro.props
+---
+
+<BlogLayout post={post} />
 ```
 
-### Setup ausblenden
+`@/` verweist über die `paths`-Einstellung in `tsconfig.json` auf `src/`. Das Layout
+ruft `render(post)` auf und erhält die gerenderte `Content`-Komponente sowie die
+Überschriften. Daraus entsteht die Inhaltsübersicht für `h2` und `h3`. Der aktuelle
+Abschnitt wird beim Scrollen fett markiert. Die Übersicht, das Datum, die Tags und
+die Links zu benachbarten Beiträgen werden aus den Collection-Daten erzeugt.
 
-`// ---cut---` versteckt den vorherigen Teil des Beispiels. TypeScript verwendet
-das Setup trotzdem für die Typprüfung. Die Eingabe enthält die Typdefinition:
+Die Route unter `/en/blog` verwendet dasselbe Layout und dieselben Beiträge.
+Beim Sprachwechsel bleiben Inhalt und Slug erhalten; Navigation, Datumsformat und
+Copy-Meldungen wechseln die Sprache. Ein deutscher Beitrag wird dabei nicht
+automatisch übersetzt.
 
-````md title="Markdown-Eingabe"
-```ts twoslash title="hidden-setup.ts" showLineNumbers
-type User = { name: string; active: boolean }
-// ---cut---
-const user: User = { name: "Ada", active: true }
-//    ^?
-console.log(user.name)
+Im vorhandenen Projekt lässt sich der Ablauf mit diesen Befehlen nachvollziehen:
+
+```sh title="Entwicklung und Build"
+pnpm install
+pnpm dev --background
+pnpm check
+pnpm build
 ```
+
+`draft: true` hält einen Beitrag während der lokalen Entwicklung sichtbar und
+schließt ihn aus dem Produktionsbuild aus. Die Filterung dafür steckt in
+`getPosts()`; die Übersicht und beide Artikelrouten verwenden diese Funktion.
+
+## Praxisbeispiele
+
+### Entwürfe filtern und Änderungen erklären
+
+Wenn ein Blog zunächst alle Beiträge lädt, können Entwürfe versehentlich in der
+veröffentlichten Übersicht auftauchen. Das folgende Beispiel ergänzt den Filter
+und sortiert die Beiträge vom neuesten zum ältesten. Bei gleichem Datum entscheidet
+der Slug über eine stabile Reihenfolge.
+
+Der Fence verwendet `ts title="src/lib/blog.ts" showLineNumbers`. Kommentare mit
+`[!code --]` und `[!code ++]` markieren die Änderung; `[!code highlight]` hebt die
+Sortierung hervor:
+
+<!-- prettier-ignore -->
+```ts title="src/lib/blog.ts" showLineNumbers
+import { getCollection } from "astro:content"
+
+export async function getPosts() {
+  const posts = await getCollection("blog") // [!code --]
+  const posts = await getCollection( // [!code ++]
+    "blog", // [!code ++]
+    ({ data }) => !import.meta.env.PROD || !data.draft // [!code ++]
+  ) // [!code ++]
+
+  return posts.sort(
+    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime() || a.id.localeCompare(b.id) // [!code highlight]
+  )
+}
+```
+
+**Copy übernimmt den neuen Stand.** Die alte Ladezeile und die Markierungskommentare
+fehlen im kopierten Code. Dateititel und Zeilennummern werden ebenfalls nicht
+kopiert; die Leerzeilen bleiben erhalten.
+
+Ein kurzer Ablauf für die Veröffentlichung lässt sich ganz normal als Markdown
+schreiben:
+
+1. Den Beitrag als _Entwurf_ lokal prüfen.
+2. `draft` auf `false` setzen.
+3. Typprüfung, Tests und Build ausführen.
+
+> Ein erfolgreicher Build prüft auch die expliziten Twoslash-Beispiele. Ein
+> unerwarteter TypeScript-Fehler darin verhindert die Veröffentlichung.
+
+### Markdown für Release-Notizen erzeugen
+
+Wer Release-Notizen aus einem Script erzeugt, arbeitet oft mit Markdown,
+HTML-Zeichen und mehrzeiligen Strings. Dieser Block hat bewusst keinen Dateititel;
+Copy sitzt direkt oben rechts:
+
+````ts
+const notes = [
+  "## Release 1.1",
+  "",
+  "**Neu:** Entwürfe bleiben im Produktionsbuild verborgen.",
+  "",
+  "```ts",
+  'const label = "<strong>Blog & Code</strong>"',
+  "const published = true // [\!code ++]",
+  "```"
+].join("\n")
+
+console.log(notes)
 ````
 
-Im gerenderten Block und in Copy fehlt das Setup:
+Der Backslash in `[\!code ++]` verhindert, dass Shiki die Beispielzeichenfolge
+selbst als Diff behandelt. Anzeige und Copy enthalten den wörtlichen Marker
+`[!code ++]`. Anführungszeichen, Backticks, HTML-Zeichen und `\n` bleiben im
+kopierten Quelltext erhalten.
 
-```ts twoslash title="hidden-setup.ts" showLineNumbers
-type User = { name: string; active: boolean }
+### Typen an einer Datumsfunktion zeigen
+
+Eine feste Zeitzone verhindert, dass derselbe Veröffentlichungszeitpunkt je nach
+Umgebung als anderer Kalendertag angezeigt wird. Die folgende Funktion verwendet
+deshalb UTC und wählt die Darstellung über die Oberflächensprache.
+
+Dieses Beispiel bündelt Typprüfung, JSDoc, eine dauerhafte Typausgabe, ein
+ausgeblendetes Setup und Zeilennummern. Der Fence lautet
+`ts twoslash title="src/lib/format-post-date.ts" showLineNumbers`:
+
+```ts twoslash title="src/lib/format-post-date.ts" showLineNumbers
+type Locale = "de" | "en"
 // ---cut---
-const user: User = { name: "Ada", active: true }
+/** Formats a publication date in UTC for the selected locale. */
+function formatPostDate(locale: Locale, date: Date) {
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: "long",
+    timeZone: "UTC" // [!code highlight]
+  }).format(date)
+}
+
+const label = formatPostDate("de", new Date("2026-10-02T00:00:00Z"))
 //    ^?
-console.log(user.name)
 ```
 
-### Einen erwarteten Fehler erklären
+Die kleine `Locale`-Definition oberhalb von `// ---cut---` steht nur für die
+Typprüfung bereit. Im Projekt wird dieser Typ aus `src/i18n/types.ts` importiert.
+Die versteckte Definition erscheint weder in der Ausgabe noch im Kopiertext.
 
-Die Fehlernummer `2322` steht für einen nicht zuweisbaren Typ. Dieses Beispiel
-deklariert genau diesen Fehler als erwartet. Der Build darf ihn deshalb anzeigen:
+`// ^?` zeigt den abgeleiteten Typ von `label` dauerhaft unter der Zeile an.
+Öffne die Typinformation von `formatPostDate` per Hover, Tastaturfokus oder
+Antippen: Das Popup enthält die Signatur und die JSDoc-Beschreibung. Escape schließt
+es wieder. Query-Kommentare und Typausgaben werden nicht mitkopiert.
 
-```ts twoslash title="expected-error.ts"
-// @errors: 2322
-const count: number = "drei"
+### Ungültige Daten gezielt erklären
+
+Ein Datum aus einer API kommt häufig als String. Die Datumsfunktion erwartet
+hingegen ein `Date`-Objekt. Twoslash kann den Fehler und die passende Umwandlung in
+einem einzigen Beispiel zeigen:
+
+```ts twoslash title="Veröffentlichungsdatum aus einer API"
+// @errors: 2345
+declare function formatPostDate(locale: "de" | "en", date: Date): string
+// ---cut---
+const pubDate = "2026-10-02T00:00:00Z"
+
+formatPostDate("de", pubDate)
+formatPostDate("de", new Date(pubDate))
 ```
 
-Copy übernimmt die fehlerhafte Deklaration als Lehrbeispiel, ohne
-`@errors`-Kommentar und ohne Diagnose. Die sichtbare Fehlermeldung erklärt, was
-TypeScript an der Zuweisung beanstandet.
+`// @errors: 2345` erlaubt hier ausdrücklich die Diagnose für den falschen
+Argumenttyp. Die nächste Zeile zeigt die Korrektur. Die versteckte Deklaration
+beschreibt dieselbe Funktion wie im vorherigen Beispiel; beide Codeblöcke werden
+unabhängig voneinander geprüft. Copy enthält die beiden Aufrufe als Lehrbeispiel,
+aber weder das versteckte Setup noch die Diagnose.
 
-## 7. Die Umsetzung ausprobieren
+Die Content Collection erledigt eine vergleichbare Umwandlung beim Laden des
+Frontmatters bereits mit `z.coerce.date()`. So erhält das Layout geprüfte Daten,
+während der Beitrag selbst bei einfachem Markdown bleibt.
 
-Die folgenden Prüfungen lassen sich direkt auf dieser Seite durchführen:
-
-- **Copy:** Vergleiche den kopierten Text mit dem jeweiligen Beispiel. Beim Diff
-  darf die alte Deklaration fehlen; Leerzeilen und Sonderzeichen bleiben erhalten.
-- **Tastatur:** Erreiche Copy und Typinformationen mit Tab, öffne sie mit Enter
-  und schließe ein Typ-Popup mit Escape. Codeblöcke sind für horizontales Scrollen
-  fokussierbar.
-- **Schmales Display:** Lange Codezeilen scrollen innerhalb ihres Blocks. Die
-  Seite selbst soll horizontal nicht überlaufen. Typ-Popups dürfen nicht am
-  Rand des Codeblocks abgeschnitten werden.
-- **Sprachwechsel:** Wechsle oben zu Englisch. Text, Slug und Beispiele bleiben
-  gleich; Navigation, Datum und Copy-Meldungen wechseln die Sprache.
-- **Ohne JavaScript:** Markdown, Syntaxfarben, Titel, Diff und Query-Ausgaben
-  bleiben sichtbar. Copy wird erst mit verfügbarer Clipboard-API eingeblendet.
-  Native Typ-Popups lassen sich in unterstützten Browsern weiterhin anklicken.
-- **Helles Theme:** Auch bei dunkler Systemeinstellung bleiben Seite und
-  Codeblöcke zunächst hell.
-
-Die Regressionstests unter `tests/code-block.test.mjs` prüfen den Kopiertext, die
-Transformer-Reihenfolge, maskierte Notation und die Twoslash-Verarbeitung. Sie
-verwenden dieselbe Shiki-Konfiguration wie die Website.
-
-## Spätere Erweiterungen
-
-**MDX** kommt erst hinzu, wenn ein Beitrag tatsächlich Astro-Komponenten im Text
-braucht. Für alle hier gezeigten Codeblöcke genügt Markdown.
-
-**Mermaid** ist für spätere Diagramme vorgesehen und wird derzeit nicht gerendert.
-Ein Mermaid-Fence allein aktiviert hier noch keine Diagrammkomponente.
-
-**Dark Mode** benötigt eine bewusste Umschaltung der gesamten Website und passende
-Flächen, Rahmen und Popup-Farben. Die Shiki-Farbvariablen sind dafür bereits
-vorbereitet.
+Vor dem Veröffentlichen prüfe ich mit `pnpm test:blog` die Codeverarbeitung und mit
+`pnpm check` und `pnpm build` das Projekt. Im Browser teste ich Copy, Sprunglinks und
+Typ-Popups auch mit Tastatur und schmalem Display. Ohne JavaScript bleiben Texte,
+Syntaxfarben, Diffs und die dauerhaften Typausgaben lesbar; Copy wird erst mit
+verfügbarer Clipboard-API eingeblendet.

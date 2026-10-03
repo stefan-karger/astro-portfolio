@@ -168,7 +168,7 @@ export const de = {
     tags: "Tags",
     language: { de: "Deutsch", en: "Englisch" },
     contents: "Auf dieser Seite",
-    back: "Zur Blogübersicht",
+    back: "Zur Übersicht",
     navigation: "Weitere Beiträge",
     previous: "Vorheriger Beitrag",
     next: "Nächster Beitrag",

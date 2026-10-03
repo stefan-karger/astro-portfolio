@@ -56,7 +56,7 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
       </div>
       <h1
         id="post-title"
-        class="mt-4 font-mono text-page-title leading-[1.15] font-bold tracking-[-0.035em]"
+        class="mt-4 font-mono text-page-title leading-[1.15] font-bold tracking-[-0.035em] wrap-break-word"
         lang={post.data.language}
       >
         {post.data.title}
@@ -78,19 +78,20 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
       )}
     </header>
     <CodeBlockControls locale={locale} />
-    <div class="mt-12 grid min-w-0 gap-10 xl:grid-cols-[minmax(0,75ch)_minmax(12rem,1fr)] xl:gap-12">
+    <div class="mt-12 grid min-w-0 gap-10 xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-14">
       {contents.length > 0 && (
         <aside class="min-w-0 xl:col-start-2 xl:row-start-1">
           <nav
-            class="border-l border-rule pl-5 xl:sticky xl:top-[calc(var(--spacing-header)+2rem)] xl:max-h-[calc(100dvh-var(--spacing-header)-4rem)] xl:overflow-y-auto"
+            id="blog-contents"
+            class="xl:sticky xl:top-[calc(var(--spacing-header)+2rem)] xl:max-h-[calc(100dvh-var(--spacing-header)-4rem)] xl:overflow-y-auto"
             aria-label={t.blog.contents}
           >
-            <p class="mb-3 text-sm font-semibold">{t.blog.contents}</p>
+            <p class="mb-3 text-sm font-bold text-muted">{t.blog.contents}</p>
             <ul class="space-y-2 text-sm leading-snug text-muted" lang={post.data.language}>
               {contents.map((heading) => (
                 <li class:list={[heading.depth === 3 && "pl-3"]}>
                   <a
-                    class="text-link inline-block py-1 no-underline hover:underline"
+                    class="inline-block py-1 no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:text-ink"
                     href={`#${heading.slug}`}
                   >
                     {heading.text}
@@ -102,13 +103,16 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
         </aside>
       )}
       <div
-        class="blog-content min-w-0 max-w-[75ch] xl:col-start-1 xl:row-start-1"
+        class="blog-content min-w-0 max-w-[85ch] xl:col-start-1 xl:row-start-1 xl:max-w-none"
         lang={post.data.language}
       >
         <Content />
       </div>
     </div>
-    <nav class="mt-14 max-w-[75ch] border-t border-rule pt-6" aria-label={t.blog.navigation}>
+    <nav
+      class="mt-14 max-w-[85ch] border-t border-rule pt-6 xl:max-w-[calc(100%-17.5rem)]"
+      aria-label={t.blog.navigation}
+    >
       <a
         class="site-link inline-flex min-h-11 items-center text-sm"
         href={routeUrl(locale, "blog")}
@@ -136,3 +140,54 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
     </nav>
   </article>
 </BaseLayout>
+
+<script>
+  const contents = document.querySelector<HTMLElement>("#blog-contents")
+  const links = contents?.querySelectorAll<HTMLAnchorElement>("a[href^='#']") ?? []
+  const sections = Array.from(links).flatMap((link) => {
+    const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)))
+    return heading ? [{ link, heading }] : []
+  })
+
+  if (contents && sections.length > 0) {
+    let active: HTMLAnchorElement | undefined
+    let frame: number | undefined
+
+    const update = () => {
+      frame = undefined
+      // Match the heading position after following a native anchor link.
+      const offset =
+        parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) +
+        parseFloat(getComputedStyle(sections[0].heading).scrollMarginTop)
+      let current = sections[0]
+
+      for (const section of sections) {
+        if (section.heading.getBoundingClientRect().top > offset + 1) break
+        current = section
+      }
+
+      if (active === current.link) return
+      active?.removeAttribute("aria-current")
+      current.link.setAttribute("aria-current", "location")
+      active = current.link
+      if (current === sections[0]) contents.scrollTop = 0
+
+      const bounds = contents.getBoundingClientRect()
+      const linkBounds = active.getBoundingClientRect()
+      if (linkBounds.top < bounds.top) {
+        contents.scrollTop += linkBounds.top - bounds.top
+      } else if (linkBounds.bottom > bounds.bottom) {
+        contents.scrollTop += linkBounds.bottom - bounds.bottom
+      }
+    }
+
+    function scheduleUpdate() {
+      if (frame === undefined) frame = window.requestAnimationFrame(update)
+    }
+
+    window.addEventListener("scroll", scheduleUpdate, { passive: true })
+    window.addEventListener("resize", scheduleUpdate)
+    window.addEventListener("pageshow", scheduleUpdate)
+    update()
+  }
+</script>
