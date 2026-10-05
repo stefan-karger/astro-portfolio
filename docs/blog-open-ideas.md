@@ -1,6 +1,6 @@
 # Offene Blog-Erweiterungen
 
-Stand: 2026-10-02. Diese Ideen sind zurückgestellt und noch nicht zur Umsetzung eingeplant.
+Stand: 2026-10-05. Die offenen Ideen sind zurückgestellt und noch nicht zur Umsetzung eingeplant.
 
 ## MDX bei konkretem Komponentenbedarf
 
@@ -8,11 +8,12 @@ MDX ergänzen, sobald ein Beitrag Astro-Komponenten direkt im Text benötigt.
 Dann die Astro-Integration und den Collection-Loader um `.mdx` erweitern.
 Normale Beiträge können weiterhin als `.md` geschrieben werden.
 
-## Mermaid-Diagramme
+## Mermaid-Diagramme, umgesetzt
 
-Mermaid bei einem konkreten Diagrammbeispiel integrieren. Ein Mermaid-Fence rendert
-derzeit kein Diagramm. Vor der Umsetzung den Renderingweg und den erforderlichen
-Browseranteil festlegen.
+Mermaid-Fences ergänzen die vorhandenen Shiki-Codeblöcke. Die Bibliothek wird auf
+Artikeln mit Diagrammen dynamisch geladen. Die Definition bleibt aufklappbar und
+kopierbar. Der zweite Teil von "Astro für Entwicklerblogs" dokumentiert die
+Integration und zeigt Flowcharts, Sequenz-, Zustands- und ER-Diagramme.
 
 ## Dark Mode für die Website
 

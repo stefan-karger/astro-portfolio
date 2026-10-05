@@ -36,7 +36,9 @@ export default defineConfig({
 
   redirects: {
     "/portfolio": "/fotografie",
-    "/en/portfolio": "/en/photography"
+    "/en/portfolio": "/en/photography",
+    "/blog/astro-shiki-codebloecke": "/blog/astro-fuer-entwicklerblogs-shiki-twoslash",
+    "/en/blog/astro-shiki-codebloecke": "/en/blog/astro-fuer-entwicklerblogs-shiki-twoslash"
   },
 
   i18n: {

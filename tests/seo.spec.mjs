@@ -88,7 +88,12 @@ async function readPage(file, directory = dist) {
 }
 
 const files = await htmlFiles(dist)
-const articles = files.filter((file) => /^(?:en\/)?blog\/.+\/index\.html$/.test(file))
+const redirectFiles = new Set(
+  Object.keys(config.redirects).map((route) => `${route.replace(/^\//, "")}/index.html`)
+)
+const articles = files.filter(
+  (file) => /^(?:en\/)?blog\/.+\/index\.html$/.test(file) && !redirectFiles.has(file)
+)
 const regularPages = await Promise.all(
   [...fixedPages, ...articles].map(async (file) => ({ file, ...(await readPage(file)) }))
 )
@@ -198,6 +203,94 @@ function checkArticle(data, slug, language, title, description, date) {
   assert.equal(data.meta.get("article:published_time"), date)
 }
 
+test("Public pages preserve the brand while both homepages identify the person in JSON-LD", async () => {
+  for (const data of regularPages.filter(({ file }) => !legal.has(file))) {
+    const publicHtml = data.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    assert.ok(
+      !publicHtml.includes(siteConfig.name.legal),
+      `${data.file} keeps the full name out of user-facing HTML and metadata`
+    )
+  }
+  const people = []
+  for (const file of ["index.html", "en/index.html"]) {
+    const data = regularPages.find((item) => item.file === file)
+    assert.equal(
+      data.title,
+      `${siteConfig.name.public} - ${translations[data.lang].home.metaTitle}`
+    )
+    assert.ok(data.meta.get("description").includes(siteConfig.name.public), file)
+    assert.equal(
+      tags(data.html, "img")[0].alt,
+      translations[data.lang].home.hero.imageAlt(siteConfig.name.public)
+    )
+    const scripts = [
+      ...data.html.matchAll(
+        /<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi
+      )
+    ]
+    assert.equal(scripts.length, 1, file)
+    const graph = JSON.parse(scripts[0][1])
+    assert.equal(graph["@context"], "https://schema.org")
+    const person = graph["@graph"].find((item) => item["@type"] === "Person")
+    const profile = graph["@graph"].find((item) => item["@type"] === "ProfilePage")
+    const website = graph["@graph"].find((item) => item["@type"] === "WebSite")
+    assert.equal(person.name, siteConfig.name.legal)
+    assert.equal(person.alternateName, siteConfig.name.public)
+    assert.deepEqual(
+      person.sameAs,
+      siteConfig.socialLinks.map(({ href }) => href)
+    )
+    assert.equal(profile.url, data.meta.get("og:url"))
+    assert.equal(profile.name, data.title)
+    assert.equal(profile.description, data.meta.get("description"))
+    assert.equal(profile.inLanguage, data.lang)
+    assert.equal(profile.mainEntity["@id"], person["@id"])
+    assert.equal(profile.isPartOf["@id"], website["@id"])
+    assert.equal(website.publisher["@id"], person["@id"])
+    assert.equal(website.name, siteConfig.name.public)
+    assert.equal(
+      website.alternateName,
+      undefined,
+      "The full name is not an alternative website brand"
+    )
+    const image = new URL(person.image)
+    assert.equal(image.origin, site.origin)
+    await readFile(path.join(dist, decodeURIComponent(image.pathname)))
+    people.push(person)
+  }
+  assert.deepEqual(people[0], people[1], "Both languages identify the same person")
+  for (const data of regularPages.filter(
+    (item) => !["index.html", "en/index.html"].includes(item.file)
+  )) {
+    assert.ok(
+      !data.html.includes('type="application/ld+json"'),
+      `${data.file} is not a profile page`
+    )
+  }
+})
+
+test("The sitemap lists each indexable canonical once and robots.txt advertises it", async () => {
+  const xml = await readFile(path.join(dist, "sitemap.xml"), "utf8")
+  assert.ok(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>'))
+  assert.ok(xml.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'))
+  const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => decode(match[1]))
+  const expected = [
+    ...new Set(
+      regularPages.filter(({ file }) => !legal.has(file)).map(({ meta }) => meta.get("og:url"))
+    )
+  ].sort()
+  assert.deepEqual(
+    urls.sort(),
+    expected,
+    "Exclude noindex pages, redirects and duplicate article interfaces"
+  )
+  const robots = await readFile(path.join(dist, "robots.txt"), "utf8")
+  assert.equal(
+    robots,
+    `User-agent: *\nAllow: /\n\nSitemap: ${new URL("/sitemap.xml", site).href}\n`
+  )
+})
+
 test("Published articles preserve their content language and canonical across both interfaces", () => {
   assert.ok(articles.length > 0, "The blog has published content")
   for (const data of regularPages.filter((data) => articles.includes(data.file))) {
@@ -212,6 +305,76 @@ test("Published articles preserve their content language and canonical across bo
     assert.ok(sibling, `Both interfaces exist for ${slug}`)
     assert.equal(data.meta.get("og:url"), sibling.meta.get("og:url"))
     assert.equal(data.meta.get("og:description"), sibling.meta.get("og:description"))
+  }
+})
+
+test("The Astro series is ordered by part and uses the current interface language", () => {
+  const slugs = [
+    "astro-fuer-entwicklerblogs-shiki-twoslash",
+    "astro-fuer-entwicklerblogs-mermaid-diagramme"
+  ]
+  for (const prefix of ["", "en/"]) {
+    for (const slug of slugs) {
+      const data = regularPages.find((entry) => entry.file === `${prefix}blog/${slug}/index.html`)
+      assert.ok(data)
+      const label = translations[data.lang].blog.series
+      const navigation = data.html.match(
+        new RegExp(`<nav\\b[^>]*aria-label="${label}"[^>]*>([\\s\\S]*?)<\\/nav>`)
+      )?.[1]
+      assert.ok(navigation, "The series has its own navigation")
+      assert.deepEqual(
+        tags(navigation, "li").map((li) => li["data-series-part"]),
+        ["1", "2"]
+      )
+      const links = tags(navigation, "a")
+      assert.deepEqual(
+        links.map((link) => link.href),
+        slugs.map((id) => `/${prefix}blog/${id}/`)
+      )
+      const current = links.filter((link) => link["aria-current"] === "page")
+      assert.equal(current.length, 1)
+      assert.equal(current[0].href, `/${prefix}blog/${slug}/`)
+    }
+  }
+})
+
+test("The Mermaid article builds five diagrams with source available before scripts execute", () => {
+  for (const prefix of ["", "en/"]) {
+    const data = regularPages.find(
+      (entry) =>
+        entry.file === `${prefix}blog/astro-fuer-entwicklerblogs-mermaid-diagramme/index.html`
+    )
+    assert.equal(
+      (data.html.match(/<figure class="code-block mermaid-block" data-mermaid>/g) ?? []).length,
+      5
+    )
+    assert.equal((data.html.match(/<details class="mermaid-source" open>/g) ?? []).length, 5)
+    const definitions = tags(data.html, "button")
+      .map((button) => button["data-copy-code"])
+      .filter((source) =>
+        /^(?:flowchart|sequenceDiagram|stateDiagram-v2|erDiagram)\b/.test(source ?? "")
+      )
+    assert.equal(definitions.length, 5)
+    assert.ok(
+      definitions.every((source) => source.includes("accTitle:") && source.includes("accDescr:"))
+    )
+  }
+})
+
+test("Old blog URLs redirect to the renamed first series part", async () => {
+  for (const prefix of ["", "en/"]) {
+    const html = await readFile(
+      path.join(dist, `${prefix}blog/astro-shiki-codebloecke/index.html`),
+      "utf8"
+    )
+    const target = `/${prefix}blog/astro-fuer-entwicklerblogs-shiki-twoslash`
+    assert.ok(
+      tags(html, "meta").some(
+        (meta) => meta["http-equiv"] === "refresh" && meta.content === `0;url=${target}`
+      )
+    )
+    assert.ok(tags(html, "a").some((link) => link.href === target))
+    assert.ok(!articles.includes(`${prefix}blog/astro-shiki-codebloecke/index.html`))
   }
 })
 
@@ -281,6 +444,13 @@ test("An isolated build checks English articles, drafts, escaping and invalid me
       })
     await build()
     const fixtureDist = path.join(temporary, "dist")
+    const sitemap = await readFile(path.join(fixtureDist, "sitemap.xml"), "utf8")
+    const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) =>
+      decode(match[1])
+    )
+    assert.ok(sitemapUrls.includes(new URL("/en/blog/__seo-english/", site).href))
+    assert.ok(!sitemapUrls.includes(new URL("/blog/__seo-english/", site).href))
+    assert.ok(!sitemap.includes("__seo-draft"), "Drafts are excluded from the sitemap")
     for (const prefix of ["", "en/"]) {
       const article = await readPage(`${prefix}blog/__seo-english/index.html`, fixtureDist)
       checkArticle(article, "__seo-english", "en", title, description, "2026-10-01T00:00:00.000Z")
@@ -326,6 +496,16 @@ test("An isolated build checks English articles, drafts, escaping and invalid me
       await writeFile(fixturePage, template(badTitle, badDescription, canonical))
       await assert.rejects(build, (error) => message.test(`${error.stdout}\n${error.stderr}`))
     }
+    await writeFile(fixturePage, template(title, description, "/fotografie/"))
+    const seriesPost = post.replace(
+      "draft: false",
+      'draft: false\nseries:\n  name: "Test series"\n  part: 1'
+    )
+    await writeFile(path.join(content, "__seo-english.md"), seriesPost)
+    await writeFile(path.join(content, "__seo-older.md"), seriesPost)
+    await assert.rejects(build, (error) =>
+      /Duplicate part 1 in series "Test series"/.test(`${error.stdout}\n${error.stderr}`)
+    )
   } finally {
     const resolved = path.resolve(temporary)
     assert.equal(path.dirname(resolved), path.resolve(tmpdir()))

@@ -175,7 +175,12 @@ export const de = {
     copy: "Code kopieren",
     copied: "Code in die Zwischenablage kopiert",
     copyError: "Kopieren fehlgeschlagen. Bitte den Code markieren und manuell kopieren.",
-    typeInfo: "Typinformationen"
+    typeInfo: "Typinformationen",
+    series: "Artikelserie",
+    part: "Teil",
+    mermaidSource: "Quelltext anzeigen",
+    mermaidDiagram: "Diagramm",
+    mermaidError: "Das Diagramm konnte nicht geladen werden. Der Quelltext ist weiterhin verfügbar."
   },
 
   prototype: {

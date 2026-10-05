@@ -1,16 +1,23 @@
 ---
-title: "Astro und Markdown für Entwicklerblogs"
-description: "Vom Setup bis zum Praxisbeispiel: So entsteht dieser Blog mit Astro-Collections, Markdown und Codeblöcken mit Shiki und Twoslash."
+title: "Astro für Entwicklerblogs: Shiki & Twoslash"
+description: "Teil 1 der Serie: So entsteht dieser Blog mit Astro-Collections, Markdown und Codeblöcken mit Shiki und Twoslash. Vom Setup bis zum Praxisbeispiel."
 pubDate: 2026-10-02
 language: de
 tags: "Astro, Markdown, Shiki, TypeScript"
 draft: false
+series:
+  name: "Astro für Entwicklerblogs"
+  part: 1
 ---
 
 Ein Entwicklerblog braucht gut lesbare Texte und Code, den man verstehen und
 übernehmen kann. Für diesen Blog schreibe ich Beiträge in Markdown. Astro erzeugt
 daraus die Seiten; Shiki übernimmt die Syntaxfarben und Twoslash ergänzt bei Bedarf
 TypeScript-Typinformationen.
+
+Dieser Beitrag ist der erste Teil der Serie "Astro für Entwicklerblogs".
+[Teil 2 ergänzt Mermaid-Diagramme](/blog/astro-fuer-entwicklerblogs-mermaid-diagramme/)
+für Architektur und Abläufe und zeigt, wie sie die Gestaltung dieses Blogs übernehmen.
 
 Hier zeige ich den Stack, die Einrichtung im Projekt und praktische Beispiele aus
 einem Blog: Entwürfe vor der Veröffentlichung filtern, Release-Notizen erzeugen und
@@ -79,7 +86,7 @@ Die Dateien für Inhalte, Darstellung und Codeverarbeitung liegen getrennt:
 src/
   content.config.ts
   content/blog/
-    astro-shiki-codebloecke.md
+    astro-fuer-entwicklerblogs-shiki-twoslash.md
   pages/blog/
     index.astro
     [...slug].astro

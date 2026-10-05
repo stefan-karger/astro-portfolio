@@ -9,6 +9,7 @@
   --color-ink-hover: #3d3d39;
   --color-muted: #62625d;
   --color-rule: #d5d5d0;
+  --color-code: oklch(0.98 0 0);
   --spacing-header: 3.5rem;
   --text-display: clamp(2.5rem, 5vw, 4.25rem);
   --text-page-title: clamp(2.25rem, calc(3vw + 1rem), 3.5rem);
@@ -144,14 +145,85 @@
     @apply rounded bg-ink/5 px-1.5 py-0.5 font-mono text-[0.875em];
   }
 
+  .code-block {
+    @apply relative my-6 min-w-0;
+    border-radius: 1.125rem;
+    background-color: var(--color-code);
+  }
+
+  .code-block-header {
+    @apply flex min-h-11 items-center justify-between gap-3 pr-1 pl-4;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-rule) 30%, transparent);
+  }
+
+  .code-block-title {
+    @apply flex min-w-0 items-center gap-2 font-mono text-xs leading-5 text-ink sm:text-[0.8125rem];
+  }
+
+  .code-block-filename {
+    @apply min-w-0 py-2.5;
+    overflow-wrap: anywhere;
+  }
+
+  .code-block-file-icon {
+    @apply size-4 shrink-0 text-muted;
+  }
+
+  .code-block [data-copy-code] {
+    background-color: var(--color-code);
+  }
+
   .code-block .astro-code {
-    @apply m-0 max-w-full overflow-x-auto rounded-lg px-4 pb-4 font-mono text-sm leading-6;
+    @apply m-0 max-w-full overflow-x-auto px-4 pb-4 font-mono text-sm leading-6;
+    border-radius: inherit;
     background-color: transparent !important;
     overflow-wrap: normal;
   }
 
   .code-block .astro-code > code {
     @apply block min-w-max;
+  }
+
+  .mermaid-diagram {
+    @apply overflow-x-auto p-4 sm:p-6;
+  }
+
+  .mermaid-diagram > svg {
+    display: block;
+    width: var(--mermaid-width);
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .mermaid-source > summary {
+    @apply flex min-h-11 cursor-pointer list-none items-center gap-2 px-4 text-sm text-muted;
+    border-top: 1px solid color-mix(in srgb, var(--color-rule) 30%, transparent);
+  }
+
+  .mermaid-source > summary::before {
+    content: "";
+    width: 0.4rem;
+    height: 0.4rem;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(-45deg);
+  }
+
+  .mermaid-source[open] > summary::before {
+    transform: rotate(45deg);
+  }
+
+  .mermaid-source > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  html[lang="en"] .mermaid-label-de,
+  html:not([lang="en"]) .mermaid-label-en {
+    display: none;
+  }
+
+  .blog-content .mermaid-error {
+    @apply m-0 px-4 py-3 text-sm text-muted;
   }
 
   .code-block .line {

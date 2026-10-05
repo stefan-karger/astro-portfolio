@@ -3,6 +3,7 @@ import { render, type CollectionEntry } from "astro:content"
 
 import BaseLayout from "@/layouts/base-layout.astro"
 import CodeBlockControls from "@/components/blog/code-block-controls.astro"
+import MermaidDiagrams from "@/components/blog/mermaid-diagrams.astro"
 import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
@@ -26,6 +27,17 @@ const index = posts.findIndex((entry) => entry.id === post.id)
 const previous = posts[index + 1]
 const next = index > 0 ? posts[index - 1] : undefined
 const contents = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
+const series = post.data.series
+const seriesPosts = series
+  ? posts
+      .filter(
+        (entry) =>
+          !entry.data.draft &&
+          entry.data.language === post.data.language &&
+          entry.data.series?.name === series.name
+      )
+      .sort((a, b) => a.data.series!.part - b.data.series!.part)
+  : []
 ---
 
 <BaseLayout
@@ -53,10 +65,15 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
           {t.blog.language[post.data.language]}
         </span>
         {post.data.draft && <span>{t.blog.draft}</span>}
+        {series && (
+          <span>
+            {t.blog.part} {series.part}
+          </span>
+        )}
       </div>
       <h1
         id="post-title"
-        class="mt-4 font-mono text-page-title leading-[1.15] font-bold tracking-[-0.035em] wrap-break-word"
+        class="mt-4 font-mono text-[1.75rem] leading-[1.15] font-bold tracking-[-0.035em] wrap-break-word sm:text-page-title"
         lang={post.data.language}
       >
         {post.data.title}
@@ -77,7 +94,30 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
         </ul>
       )}
     </header>
+    {series && seriesPosts.length > 0 && (
+      <nav class="mt-8 max-w-[85ch] border-y border-rule/60 py-3" aria-label={t.blog.series}>
+        <ol class="flex flex-wrap gap-x-8 gap-y-2 text-sm">
+          {seriesPosts.map((entry) => (
+            <li data-series-part={entry.data.series!.part}>
+              <a
+                class="text-link inline-flex min-h-11 items-center gap-3 aria-[current]:font-semibold"
+                href={postUrl(locale, entry.id)}
+                aria-current={entry.id === post.id ? "page" : undefined}
+              >
+                <span class="shrink-0 text-muted">
+                  {t.blog.part} {entry.data.series!.part}
+                </span>
+                <span lang={entry.data.language}>
+                  {entry.data.title.replace(`${series.name}: `, "")}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
     <CodeBlockControls locale={locale} />
+    <MermaidDiagrams locale={locale} />
     <div class="mt-12 grid min-w-0 gap-10 xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-14">
       {contents.length > 0 && (
         <aside class="min-w-0 xl:col-start-2 xl:row-start-1">
@@ -91,7 +131,7 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
               {contents.map((heading) => (
                 <li class:list={[heading.depth === 3 && "pl-3"]}>
                   <a
-                    class="inline-block py-1 no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:text-ink"
+                    class="inline-block py-1 no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:font-bold aria-[current]:text-ink"
                     href={`#${heading.slug}`}
                   >
                     {heading.text}

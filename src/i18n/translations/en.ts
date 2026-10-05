@@ -174,7 +174,12 @@ export const en = {
     copy: "Copy code",
     copied: "Code copied to clipboard",
     copyError: "Copy failed. Please select the code and copy it manually.",
-    typeInfo: "Type information"
+    typeInfo: "Type information",
+    series: "Article series",
+    part: "Part",
+    mermaidSource: "Show source",
+    mermaidDiagram: "Diagram",
+    mermaidError: "The diagram could not be loaded. Its source is still available."
   },
 
   prototype: {

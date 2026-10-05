@@ -20,7 +20,13 @@ const blog = defineCollection({
             .filter(Boolean)
         )
       ]),
-    draft: z.boolean().default(false)
+    draft: z.boolean().default(false),
+    series: z
+      .object({
+        name: z.string().trim().min(1),
+        part: z.number().int().positive()
+      })
+      .optional()
   })
 })
 

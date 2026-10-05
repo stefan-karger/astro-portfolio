@@ -1,0 +1,157 @@
+---
+import type { Locale } from "@/i18n/types"
+import { getTranslations } from "@/i18n/translations"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const t = getTranslations(locale)
+---
+
+<div
+  id="mermaid-controls"
+  hidden
+  data-locale={locale}
+  data-diagram={t.blog.mermaidDiagram}
+  data-error={t.blog.mermaidError}
+></div>
+
+<script>
+  const controls = document.querySelector<HTMLElement>("#mermaid-controls")
+  const blocks = document.querySelectorAll<HTMLElement>("[data-mermaid]")
+
+  async function renderDiagrams() {
+    if (!controls || !blocks.length) return
+
+    function fail(block: HTMLElement) {
+      const message = block.querySelector<HTMLElement>(".mermaid-error")
+      if (message) {
+        message.textContent = controls!.dataset.error ?? ""
+        message.lang = controls!.dataset.locale ?? ""
+        message.hidden = false
+      }
+      const details = block.querySelector("details")
+      if (details) details.open = true
+    }
+
+    try {
+      const [{ default: mermaid }] = await Promise.all([import("mermaid"), document.fonts.ready])
+      const style = getComputedStyle(document.documentElement)
+      const code = blocks[0].querySelector<HTMLElement>(".astro-code")
+      if (!code) throw new Error("Missing Mermaid source.")
+      const fontSize = getComputedStyle(code).fontSize
+      const canvas = document.createElement("canvas")
+      canvas.width = canvas.height = 1
+      const context = canvas.getContext("2d")
+      if (!context) throw new Error("Could not resolve Mermaid theme colors.")
+
+      // Mermaid's theme calculations require hex, including for our OKLCH code color.
+      function color(name: string) {
+        context!.fillStyle = style.getPropertyValue(name).trim()
+        context!.fillRect(0, 0, 1, 1)
+        return `#${Array.from(context!.getImageData(0, 0, 1, 1).data)
+          .slice(0, 3)
+          .map((value) => value.toString(16).padStart(2, "0"))
+          .join("")}`
+      }
+
+      const paper = color("--color-paper")
+      const ink = color("--color-ink")
+      const muted = color("--color-muted")
+      const rule = color("--color-rule")
+      const surface = color("--color-code")
+      const appearance = { theme: "base", look: "classic", useMaxWidth: false } as const
+
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+        suppressErrorRendering: true,
+        htmlLabels: false,
+        theme: "base",
+        look: "classic",
+        fontFamily: style.getPropertyValue("--font-mono").trim(),
+        fontSize: parseFloat(fontSize),
+        themeVariables: {
+          fontFamily: style.getPropertyValue("--font-mono").trim(),
+          fontSize,
+          background: surface,
+          primaryColor: paper,
+          primaryTextColor: ink,
+          primaryBorderColor: muted,
+          secondaryColor: surface,
+          secondaryTextColor: ink,
+          secondaryBorderColor: muted,
+          tertiaryColor: paper,
+          tertiaryTextColor: ink,
+          tertiaryBorderColor: muted,
+          lineColor: muted,
+          textColor: ink,
+          mainBkg: paper,
+          nodeBorder: muted,
+          clusterBkg: surface,
+          clusterBorder: rule,
+          edgeLabelBackground: surface,
+          actorBkg: paper,
+          actorBorder: muted,
+          actorTextColor: ink,
+          actorLineColor: muted,
+          signalColor: muted,
+          signalTextColor: ink,
+          labelBoxBkgColor: paper,
+          labelBoxBorderColor: muted,
+          labelTextColor: ink,
+          loopTextColor: ink,
+          noteBkgColor: surface,
+          noteBorderColor: muted,
+          noteTextColor: ink,
+          activationBkgColor: surface,
+          activationBorderColor: muted,
+          sequenceNumberColor: paper,
+          attributeBackgroundColorOdd: paper,
+          attributeBackgroundColorEven: surface
+        },
+        flowchart: {
+          ...appearance,
+          curve: "linear",
+          subGraphTitleMargin: { top: 12, bottom: 12 }
+        },
+        sequence: appearance,
+        state: appearance,
+        er: appearance
+      })
+
+      for (const [index, block] of Array.from(blocks).entries()) {
+        const target = block.querySelector<HTMLElement>(".mermaid-diagram")
+        const source = block.querySelector<HTMLButtonElement>("[data-copy-code]")?.dataset.copyCode
+        if (!target || source === undefined) continue
+
+        try {
+          const { svg } = await mermaid.render(`mermaid-${index + 1}`, source)
+          target.innerHTML = svg
+          const diagram = target.querySelector("svg")
+          if (!diagram) throw new Error("Mermaid did not return an SVG.")
+          const width = diagram.viewBox.baseVal.width
+          target.style.setProperty("--mermaid-width", `${width}px`)
+          target.setAttribute("role", "region")
+          target.setAttribute(
+            "aria-label",
+            diagram.querySelector("title")?.textContent || controls.dataset.diagram || ""
+          )
+          target.tabIndex = 0
+          target.hidden = false
+          const details = block.querySelector("details")
+          if (details && !details.contains(document.activeElement)) details.open = false
+        } catch (error) {
+          fail(block)
+          console.warn("Could not render Mermaid diagram.", error)
+        }
+      }
+    } catch (error) {
+      blocks.forEach(fail)
+      console.warn("Could not load Mermaid diagrams.", error)
+    }
+  }
+
+  void renderDiagrams()
+</script>
