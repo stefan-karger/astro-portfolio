@@ -20,6 +20,7 @@
     "validate": "pnpm format:check && pnpm lint && pnpm test:blog && pnpm check && pnpm build && pnpm test:seo"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.19",
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
@@ -43,6 +44,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "fast-xml-parser": "^5.11.2",
+    "fast-xml-validator": "^1.4.2",
     "prettier": "^3.9.8",
     "prettier-plugin-astro": "^1.0.1",
     "prettier-plugin-tailwindcss": "^0.8.1",

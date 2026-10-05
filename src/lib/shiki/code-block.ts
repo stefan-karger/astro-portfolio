@@ -118,7 +118,7 @@ export function transformerCodeBlock(): ShikiTransformer {
       const mermaid = this.options.lang === "mermaid"
       const meta = this.options.meta?.__raw ?? ""
       const titleMatch = meta.match(/(?:^|\s)title="([^"]*)"(?=\s|$)/)
-      const title = titleMatch?.[1]?.trim()
+      const title = titleMatch?.[1]?.trim() || (mermaid ? "Mermaid" : undefined)
       const showLineNumbers = /(?:^|\s)showLineNumbers(?=\s|$)/.test(
         meta.replace(titleMatch?.[0] ?? "", "")
       )
@@ -222,27 +222,31 @@ export function transformerCodeBlock(): ShikiTransformer {
       }
       preparePopups(code)
 
-      const header =
-        title || mermaid
-          ? element("div", { className: "code-block-header" }, [
-              element("span", { className: "code-block-title" }, [
-                ...fileIcon(title ?? ""),
-                element("span", { className: "code-block-filename" }, [
-                  { type: "text", value: title ?? "Mermaid" }
-                ])
-              ]),
-              copy
-            ])
-          : copy
+      const header = title
+        ? element("div", { className: "code-block-header" }, [
+            element("span", { className: "code-block-title" }, [
+              ...fileIcon(title),
+              element("span", { className: "code-block-filename" }, [
+                { type: "text", value: title }
+              ])
+            ]),
+            copy
+          ])
+        : copy
 
-      if (!title && !mermaid)
+      if (!title)
         copy.properties.className = `${copy.properties.className} absolute right-1 top-1 z-10`
-      this.addClassToHast(pre, title || mermaid ? "pt-4" : "pt-4 pr-16")
+      this.addClassToHast(pre, title ? "pt-4" : "pt-4 pr-16")
       if (mermaid) {
         root.children = [
           element("figure", { className: "code-block mermaid-block", dataMermaid: true }, [
             header,
-            element("div", { className: "mermaid-diagram", hidden: true }),
+            element("div", {
+              className: "mermaid-diagram",
+              hidden: true,
+              role: "region",
+              tabIndex: 0
+            }),
             element("p", { className: "mermaid-error", hidden: true, role: "status" }),
             element("details", { className: "mermaid-source", open: true }, [
               element("summary", {}, [

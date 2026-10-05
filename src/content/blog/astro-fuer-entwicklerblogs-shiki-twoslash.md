@@ -1,7 +1,8 @@
 ---
 title: "Astro für Entwicklerblogs: Shiki & Twoslash"
 description: "Teil 1 der Serie: So entsteht dieser Blog mit Astro-Collections, Markdown und Codeblöcken mit Shiki und Twoslash. Vom Setup bis zum Praxisbeispiel."
-pubDate: 2026-10-02
+pubDate: "2026-10-02"
+updatedDate: "2026-10-05"
 language: de
 tags: "Astro, Markdown, Shiki, TypeScript"
 draft: false
@@ -192,33 +193,44 @@ Das verwendete Theme ist hell. Shiki erzeugt bereits zusätzliche Farbvariablen 
 ### Die Content Collection anlegen
 
 Die Collection lädt `.md`-Dateien aus `src/content/blog`. Ihr Schema prüft das
-Frontmatter und wandelt Veröffentlichungsdaten in `Date`-Objekte um:
+Frontmatter, akzeptiert Kalenderdaten als Strings in `YYYY-MM-DD` und wandelt sie
+in `Date`-Objekte mit UTC-Mitternacht um:
 
 ```ts title="src/content.config.ts"
 import { defineCollection } from "astro:content"
 import { glob } from "astro/loaders"
 import { z } from "astro/zod"
 
+const date = z.iso
+  .date({ error: 'Expected a valid date string in "YYYY-MM-DD"; quote dates in frontmatter.' })
+  .transform((value) => new Date(`${value}T00:00:00.000Z`))
+
 const blog = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
-  schema: z.object({
-    title: z.string().trim().min(1),
-    description: z.string().trim().min(1),
-    pubDate: z.coerce.date(),
-    language: z.enum(["de", "en"]),
-    tags: z
-      .string()
-      .default("")
-      .transform((value) => [
-        ...new Set(
-          value
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean)
-        )
-      ]),
-    draft: z.boolean().default(false)
-  })
+  schema: z
+    .object({
+      title: z.string().trim().min(1),
+      description: z.string().trim().min(1),
+      pubDate: date,
+      updatedDate: date.optional(),
+      language: z.enum(["de", "en"]),
+      tags: z
+        .string()
+        .default("")
+        .transform((value) => [
+          ...new Set(
+            value
+              .split(",")
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          )
+        ]),
+      draft: z.boolean().default(false)
+    })
+    .refine(({ pubDate, updatedDate }) => !updatedDate || updatedDate >= pubDate, {
+      path: ["updatedDate"],
+      message: "updatedDate must be on or after pubDate."
+    })
 })
 
 export const collections = { blog }
@@ -230,7 +242,7 @@ Ein neuer Beitrag beginnt beispielsweise so:
 ---
 title: "Veröffentlichungsdaten zuverlässig formatieren"
 description: "Warum eine feste Zeitzone Datumsangaben im Blog stabil hält."
-pubDate: 2026-10-02
+pubDate: "2026-10-02"
 language: de
 tags: "Astro, TypeScript, Astro"
 draft: false
@@ -238,6 +250,11 @@ draft: false
 
 Datumsangaben sollen für alle Leser denselben Veröffentlichungstag zeigen.
 ```
+
+Die Anführungszeichen verhindern, dass der YAML-Parser den Wert vor der
+Validierung in ein `Date`-Objekt umwandelt. Ungültige Kalenderdaten werden
+abgelehnt. Ein optionales `updatedDate` folgt derselben Schreibweise und darf
+nicht vor `pubDate` liegen. Es wird bei einer inhaltlichen Aktualisierung gesetzt.
 
 Aus den Tags werden hier `Astro` und `TypeScript`: Leerzeichen, leere Einträge und
 Dopplungen werden entfernt. Der Dateipfad bestimmt den Slug. Unterordner sind
@@ -421,8 +438,8 @@ unabhängig voneinander geprüft. Copy enthält die beiden Aufrufe als Lehrbeisp
 aber weder das versteckte Setup noch die Diagnose.
 
 Die Content Collection erledigt eine vergleichbare Umwandlung beim Laden des
-Frontmatters bereits mit `z.coerce.date()`. So erhält das Layout geprüfte Daten,
-während der Beitrag selbst bei einfachem Markdown bleibt.
+Frontmatters nach der Prüfung mit `z.iso.date()`. So erhält das Layout geprüfte
+Daten, während der Beitrag selbst bei einfachem Markdown bleibt.
 
 Vor dem Veröffentlichen prüfe ich mit `pnpm test:blog` die Codeverarbeitung und mit
 `pnpm check` und `pnpm build` das Projekt. Im Browser teste ich Copy, Sprunglinks und

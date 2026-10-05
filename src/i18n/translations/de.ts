@@ -1,3 +1,5 @@
+import type { CareerId } from "@/lib/career"
+
 export const de = {
   home: {
     metaTitle: "Softwareentwicklung & Fotografie",
@@ -51,11 +53,9 @@ export const de = {
   projects: {
     title: "Projekte",
     solid: {
-      name: "SolidUI",
       kind: "Open Source",
       description:
         "Ein inoffizieller Port von shadcn/ui für SolidJS: anpassbare UI-Komponenten auf Basis von Kobalte, Corvu und Tailwind CSS. Dazu gehören eine eigene Dokumentation und ein CLI-Tool, mit dem sich die Komponenten direkt in bestehende Projekte übernehmen lassen.",
-      website: "solid-ui.com",
       source: "GitHub"
     },
     lager: {
@@ -63,53 +63,51 @@ export const de = {
       kind: "Projekt bei Junksplayground",
       description:
         "Eine eigens entwickelte Schnittstelle, die JTL-Wawi und Cardmarket miteinander verbindet. Sie gleicht Bestände und Bestellungen automatisiert ab und aktualisiert die Verkaufspreise eigenständig anhand individueller Regeln und aktueller Marktdaten.",
-      metrics: [
-        { value: "≈200.000", label: "Artikelvarianten" },
-        { value: "≈4.000.000", label: "Einzelartikel im Bestand" },
-        { value: "≈40.000", label: "Cardmarket-Bestellungen seit 2024" },
-        {
-          value: ">100.000",
-          label: "Preisabgleiche am Tag"
-        }
-      ]
+      metrics: {
+        variants: "Artikelvarianten",
+        stock: "Einzelartikel im Bestand",
+        orders: (since: number) => `Cardmarket-Bestellungen seit ${since}`,
+        priceChecksPerDay: "Preisabgleiche am Tag"
+      }
     }
   },
 
   career: {
     title: "Werdegang",
+    present: "heute",
     jobs: [
       {
+        id: "rhein" as const satisfies CareerId,
         company: "BMW Rhein Gruppe",
         url: "https://www.rhein-bmw.de/",
         role: "Senior Softwareentwickler",
-        period: "2014 — heute",
         type: "Hauptberuflich",
         summary:
           "Eigenverantwortliche Konzeption, Entwicklung und langfristige Betreuung interner Software für Vertrieb, Service und IT. Ein Schwerpunkt ist der Aufbau einer zentralen Webanwendung, die Informationen und Funktionen bestehender Fachanwendungen schrittweise zusammenführt."
       },
       {
+        id: "junksplayground" as const satisfies CareerId,
         company: "Junksplayground",
         url: "https://junksplayground.de/",
         role: "Softwareentwickler & technischer Berater",
-        period: "2022 — heute",
         type: "Nebenberuflich",
         summary:
           "Entwicklung und langfristige Betreuung einer Schnittstelle zwischen JTL-Wawi und Cardmarket für automatisierte Bestands-, Bestell- und Preisabgleiche. Ergänzend technische Beratung der Geschäftsleitung bei Automatisierungen, Systemarchitektur und neuen Softwareprojekten."
       },
       {
+        id: "paragon" as const satisfies CareerId,
         company: "PARAGON Systemhaus GmbH",
-        role: "Softwareentwickler",
-        period: "2013"
+        role: "Softwareentwickler"
       },
       {
+        id: "huk" as const satisfies CareerId,
         company: "HUK-COBURG",
-        role: "Softwareentwickler",
-        period: "2011 — 2013"
+        role: "Softwareentwickler"
       },
       {
+        id: "schwaebischHall" as const satisfies CareerId,
         company: "Bausparkasse Schwäbisch Hall",
-        role: "Duales Studium Wirtschaftsinformatik (B.Sc.)",
-        period: "2008 — 2011"
+        role: "Duales Studium Wirtschaftsinformatik (B.Sc.)"
       }
     ]
   },
@@ -162,6 +160,8 @@ export const de = {
   },
 
   blog: {
+    author: "Von",
+    updated: "Aktualisiert am",
     description: "Notizen zu Software, Webentwicklung und den Dingen, die ich dabei lerne.",
     empty: "Noch keine Beiträge veröffentlicht.",
     draft: "Entwurf",

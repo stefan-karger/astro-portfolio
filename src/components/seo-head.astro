@@ -1,8 +1,7 @@
 ---
-import portrait from "@/assets/hero.jpg"
 import { defaultLocale, locales, type Locale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
-import { routeUrl, switchLocale } from "@/i18n/url"
+import { switchLocale } from "@/i18n/url"
 import { siteConfig } from "@/lib/config"
 
 interface Props {
@@ -14,6 +13,7 @@ interface Props {
   article?: {
     language: Locale
     publishedTime: string
+    modifiedTime?: string
   }
   isErrorPage?: boolean
 }
@@ -53,42 +53,6 @@ const metadataLocale = article?.language ?? locale
 const ogLocales = { de: "de_DE", en: "en_US" }
 const image = new URL(siteConfig.socialImage.path, Astro.site).href
 const imageAlt = getTranslations(metadataLocale).seo.imageAlt
-const isHome =
-  Astro.url.pathname.replace(/\/+$/, "") === routeUrl(locale, "home").replace(/\/+$/, "")
-const personId = new URL("/#person", Astro.site).href
-const websiteId = new URL("/#website", Astro.site).href
-const profileData = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": websiteId,
-      url: new URL("/", Astro.site).href,
-      name: siteConfig.name.public,
-      inLanguage: locales,
-      publisher: { "@id": personId }
-    },
-    {
-      "@type": "ProfilePage",
-      "@id": `${canonical.href}#profile`,
-      url: canonical.href,
-      name: title,
-      description,
-      inLanguage: locale,
-      isPartOf: { "@id": websiteId },
-      mainEntity: { "@id": personId }
-    },
-    {
-      "@type": "Person",
-      "@id": personId,
-      name: siteConfig.name.legal,
-      alternateName: siteConfig.name.public,
-      url: new URL("/", Astro.site).href,
-      image: new URL(portrait.src, Astro.site).href,
-      sameAs: siteConfig.socialLinks.map(({ href }) => href)
-    }
-  ]
-}
 ---
 
 <title>{title}</title>
@@ -127,11 +91,8 @@ const profileData = {
     <meta name="twitter:image" content={image} />
     <meta name="twitter:image:alt" content={imageAlt} />
     {article && <meta property="article:published_time" content={article.publishedTime} />}
-    {isHome && !noindex && (
-      <script
-        type="application/ld+json"
-        set:html={JSON.stringify(profileData).replace(/</g, "\\u003c")}
-      ></script>
+    {article?.modifiedTime && (
+      <meta property="article:modified_time" content={article.modifiedTime} />
     )}
   </>
 )}

@@ -10,5 +10,6 @@ import { siteConfig } from "@/lib/config"
   description={getTranslations("de").blog.description}
   mainClass="w-full flex-1"
 >
+  <link slot="head" rel="alternate" type="application/rss+xml" href="/rss.xml" />
   <BlogIndex />
 </BaseLayout>

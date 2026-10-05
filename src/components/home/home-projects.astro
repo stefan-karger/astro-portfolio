@@ -1,11 +1,12 @@
 ---
 import { defaultLocale, locales } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
+import { projects as projectData } from "@/lib/projects"
 
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
 const { projects, links } = getTranslations(locale)
-const solidUrl = "https://www.solid-ui.com/"
-const sourceUrl = "https://github.com/stefan-karger/solid-ui"
+const number = new Intl.NumberFormat(locale)
+const websiteLabel = new URL(projectData.solid.url).hostname.replace(/^www\./, "")
 const recordGridClasses =
   "grid grid-cols-[minmax(12rem,0.7fr)_minmax(0,1.3fr)] gap-[clamp(2rem,6vw,5rem)] max-[45rem]:grid-cols-1 max-[45rem]:gap-4"
 ---
@@ -21,10 +22,13 @@ const recordGridClasses =
       </h2>
     </div>
 
-    <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
+    <article
+      id={projectData.solid.id}
+      class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}
+    >
       <div>
         <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-tight font-bold tracking-[-0.04em]">
-          {projects.solid.name}
+          {projectData.solid.name}
         </h3>
         <p class="mt-3 text-[0.84rem] text-muted">{projects.solid.kind}</p>
       </div>
@@ -34,30 +38,33 @@ const recordGridClasses =
         </p>
         <div class="mt-8 flex flex-wrap gap-x-[1.6rem] gap-y-3">
           <a
-            href={solidUrl}
+            href={projectData.solid.url}
             target="_blank"
             rel="noopener noreferrer"
             class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
           >
-            {projects.solid.website}
+            {websiteLabel}
             <span aria-hidden="true">&nbsp;↗</span>
             <span class="sr-only"> ({links.opensInNewTab})</span>
           </a>
           <a
-            href={sourceUrl}
+            href={projectData.solid.repository}
+            aria-label={`${projects.solid.source} – ${projectData.solid.name} (${links.opensInNewTab})`}
             target="_blank"
             rel="noopener noreferrer"
             class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
           >
             {projects.solid.source}
             <span aria-hidden="true">&nbsp;↗</span>
-            <span class="sr-only"> ({links.opensInNewTab})</span>
           </a>
         </div>
       </div>
     </article>
 
-    <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
+    <article
+      id={projectData.lager.id}
+      class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}
+    >
       <div>
         <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-tight font-bold tracking-[-0.04em]">
           {projects.lager.name}
@@ -69,11 +76,16 @@ const recordGridClasses =
           {projects.lager.description}
         </p>
         <dl class="mt-12 grid grid-cols-2 gap-8 max-[25rem]:grid-cols-1">
-          {projects.lager.metrics.map((metric) => (
+          {projectData.lager.metrics.map((metric) => (
             <div class="@container flex flex-col-reverse">
-              <dt class="m-0 text-[0.84rem] text-muted">{metric.label}</dt>
+              <dt class="m-0 text-[0.84rem] text-muted">
+                {metric.id === "orders"
+                  ? projects.lager.metrics.orders(metric.since)
+                  : projects.lager.metrics[metric.id]}
+              </dt>
               <dd class="m-0 font-mono text-[min(clamp(1.65rem,2.8vw,2.4rem),12cqw)] font-bold tracking-tighter whitespace-nowrap">
-                {metric.value}
+                {metric.comparison}
+                {number.format(metric.value)}
               </dd>
             </div>
           ))}

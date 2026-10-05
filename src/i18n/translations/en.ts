@@ -53,11 +53,9 @@ export const en = {
   projects: {
     title: "Projects",
     solid: {
-      name: "SolidUI",
       kind: "Open source",
       description:
         "An unofficial port of shadcn/ui for SolidJS, with customizable UI components built on Kobalte, Corvu, and Tailwind CSS. It comes with its own documentation and a CLI tool for adding components directly to existing projects.",
-      website: "solid-ui.com",
       source: "GitHub"
     },
     lager: {
@@ -65,50 +63,51 @@ export const en = {
       kind: "Project at Junksplayground",
       description:
         "A custom-built integration connecting JTL-Wawi and Cardmarket. It automatically synchronizes stock and orders and updates selling prices based on custom rules and current market data.",
-      metrics: [
-        { value: "≈200,000", label: "Product variants" },
-        { value: "≈4,000,000", label: "Individual units in stock" },
-        { value: "≈40,000", label: "Cardmarket orders since 2024" },
-        { value: ">100,000", label: "Price evaluation per day" }
-      ]
+      metrics: {
+        variants: "Product variants",
+        stock: "Individual units in stock",
+        orders: (since: number) => `Cardmarket orders since ${since}`,
+        priceChecksPerDay: "Price evaluation per day"
+      }
     }
   },
 
   career: {
     title: "Career",
+    present: "present",
     jobs: [
       {
+        id: "rhein",
         company: "BMW Rhein Gruppe",
         url: "https://www.rhein-bmw.de/",
         role: "Senior Software Engineer",
-        period: "2014 — present",
         type: "Day job",
         summary:
           "Independent design, development, and long-term maintenance of internal software for sales, service, and IT. A key focus is building a central web application that gradually brings together information and functionality from existing business applications."
       },
       {
+        id: "junksplayground",
         company: "Junksplayground",
         url: "https://junksplayground.de/",
         role: "Software Engineer & Technical Advisor",
-        period: "2022 — present",
         type: "Side job",
         summary:
           "Development and long-term maintenance of an integration between JTL-Wawi and Cardmarket for automated inventory, order, and price synchronization. Technical advice to company management on automation, system architecture, and new software projects."
       },
       {
+        id: "paragon",
         company: "PARAGON Systemhaus GmbH",
-        role: "Software Engineer",
-        period: "2013"
+        role: "Software Engineer"
       },
       {
+        id: "huk",
         company: "HUK-COBURG",
-        role: "Software Engineer",
-        period: "2011 — 2013"
+        role: "Software Engineer"
       },
       {
+        id: "schwaebischHall",
         company: "Bausparkasse Schwäbisch Hall",
-        role: "Dual Study Program in Business Information Systems (B.Sc.)",
-        period: "2008 — 2011"
+        role: "Dual Study Program in Business Information Systems (B.Sc.)"
       }
     ]
   },
@@ -161,6 +160,8 @@ export const en = {
   },
 
   blog: {
+    author: "By",
+    updated: "Updated",
     description: "Notes on software, web development and what I learn along the way.",
     empty: "No posts published yet.",
     draft: "Draft",

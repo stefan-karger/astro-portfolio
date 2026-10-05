@@ -1,0 +1,10 @@
+/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+
+/blog/*.md
+  Content-Type: text/markdown; charset=utf-8
+  X-Robots-Tag: noindex, follow
+
+/en/blog/*.md
+  Content-Type: text/markdown; charset=utf-8
+  X-Robots-Tag: noindex, follow

@@ -4,6 +4,10 @@
 >
 > Goal: Make the site easy to discover, understand, navigate, extract from, and operate by humans, search engines, browser agents, and tool-using AI agents.
 
+The repository's [Coding Guidelines](../CODING_GUIDELINES.md) take precedence.
+This guide is a general reference. The [README](../README.md) describes the current
+implementation; [Offene Punkte](offene-punkte.md) lists outstanding project tasks.
+
 ---
 
 ## 1. Purpose
@@ -50,7 +54,7 @@ When asked to review a project against this guide:
 4. Explain why each finding matters.
 5. Reference the affected file, component, route, or pattern.
 6. Prefer the smallest robust fix.
-7. Do not introduce abstractions unless multiple real use cases justify them.
+7. Follow the project's coding guidelines when introducing abstractions. Extract code when a meaningful semantic boundary, contained complexity, or a concrete maintenance benefit outweighs the added indirection.
 8. Do not rewrite working architecture only to make it "more agentic".
 9. Preserve existing UX and visual design unless a change is necessary.
 10. Consider humans, accessibility tools, search engines, and agents together.

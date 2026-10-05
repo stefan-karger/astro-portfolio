@@ -23,12 +23,13 @@ const t = getTranslations(locale)
 
   async function renderDiagrams() {
     if (!controls || !blocks.length) return
+    const labels = controls.dataset
 
     function fail(block: HTMLElement) {
       const message = block.querySelector<HTMLElement>(".mermaid-error")
       if (message) {
-        message.textContent = controls!.dataset.error ?? ""
-        message.lang = controls!.dataset.locale ?? ""
+        message.textContent = labels.error ?? ""
+        message.lang = labels.locale ?? ""
         message.hidden = false
       }
       const details = block.querySelector("details")
@@ -41,19 +42,10 @@ const t = getTranslations(locale)
       const code = blocks[0].querySelector<HTMLElement>(".astro-code")
       if (!code) throw new Error("Missing Mermaid source.")
       const fontSize = getComputedStyle(code).fontSize
-      const canvas = document.createElement("canvas")
-      canvas.width = canvas.height = 1
-      const context = canvas.getContext("2d")
-      if (!context) throw new Error("Could not resolve Mermaid theme colors.")
 
-      // Mermaid's theme calculations require hex, including for our OKLCH code color.
+      // The site's color tokens use the hex format required by Mermaid.
       function color(name: string) {
-        context!.fillStyle = style.getPropertyValue(name).trim()
-        context!.fillRect(0, 0, 1, 1)
-        return `#${Array.from(context!.getImageData(0, 0, 1, 1).data)
-          .slice(0, 3)
-          .map((value) => value.toString(16).padStart(2, "0"))
-          .join("")}`
+        return style.getPropertyValue(name).trim()
       }
 
       const paper = color("--color-paper")
@@ -70,10 +62,10 @@ const t = getTranslations(locale)
         htmlLabels: false,
         theme: "base",
         look: "classic",
-        fontFamily: style.getPropertyValue("--font-mono").trim(),
+        fontFamily: "var(--font-mono)",
         fontSize: parseFloat(fontSize),
         themeVariables: {
-          fontFamily: style.getPropertyValue("--font-mono").trim(),
+          fontFamily: "var(--font-mono)",
           fontSize,
           background: surface,
           primaryColor: paper,
@@ -86,26 +78,12 @@ const t = getTranslations(locale)
           tertiaryTextColor: ink,
           tertiaryBorderColor: muted,
           lineColor: muted,
-          textColor: ink,
-          mainBkg: paper,
-          nodeBorder: muted,
           clusterBkg: surface,
           clusterBorder: rule,
-          edgeLabelBackground: surface,
-          actorBkg: paper,
-          actorBorder: muted,
-          actorTextColor: ink,
-          actorLineColor: muted,
           signalColor: muted,
-          signalTextColor: ink,
-          labelBoxBkgColor: paper,
-          labelBoxBorderColor: muted,
-          labelTextColor: ink,
-          loopTextColor: ink,
           noteBkgColor: surface,
           noteBorderColor: muted,
           noteTextColor: ink,
-          activationBkgColor: surface,
           activationBorderColor: muted,
           sequenceNumberColor: paper,
           attributeBackgroundColorOdd: paper,
@@ -121,7 +99,7 @@ const t = getTranslations(locale)
         er: appearance
       })
 
-      for (const [index, block] of Array.from(blocks).entries()) {
+      for (const [index, block] of blocks.entries()) {
         const target = block.querySelector<HTMLElement>(".mermaid-diagram")
         const source = block.querySelector<HTMLButtonElement>("[data-copy-code]")?.dataset.copyCode
         if (!target || source === undefined) continue
@@ -131,14 +109,10 @@ const t = getTranslations(locale)
           target.innerHTML = svg
           const diagram = target.querySelector("svg")
           if (!diagram) throw new Error("Mermaid did not return an SVG.")
-          const width = diagram.viewBox.baseVal.width
-          target.style.setProperty("--mermaid-width", `${width}px`)
-          target.setAttribute("role", "region")
           target.setAttribute(
             "aria-label",
-            diagram.querySelector("title")?.textContent || controls.dataset.diagram || ""
+            diagram.querySelector("title")?.textContent || labels.diagram || ""
           )
-          target.tabIndex = 0
           target.hidden = false
           const details = block.querySelector("details")
           if (details && !details.contains(document.activeElement)) details.open = false

@@ -1,7 +1,7 @@
 ---
 title: "Astro für Entwicklerblogs: Mermaid-Diagramme"
 description: "Teil 2 der Serie: Mermaid in Astro-Markdown integrieren, Diagramme mit den vorhandenen Schriften und Farben gestalten und die Funktionen direkt ausprobieren."
-pubDate: 2026-10-05
+pubDate: "2026-10-05"
 language: de
 tags: "Astro, Markdown, Mermaid, CSS"
 draft: false
@@ -94,21 +94,19 @@ Diagrammdefinition.
 
 ```ts title="src/lib/shiki/code-block.ts · Erkennung"
 const mermaid = this.options.lang === "mermaid"
-
-// Für Mermaid müssen Renderer und Copy dieselbe Originaldefinition erhalten.
-const source = mermaid ? this.source : /* bisherige Codeverarbeitung */ ""
 ```
 
 Der bestehende Transformer legt die Kopfzeile und den Copy-Button an. Für Mermaid
 setzt er darunter einen zunächst verborgenen Diagrammbereich und ein geöffnetes
-`details`-Element mit dem eingefärbten Quelltext:
+`details`-Element mit dem eingefärbten Quelltext. Als Kopiertext erhält der Button
+`this.source`. Ohne Dateititel heißt die Kopfzeile "Mermaid":
 
 ```html title="Aufbau des erzeugten Diagrammblocks"
 <figure class="code-block mermaid-block" data-mermaid>
   <div class="code-block-header">
     <!-- Titel und vorhandener Copy-Button mit data-copy-code -->
   </div>
-  <div class="mermaid-diagram" hidden></div>
+  <div class="mermaid-diagram" hidden role="region" tabindex="0"></div>
   <p class="mermaid-error" hidden role="status"></p>
   <details class="mermaid-source" open>
     <summary>Quelltext anzeigen</summary>
@@ -156,10 +154,10 @@ if (blocks.length) {
 Jeder Block erhält eine eindeutige SVG-ID. Die Fehlerbehandlung liegt innerhalb
 der Schleife, damit eine defekte Definition die folgenden Diagramme nicht stoppt.
 Der folgende Ausschnitt zeigt den Kern. Die Komponente ergänzt außerdem die
-Breitenangaben und die Beschriftung des scrollbaren Bereichs:
+Beschriftung des scrollbaren Bereichs aus dem SVG-Titel:
 
 ```ts title="mermaid-diagrams.astro · Rendering"
-for (const [index, block] of Array.from(blocks).entries()) {
+for (const [index, block] of blocks.entries()) {
   const target = block.querySelector<HTMLElement>(".mermaid-diagram")
   const source = block.querySelector<HTMLButtonElement>("[data-copy-code]")?.dataset.copyCode
   if (!target || source === undefined) continue
@@ -200,32 +198,34 @@ Die Farbzuordnung folgt den bestehenden CSS-Tokens:
 | `--color-code`  | Hintergrundflächen, Notizen und alternative Tabellenzeilen |
 | `--font-mono`   | JetBrains Mono für Diagrammbeschriftungen                  |
 
-Mermaids Farbberechnung erwartet Hex-Werte. `--color-code` ist hier in OKLCH
-definiert. Ein Canvas mit einem Pixel löst auch diese Farbe in RGB auf:
+Mermaids Farbberechnung erwartet Hex-Werte. Die Farb-Tokens der Website verwenden
+deshalb dieses Format. Auch der Codeblock-Hintergrund steht als Hexwert im CSS:
 
-```ts title="mermaid-diagrams.astro · CSS-Farben auflösen"
+```css title="src/styles/global.css · Codeblock-Hintergrund"
+@theme {
+  --color-code: #f8f8f8;
+}
+```
+
+Der Renderer liest diese Werte direkt aus den CSS-Tokens:
+
+```ts title="mermaid-diagrams.astro · CSS-Farben lesen"
 const style = getComputedStyle(document.documentElement)
-const canvas = document.createElement("canvas")
-canvas.width = canvas.height = 1
-const context = canvas.getContext("2d")!
 
 function color(name: string) {
-  context.fillStyle = style.getPropertyValue(name).trim()
-  context.fillRect(0, 0, 1, 1)
-  return `#${Array.from(context.getImageData(0, 0, 1, 1).data)
-    .slice(0, 3)
-    .map((value) => value.toString(16).padStart(2, "0"))
-    .join("")}`
+  return style.getPropertyValue(name).trim()
 }
 ```
 
 So bleibt die Website die Quelle der Farben. Eine Änderung an den Tokens kommt
-auch bei Mermaid an. Die folgende Konfiguration zeigt die wichtigsten Variablen:
+auch bei Mermaid an. Die Konfiguration ergänzt die Grundfarben und die Stellen,
+an denen Mermaids abgeleitete Farben von der Websitegestaltung abweichen:
 
-```ts title="mermaid-diagrams.astro · Theme-Auszug"
+```ts title="mermaid-diagrams.astro · Theme"
 const paper = color("--color-paper")
 const ink = color("--color-ink")
 const muted = color("--color-muted")
+const rule = color("--color-rule")
 const surface = color("--color-code")
 const appearance = { theme: "base", look: "classic", useMaxWidth: false } as const
 const code = blocks[0].querySelector<HTMLElement>(".astro-code")!
@@ -238,21 +238,30 @@ mermaid.initialize({
   htmlLabels: false,
   theme: "base",
   look: "classic",
-  fontFamily: style.getPropertyValue("--font-mono").trim(),
+  fontFamily: "var(--font-mono)",
   fontSize: parseFloat(fontSize),
   themeVariables: {
-    fontFamily: style.getPropertyValue("--font-mono").trim(),
+    fontFamily: "var(--font-mono)",
     fontSize,
+    background: surface,
     primaryColor: paper,
     primaryTextColor: ink,
     primaryBorderColor: muted,
     secondaryColor: surface,
+    secondaryTextColor: ink,
+    secondaryBorderColor: muted,
+    tertiaryColor: paper,
+    tertiaryTextColor: ink,
+    tertiaryBorderColor: muted,
     lineColor: muted,
-    actorBkg: paper,
-    actorTextColor: ink,
-    actorBorder: muted,
+    clusterBkg: surface,
+    clusterBorder: rule,
+    signalColor: muted,
     noteBkgColor: surface,
+    noteBorderColor: muted,
     noteTextColor: ink,
+    activationBorderColor: muted,
+    sequenceNumberColor: paper,
     attributeBackgroundColorOdd: paper,
     attributeBackgroundColorEven: surface
   },
@@ -267,9 +276,15 @@ mermaid.initialize({
 })
 ```
 
-Die tatsächliche Konfiguration legt auch Text- und Randfarben für Gruppen,
-Nachrichten, Aktivierungen und alternative Knoten fest. Nur die Grundfarben zu
-ändern reicht für alle Diagrammtypen nicht aus.
+Das `base`-Theme übernimmt viele Werte bereits aus den Grundfarben. Zum Beispiel
+folgen Akteure der primären Knotenfarbe, ihr Text `primaryTextColor` und ihre
+Ränder `primaryBorderColor`. Diese Zuordnungen müssen nicht einzeln wiederholt
+werden. Gruppenränder, Notizen und Tabellenzeilen bekommen die passenden Tokens
+ausdrücklich zugewiesen.
+
+Die Schriftfamilie lässt sich direkt als `var(--font-mono)` übergeben. Mermaid
+setzt sie in SVG-Styles ein, die der Browser auch beim Ausmessen der Texte
+auflöst. Der Tokenname `--font-mono` allein wäre dagegen ein Schriftname.
 
 Die Schriftgröße stammt aus dem berechneten CSS des Quelltextblocks: hier 14
 Pixel. Mermaid verwendet sie bereits beim Ausmessen der Beschriftungen.
@@ -303,16 +318,15 @@ Innenabstand und einen lokalen Scrollbereich:
 
 .mermaid-diagram > svg {
   display: block;
-  width: var(--mermaid-width);
   height: auto;
   margin-inline: auto;
 }
 ```
 
-Nach dem Rendern liest die Komponente die natürliche Breite aus der SVG-`viewBox`.
-Sie setzt `--mermaid-width` auf diese Breite. Das SVG behält seine natürliche
-Größe und damit auch die 14 Pixel große Schrift. Breitere Diagramme scrollen
-innerhalb des Blocks. Kleinere Diagramme stehen mittig.
+Mit `useMaxWidth: false` setzt Mermaid selbst die natürliche Breite und Höhe am
+SVG. CSS übernimmt diese Größe und zentriert das Diagramm. Dadurch bleibt auch
+die 14 Pixel große Schrift erhalten. Breitere Diagramme scrollen innerhalb des
+Blocks.
 
 Der Scrollbereich ist per Tab erreichbar und über den zugänglichen Diagrammtitel
 benannt. Der Quelltext-Schalter verwendet dieselben Abstände und Farben wie die

@@ -267,16 +267,16 @@ test("Mermaid preserves its original definition and keeps a visible source fallb
 
 test("Untitled Mermaid blocks have a header and do not convert fences shown as Markdown", () => {
   const source = "flowchart LR\n  A --> B"
-  const root = render(source, "", "mermaid")
-  assert.equal(copy(root), source)
-  assert.equal(
-    text(elements(root, (node) => node.properties.className === "code-block-filename")[0]),
-    "Mermaid"
-  )
-  assert.equal(
-    elements(root, (node) => node.properties.className === "mermaid-diagram")[0].properties.hidden,
-    true
-  )
+  for (const meta of ["", 'title=""', 'title="   "']) {
+    const root = render(source, meta, "mermaid")
+    assert.equal(copy(root), source)
+    assert.equal(
+      text(elements(root, (node) => node.properties.className === "code-block-filename")[0]),
+      "Mermaid"
+    )
+    const diagram = elements(root, (node) => node.properties.className === "mermaid-diagram")[0]
+    assert.equal(diagram.properties.hidden, true)
+  }
   const example = render(`\`\`\`mermaid\n${source}\n\`\`\``, "", "md")
   assert.equal(elements(example, (node) => node.properties.dataMermaid !== undefined).length, 0)
   assert.equal(copy(example), `\`\`\`mermaid\n${source}\n\`\`\``)

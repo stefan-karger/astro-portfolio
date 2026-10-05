@@ -18,24 +18,14 @@ const legalLinks = [
 ]
 ---
 
-<footer class="@container border-t border-rule bg-paper text-ink">
-  <div class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-x-[clamp(3rem,8vw,8rem)] gap-y-10 px-4 py-[clamp(3rem,7vw,6rem)] @min-[50rem]:grid-cols-[minmax(0,0.8fr)_minmax(0,1.7fr)] sm:px-6 lg:px-8">
-    <div class="flex flex-col items-start justify-between gap-10">
-      <span
-        aria-hidden="true"
-        class="font-mono text-[clamp(5rem,12vw,11rem)] leading-[0.8] font-bold tracking-[-0.09em]"
-      >
-        SK.
-      </span>
-      <p class="m-0 text-sm text-muted">
-        © {year} {siteConfig.name.public}
-      </p>
-    </div>
-
-    <div class="@container min-w-0">
-      <div class="grid grid-cols-1 gap-x-8 gap-y-10 @min-[18rem]:grid-cols-2 @min-[38rem]:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)_minmax(0,0.7fr)]">
-        <div class="min-w-0 @min-[18rem]:col-span-2 @min-[38rem]:col-span-1">
-          <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.footer.contact}</h2>
+<footer class="@container/footer border-t border-rule bg-paper text-ink">
+  <div class="footer-grid mx-auto grid w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-6 px-4 py-8 @min-[50rem]/footer:grid-cols-[minmax(0,0.8fr)_minmax(0,1.7fr)] @min-[50rem]/footer:gap-x-[clamp(3rem,8vw,8rem)] @min-[50rem]/footer:gap-y-10 @min-[50rem]/footer:py-[clamp(3rem,7vw,6rem)] sm:px-6 lg:px-8">
+    <div class="footer-links @container min-w-0">
+      <div class="grid grid-cols-2 gap-x-4 gap-y-6 @min-[38rem]:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)_minmax(0,0.7fr)] @min-[50rem]/footer:gap-x-8 @min-[50rem]/footer:gap-y-10">
+        <div class="col-span-2 min-w-0 @min-[38rem]:col-span-1">
+          <h2 class="m-0 mb-3 font-mono text-lg font-bold wrap-anywhere @min-[50rem]/footer:mb-5 @min-[50rem]/footer:text-xl">
+            {t.footer.contact}
+          </h2>
           <ul class="m-0 list-none p-0">
             <li>
               <a
@@ -55,13 +45,15 @@ const legalLinks = [
             </li>
           </ul>
         </div>
-        <nav aria-label={t.nav.socialLinksLabel}>
-          <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.footer.elsewhere}</h2>
+        <nav class="min-w-0" aria-label={t.nav.socialLinksLabel}>
+          <h2 class="m-0 mb-3 font-mono text-lg font-bold wrap-anywhere @min-[50rem]/footer:mb-5 @min-[50rem]/footer:text-xl">
+            {t.footer.elsewhere}
+          </h2>
           <ul class="m-0 list-none p-0">
             {siteConfig.socialLinks.map((social) => (
               <li>
                 <a
-                  class="site-link inline-flex min-h-11 items-center text-muted hover:text-ink"
+                  class="site-link inline-flex min-h-11 max-w-full items-center text-muted wrap-anywhere hover:text-ink"
                   href={social.href}
                   target={social.external ? "_blank" : undefined}
                   rel={social.external ? "me noopener noreferrer" : undefined}
@@ -78,15 +70,17 @@ const legalLinks = [
             ))}
           </ul>
         </nav>
-        <nav aria-label={t.nav.legalLabel}>
-          <h2 class="m-0 mb-5 font-mono text-xl font-bold">{t.nav.legalLabel}</h2>
+        <nav class="min-w-0" aria-label={t.nav.legalLabel}>
+          <h2 class="m-0 mb-3 font-mono text-lg font-bold wrap-anywhere @min-[50rem]/footer:mb-5 @min-[50rem]/footer:text-xl">
+            {t.nav.legalLabel}
+          </h2>
           <ul class="m-0 list-none p-0">
             {legalLinks.map((link) => (
               <li>
                 <a
                   href={link.href}
                   aria-current={currentPath === link.href.replace(/\/+$/, "") ? "page" : undefined}
-                  class="site-link inline-flex min-h-11 items-center text-muted hover:text-ink aria-[current=page]:font-bold aria-[current=page]:text-ink"
+                  class="site-link inline-flex min-h-11 max-w-full items-center text-muted wrap-anywhere hover:text-ink aria-[current=page]:font-bold aria-[current=page]:text-ink"
                 >
                   {link.label}
                 </a>
@@ -96,5 +90,43 @@ const legalLinks = [
         </nav>
       </div>
     </div>
+    <span
+      aria-hidden="true"
+      class="footer-brand self-center font-mono text-[2rem] leading-[0.8] font-bold tracking-[-0.09em] @min-[50rem]/footer:self-start @min-[50rem]/footer:text-[clamp(5rem,12vw,11rem)]"
+    >
+      SK.
+    </span>
+    <p class="footer-copyright m-0 min-w-0 self-center text-right text-sm text-muted @min-[50rem]/footer:self-end @min-[50rem]/footer:text-left">
+      © {year} {siteConfig.name.public}
+    </p>
   </div>
 </footer>
+
+<style>
+  .footer-grid {
+    grid-template-areas:
+      "info info"
+      "brand copyright";
+  }
+
+  .footer-links {
+    grid-area: info;
+  }
+
+  .footer-brand {
+    grid-area: brand;
+  }
+
+  .footer-copyright {
+    grid-area: copyright;
+  }
+
+  @container footer (min-width: 50rem) {
+    .footer-grid {
+      grid-template-areas:
+        "brand info"
+        "copyright info";
+      grid-template-rows: 1fr auto;
+    }
+  }
+</style>
