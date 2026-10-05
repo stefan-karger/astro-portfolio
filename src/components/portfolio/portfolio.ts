@@ -115,6 +115,15 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
     const dialog = lightbox.pswp!.element!
     dialog.setAttribute("aria-label", gallery.dataset.dialogLabel!)
 
+    const carousel = lightbox.pswp!.scrollWrap!
+    carousel.setAttribute("role", "group")
+    carousel.setAttribute("aria-roledescription", gallery.dataset.carouselDescription!)
+
+    // PhotoSwipe reuses these three slide holders when navigating between images.
+    for (const slide of dialog.querySelectorAll('[aria-roledescription="slide"]')) {
+      slide.setAttribute("aria-roledescription", gallery.dataset.slideDescription!)
+    }
+
     for (const element of document.body.children) {
       if (element instanceof HTMLElement && element !== dialog && !element.inert) {
         element.inert = true

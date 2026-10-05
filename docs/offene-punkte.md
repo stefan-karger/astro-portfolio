@@ -20,82 +20,63 @@ Prüfungen. Die aktuelle Umsetzung beschreibt die [README](../README.md).
   Die Spiegelaufnahme hat 1350 × 1350 Pixel. Kleine Quellen werden nicht
   künstlich hochskaliert.
 
-## Abnahme nach Veröffentlichung auf Netlify
+## Netlify-Abnahme
 
-Grundlage ist ein Deployment des aktuellen Arbeitsstands auf der tatsächlichen
-Netlify-Umgebung. Die lokale Astro-Vorschau verarbeitet keine Netlify-Headerregeln.
+Geprüft am 5. Oktober 2026 auf der
+[Deploy-Preview 2](https://deploy-preview-2--stefan-karger.netlify.app/).
+Der Vergleich umfasst 14 Inhaltsseiten, die öffentlichen Text- und XML-Endpunkte,
+zehn fehlende Seiten und Dateien sowie bekannte Assets.
 
-### RSS, Markdown und Crawler
+Netlify ergänzt auf Deploy-Previews automatisch `X-Robots-Tag: noindex`.
+Deshalb ist diese Preview nicht indexierbar. Die Abnahme der Produktionsdomain
+steht weiterhin aus.
+[Netlify: Indexierung von Deployments](https://docs.netlify.com/deploy/deploy-overview/#search-engine-indexing)
 
-Lokaler manueller Prüfstand vom 5. Oktober 2026 laut Rückmeldung von Stefan,
-unter `http://localhost:4321`:
+### In der Preview bestätigt
 
-- [x] `/blog/astro-fuer-entwicklerblogs-mermaid-diagramme.md` funktioniert.
-- [x] `/llms.txt` funktioniert.
-- [x] `/rss.xml` löst im Browser einen Dateidownload aus; der Inhalt passt.
+| Bereich                    | Ergebnis                                                                                                                                                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RSS                        | HTTP 200, `application/rss+xml; charset=utf-8`, gültiges XML mit beiden veröffentlichten Artikeln, vollständigem Autor und korrekten Daten und Links.                                                                                                                     |
+| Markdown                   | Beide veröffentlichten deutschen Artikel mit HTTP 200, `text/markdown; charset=utf-8` und `X-Robots-Tag: noindex, follow, noindex`. Metadaten und Artikeltext stimmen mit dem lokalen Build überein.                                                                      |
+| Discovery                  | `/llms.txt`, `/robots.txt` und `/sitemap.xml` sind erreichbar und stimmen mit dem Build überein. Textdateien haben UTF-8, die Sitemap `application/xml`. Feed- und Markdown-Links stehen im HTML-Head.                                                                    |
+| Crawler                    | Zehn benannte HTTP-User-Agents liefern auf jeweils sechs Pfaden dieselben Statuscodes und Inhalte wie normale Abrufe. robots.txt erlaubt die vorgesehenen Gruppen.                                                                                                        |
+| HTML und Metadaten         | Alle 14 Seiten haben HTTP 200 und passende Titel, Beschreibungen, Canonicals, Sprachalternativen und Social-Metadaten. Auf den vier Legal-Seiten steht genau ein `noindex, follow`. Artikel folgen ihrer Inhaltssprache; Autorenzeile und bedingtes `updatedDate` passen. |
+| Schema.org                 | Beide Startseiten und beide Artikel haben im Schema.org-Validator jeweils null Fehler und null Warnungen.                                                                                                                                                                 |
+| Google Rich Results        | Die deutsche Startseite liefert eine gültige ProfilePage, beide Artikel jeweils einen gültigen Artikel. Google bestätigt den Abruf; die Preview-Indexierung scheitert am erwarteten `noindex`-Header.                                                                     |
+| Fehlerseite                | Alle zehn unbekannten DE/EN-Pfade einschließlich tiefer Pfade und Bild-, CSS- und JavaScript-Dateien liefern HTTP 404 mit der deutschen Fehlerseite. URL, deutscher Header und Footer, `html lang="de"` und Fehler-Metadaten passen; der Sprachschalter fehlt.            |
+| Weiterleitungen und Assets | `/portfolio` und `/en/portfolio` erreichen das Fotografie-Ziel der jeweiligen Sprache. Bekannte Bilder, CSS und JavaScript sind erreichbar. Das SK.-Vorschaubild auf der Preview liefert HTTP 200 als PNG mit 1200 × 630 Pixeln und entspricht der lokalen Datei.         |
+| Datenschutztexte           | Beide Sprachfassungen stimmen mit dem lokalen Build überein.                                                                                                                                                                                                              |
 
-Der übrige RSS-, Markdown- und Crawler-Umfang scheint bei der lokalen Durchsicht
-ebenfalls zu passen. Die Netlify-Auslieferung und das Feed-Reader-Abonnement
-sind damit noch nicht geprüft.
+Die HTML-Vergleiche berücksichtigen den von Netlify eingefügten Preview-Drawer
+und abweichende generierte Twoslash-IDs. Die User-Agent-Prüfung belegt die
+Auslieferung mit diesen Kennungen, keine Besuche echter Anbietercrawler.
 
-Auf Netlify noch prüfen:
+Der [Schema.org-Validator](https://validator.schema.org/) akzeptiert alle geprüften
+Graphen. Im [Google Rich Results Test](https://search.google.com/test/rich-results)
+fehlt bei beiden Artikeln lediglich das optionale `BlogPosting.image`.
+Beide Artikel bleiben gültig.
 
-- `/rss.xml` und veröffentlichte Markdown-Dateien mit HTTP 200 abrufen.
-  Erwartete Content-Types sind `application/rss+xml; charset=utf-8` und
-  `text/markdown; charset=utf-8`.
-- Für Markdown `X-Robots-Tag: noindex, follow` prüfen, auch bei verschachtelten
-  Slugs und in beiden Inhaltssprachen, sobald entsprechende Artikel vorliegen.
-  HTML-Artikel müssen weiterhin als HTML mit ihren Canonicals erreichbar sein.
-- `/robots.txt`, `/llms.txt` und `/sitemap.xml` auf Erreichbarkeit, passende
-  Content-Types und Übereinstimmung mit dem Build prüfen. Die Sitemap enthält
-  ausschließlich indexierbare HTML-Canonicals.
-- Normale Abrufe und Abrufe mit den benannten HTTP-User-Agent-Kennungen vergleichen.
-  Unerwartete Hosting-Sperren ausschließen. Google-Extended hat keinen eigenen
-  HTTP-User-Agent. Diese Prüfung belegt keine spätere Trainingsverwendung.
-- Den Feed in einem Feed-Reader abonnieren. Titel, Kurzbeschreibung, Autor,
-  Veröffentlichung, Sprache und Artikel-Links prüfen.
+### Noch offen
 
-### Metadaten und Linkvorschauen
-
-- Die ausgelieferten Heads auf Startseite, Fotografie, Legal-Seiten,
-  Blogübersichten und allen veröffentlichten Artikeln in beiden
-  Oberflächensprachen prüfen. Titel, Beschreibung, Canonical, Sprachalternativen,
-  Open Graph und Social Cards müssen zum aktuellen Build gehören.
-- Auf den vier Legal-Seiten genau ein `noindex, follow` prüfen. Die übrigen
-  Inhaltsseiten müssen indexierbar bleiben.
-- Bei Artikeln die gemeinsame Canonical und Metadatensprache gemäß Inhaltssprache
-  prüfen. Eine englische Oberfläche eines deutschen Artikels behält dessen
-  deutsche Metadaten. Die sichtbare Autorenzeile nennt Stefan Eideloth-Karger;
-  die Aktualisierungsangabe erscheint ausschließlich bei gesetztem `updatedDate`.
-- Die ausgelieferten JSON-LD-Graphen mit dem
-  [Schema.org-Validator](https://validator.schema.org/) und unterstützte Profil-
-  und Artikeltypen mit dem
-  [Rich Results Test](https://search.google.com/test/rich-results) prüfen.
-- Die tatsächlich in `og:image` angegebene absolute URL ohne Anmeldung abrufen.
-  Erwartet werden HTTP 200, `Content-Type: image/png` und das SK.-Bild mit
-  1200 × 630 Pixeln. Die Erreichbarkeit allein unter einer Deploy-Preview-Adresse
-  reicht für diese Prüfung nicht aus.
-- Den Link in einem verfügbaren Linkvorschau-Inspector prüfen. Ältere
-  Plattform-Caches getrennt von der aktuellen HTML- und Bildantwort bewerten.
-
-### Zentrale deutsche Fehlerseite
-
-| Aufruf                                              | Erwartung                                                                  |
-| --------------------------------------------------- | -------------------------------------------------------------------------- |
-| `/nicht-vorhanden-seo-test/`                        | HTTP 404, deutsche Fehlerseite, angeforderte URL bleibt erhalten.          |
-| `/en/not-found-seo-test/`                           | HTTP 404, dieselbe deutsche Fehlerseite, angeforderte URL bleibt erhalten. |
-| Tiefe unbekannte Pfade DE/EN                        | Dieselbe deutsche Fehlerseite mit HTTP 404.                                |
-| Unbekannte Bild-, CSS- und JavaScript-Dateien DE/EN | HTTP 404.                                                                  |
-| Bekannte Inhaltsseiten, Bilder, CSS und JavaScript  | Erfolgreich erreichbar.                                                    |
-| `/portfolio` und `/en/portfolio`                    | Bestehendes Fotografie-Ziel in der jeweiligen Sprache.                     |
-
-- Allgemeine Netlify-Rewrites prüfen. Fehlende Ressourcen dürfen keine
-  HTTP-200-Antwort erhalten. Netlify verwendet die erzeugte `dist/404.html` als
-  zentrale Fehlerseite.
-- Header, Footer und `html lang` der Fehlerseite müssen deutsch sein.
-  Der Sprachschalter bleibt ausgeblendet.
-- Im Head genau ein `noindex`, kein Canonical, kein `hreflang` und keine
-  Social-Metadaten prüfen.
+- [ ] Nach Veröffentlichung die Produktionsdomain prüfen: HTML-Indexierbarkeit,
+      Auslieferungs-Header, Canonicals sowie RSS, Markdown, llms.txt, robots.txt
+      und Sitemap. Das Preview-`noindex` darf dort nicht auf indexierbaren
+      Inhaltsseiten erscheinen.
+- [ ] Nach dem erfolgreichen Produktionsdeploy die `og:image`-URL
+      `https://stefan-karger.de/social/sk-wordmark.png` und die Linkvorschau
+      abschließend prüfen: HTTP 200, PNG mit 1200 × 630 Pixeln.
+      Die Datei ist bereits umgesetzt und in der Deploy-Preview geprüft.
+- [ ] Den Google Rich Results Test nach Veröffentlichung für die Startseite und
+      die Artikel auf der Produktionsdomain wiederholen.
+- [ ] Den Feed in einem Feed-Reader abonnieren und die Anzeige von Titel,
+      Kurzbeschreibung, Autor, Datum, Sprache und Artikel-Links prüfen.
+- [ ] Die Markdown-Header bei englischen Inhalten und verschachtelten Slugs
+      auf Netlify prüfen, sobald entsprechende Artikel veröffentlicht sind.
+      Der aktuelle Build enthält ausschließlich zwei deutsche Artikel ohne
+      verschachtelte Slugs.
+- [ ] Nach dem nächsten Deploy die lokal korrigierten ARIA-Rollenbeschreibungen
+      der Galerie auf Netlify prüfen: DE `Bildkarussell` und `Bild`, EN `carousel`
+      und `slide`. Öffnen, Bildwechsel, Escape und Fokusrückkehr wurden am 5. Oktober 2026 lokal in beiden Sprachen geprüft.
 
 ## Namenssuche und externe Profile
 
@@ -138,8 +119,9 @@ und [privacy-policy.astro](../src/pages/en/privacy-policy.astro).
 - [ ] Einschlägige Unternehmensangaben für das Impressum sind geklärt.
 - [ ] Netlifys DPF-Eintrag ist geprüft und gegebenenfalls direkt verlinkt.
 - [ ] Ein bestätigter Stand ist auf den öffentlichen Datenschutzseiten ergänzt.
-- [ ] Der aktuelle Netlify-Build ist in beiden Sprachen mit der lokalen Fassung
-      abgeglichen.
+- [x] Die Deploy-Preview vom 5. Oktober 2026 ist in beiden Sprachen mit der
+      lokalen Datenschutzfassung abgeglichen. Der Produktionsabgleich folgt nach
+      Veröffentlichung.
 
 Anbieterunterlagen für diese Prüfungen:
 
@@ -154,9 +136,6 @@ Anbieterunterlagen für diese Prüfungen:
 
 - Die sichtbare Masonry-Reihenfolge mit DOM-, Tastatur- und Lightbox-Reihenfolge
   abgleichen und störende Fokussprünge prüfen.
-- Die frei formulierten ARIA-Rollenbeschreibungen `carousel` und `slide` in DE
-  und EN prüfen und gegebenenfalls lokalisieren. Standardisierte ARIA-Rollen
-  bleiben unverändert.
 - Die Galerie mit einem echten Screenreader in DE und EN prüfen: Öffnen per
   Maus und Enter muss den lokalisierten Dialog ankündigen. Während der Dialog
   offen ist, dürfen Header, Hauptinhalt und Footer im Lesemodus nicht erreichbar

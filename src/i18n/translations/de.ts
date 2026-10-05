@@ -41,6 +41,8 @@ export const de = {
     },
     lightbox: {
       label: "Fotogalerie",
+      carousel: "Bildkarussell",
+      slide: "Bild",
       close: "Schließen",
       zoomIn: "Vergrößern",
       zoomOut: "Verkleinern",
