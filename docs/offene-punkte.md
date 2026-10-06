@@ -50,7 +50,10 @@ Beide Artikel bleiben gültig.
 
 - [ ] Beim nächsten Netlify-Deploy die Chromium-Installation und den Build der
       Mermaid-SVGs prüfen. Die Artikel müssen fertige Diagramme ohne zusätzliche
-      Mermaid-JavaScript-Dateien ausliefern. Lokal ist dieser Ablauf geprüft.
+      Mermaid-JavaScript-Dateien ausliefern. Der Deploy vom 6. Oktober scheiterte
+      vor dem Astro-Build, weil `--with-deps` root-Rechte benötigt. Der Buildbefehl
+      verwendet jetzt `pnpm setup:diagrams` ohne Systempaketinstallation.
+      Die Prüfung auf Netlify bleibt offen.
 - [ ] Nach Veröffentlichung die Produktionsdomain prüfen: HTML-Indexierbarkeit,
       Auslieferungs-Header, Canonicals sowie RSS, Markdown, llms.txt, robots.txt
       und Sitemap. Das Preview-`noindex` darf dort nicht auf indexierbaren

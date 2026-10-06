@@ -25,9 +25,12 @@ Die Blog-Collection verwendet `deferRender: true`, damit Vite die Diagramme beim
 Rendern der Seite verarbeitet. Registrierte CSS- und Schriftdateien lösen eine
 Konfigurationsaktualisierung aus; das HTML entsteht beim Produktionsbuild statisch.
 
-`netlify.toml` installiert Chromium einschließlich Linux-Systembibliotheken vor
-`pnpm build` und veröffentlicht `dist/`. Andere Linux-Buildumgebungen benötigen
-ebenfalls `pnpm exec playwright install --with-deps --only-shell chromium`.
+`netlify.toml` führt `pnpm setup:diagrams` vor `pnpm build` aus und veröffentlicht
+`dist/`. Die Installation lädt nur Chromium herunter. `--with-deps` darf auf
+Netlify nicht verwendet werden, da die Installation von Linux-Systembibliotheken
+root-Rechte benötigt. In anderen Linux-Buildumgebungen mit entsprechenden Rechten
+kann `pnpm exec playwright install --with-deps --only-shell chromium` fehlende
+Systembibliotheken ergänzen.
 
 `pnpm-workspace.yaml` erlaubt Abhängigkeits-Buildskripte ausschließlich für
 esbuild und sharp. Neue Paketversionen müssen mindestens einen Tag alt sein;
