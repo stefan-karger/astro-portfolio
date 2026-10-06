@@ -28,7 +28,9 @@ function initMasonry(gallery: HTMLElement, items: HTMLAnchorElement[]) {
     const heights = Array<number>(columns).fill(0)
 
     for (const item of items) {
-      const column = heights.indexOf(Math.min(...heights))
+      const shortest = Math.min(...heights)
+      // Prefer the leftmost column when heights are within one CSS pixel.
+      const column = heights.findIndex((height) => height <= shortest + 1)
       const height =
         (itemWidth * Number(item.dataset.imageHeight)) / Number(item.dataset.imageWidth)
       item.style.width = `${itemWidth}px`

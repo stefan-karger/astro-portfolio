@@ -466,8 +466,12 @@ test("Homepage projects have stable IDs, localized facts, useful link names and 
         ? ["≈200.000", "≈4.000.000", "≈40.000", ">100.000"]
         : ["≈200,000", "≈4,000,000", "≈40,000", ">100,000"]
     )
+    const career = data.html.match(
+      /<section\b[^>]*aria-labelledby="career-title"[^>]*>([\s\S]*?)<\/section>/i
+    )?.[1]
+    assert.ok(career, "The career section is rendered")
     assert.deepEqual(
-      tags(data.html, "time").map(({ datetime }) => datetime),
+      tags(career, "time").map(({ datetime }) => datetime),
       ["2014", "2022", "2013", "2011", "2013", "2008", "2011"]
     )
     assert.equal((data.html.match(new RegExp(` — ${t.career.present}`, "g")) ?? []).length, 2)

@@ -63,6 +63,7 @@ export const en = {
     lager: {
       name: "Stock sync & auto-pricing",
       kind: "Project at Junksplayground",
+      metricsAsOf: "As of",
       description:
         "A custom-built integration connecting JTL-Wawi and Cardmarket. It automatically synchronizes stock and orders and updates selling prices based on custom rules and current market data.",
       metrics: {

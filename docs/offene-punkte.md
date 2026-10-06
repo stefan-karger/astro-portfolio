@@ -1,20 +1,10 @@
 # Offene Punkte
 
-Stand: 5. Oktober 2026. Hier stehen ausstehende Inhaltsentscheidungen und
+Stand: 6. Oktober 2026. Hier stehen ausstehende Inhaltsentscheidungen und
 Prüfungen. Die aktuelle Umsetzung beschreibt die [README](../README.md).
 
 ## Inhalte und Fotografie
 
-- Den Datenstand der Junksplayground-Kennzahlen ergänzen, wenn ein bestätigtes
-  Bezugsdatum vorliegt.
-- Den eigenen Anteil an SolidUI präzisieren, sofern öffentlich gewünscht.
-  Zusammenarbeit berücksichtigen und keine alleinige Urheberschaft behaupten.
-- Beim dualen Studium die Hochschule zusätzlich zum Praxispartner nennen,
-  sofern öffentlich gewünscht und bestätigt.
-- Die Portfolio-Auswahl und Bildfolge kuratieren. Zusammengehörige Serien,
-  die lange mobile Bildfolge sowie Auftakt und Abschluss gemeinsam beurteilen.
-- Die zeitabhängige Portfolio-Angabe "aus den vergangenen zehn Jahren" durch
-  einen bestätigten Zeitraum oder eine zeitneutrale Angabe ersetzen.
 - Höher aufgelöste, gleichwertig bearbeitete Exporte für die Bilder 002, 011,
   012, 014 und 016 prüfen. Die vorhandenen Quellen sind nur 1080 Pixel breit.
   Die Spiegelaufnahme hat 1350 × 1350 Pixel. Kleine Quellen werden nicht
@@ -68,15 +58,9 @@ Beide Artikel bleiben gültig.
       Die Datei ist bereits umgesetzt und in der Deploy-Preview geprüft.
 - [ ] Den Google Rich Results Test nach Veröffentlichung für die Startseite und
       die Artikel auf der Produktionsdomain wiederholen.
-- [ ] Den Feed in einem Feed-Reader abonnieren und die Anzeige von Titel,
-      Kurzbeschreibung, Autor, Datum, Sprache und Artikel-Links prüfen.
-- [ ] Die Markdown-Header bei englischen Inhalten und verschachtelten Slugs
-      auf Netlify prüfen, sobald entsprechende Artikel veröffentlicht sind.
-      Der aktuelle Build enthält ausschließlich zwei deutsche Artikel ohne
-      verschachtelte Slugs.
-- [ ] Nach dem nächsten Deploy die lokal korrigierten ARIA-Rollenbeschreibungen
-      der Galerie auf Netlify prüfen: DE `Bildkarussell` und `Bild`, EN `carousel`
-      und `slide`. Öffnen, Bildwechsel, Escape und Fokusrückkehr wurden am 5. Oktober 2026 lokal in beiden Sprachen geprüft.
+- [ ] Nach dem vollständigen Deploy den Feed in einem Feed-Reader abonnieren
+      und die Anzeige von Titel, Kurzbeschreibung, Autor, Datum, Sprache und
+      Artikel-Links prüfen.
 
 ## Namenssuche und externe Profile
 
@@ -85,17 +69,14 @@ Beide Artikel bleiben gültig.
   `/sitemap.xml` einreichen. Beide Startseiten mit der URL-Prüfung kontrollieren
   und nach erfolgreicher Live-Prüfung eine erneute Indexierung anfordern.
   Die von Google gewählte Canonical prüfen.
-- Auf LinkedIn und GitHub die aktuelle Website als persönliche Website
-  hinterlegen. Profile mit dem vollständigen Namen verbinden die Person mit
-  der Website. Wo ein Linktext frei wählbar ist, "Stefan Karger" verwenden.
-- Für `e-k-fotos.de` entscheiden, ob die alte Fotografie-Seite bestehen bleibt.
-  Dann einen sichtbaren Link zur aktuellen Website ergänzen. Bei Ablösung jede
-  alte URL dauerhaft zum passenden neuen Inhalt weiterleiten. Fotografie-Seiten
-  führen zur Fotografie. Keine pauschale Weiterleitung aller URLs zur Homepage
-  und keine Canonical zwischen unterschiedlichen Inhalten.
-- In Search Console die Suchanfragen "Stefan Karger" und "Stefan Eideloth-Karger"
-  getrennt beobachten. Impressionen, Klicks und durchschnittliche Position über
-  mehrere Wochen vergleichen.
+- Nach dem vollständigen Deploy auf LinkedIn und GitHub `stefan-karger.de` als
+  persönliche Website hinterlegen und den vollständigen Namen pflegen.
+- Für die gekündigte Domain `e-k-fotos.de` nach dem vollständigen Deploy von
+  `stefan-karger.de` eine direkte Weiterleitung bis zum Vertragsende einrichten.
+- Nach dem vollständigen Deploy und der Einrichtung der Search Console die
+  Suchanfragen "Stefan Karger" und "Stefan Eideloth-Karger" getrennt beobachten.
+  Impressionen, Klicks und durchschnittliche Position über mehrere Wochen
+  vergleichen.
 
 Diese Schritte benötigen Zugriff auf die jeweiligen Konten. Die Codeumsetzung
 erledigt sie nicht.
@@ -105,41 +86,39 @@ erledigt sie nicht.
 Die öffentlichen Texte liegen in [datenschutz.astro](../src/pages/datenschutz.astro)
 und [privacy-policy.astro](../src/pages/en/privacy-policy.astro).
 
-- [ ] Die Gmail-Weiterleitung bei STRATO ist abgeschaltet. Antworten werden über
-      `kontakt@stefan-karger.de` versendet. Die Löschregel gilt auch für etwaige
-      frühere Gmail-Kopien.
 - [ ] satellite ist freigeschaltet. Voicemail, Abschriften und KI-Zusammenfassungen
       sind soweit verfügbar deaktiviert. Die tatsächliche Konfiguration stimmt
       mit dem Telefonabschnitt überein; der Löschablauf der Anrufliste ist geklärt.
-- [ ] Die Aufbewahrung oder belastbare Löschkriterien für technische Zugriffs- und
-      Sicherheitsdaten bei Netlify Legacy Free sind anhand der Vertragsunterlagen
-      oder einer Anbieterauskunft geklärt. Fristen für Function Logs und
-      Credit-based Observability belegen dies nicht. Im Text ist keine feste
-      Netlify-Log-Frist behauptet.
-- [ ] Einschlägige Unternehmensangaben für das Impressum sind geklärt.
-- [ ] Netlifys DPF-Eintrag ist geprüft und gegebenenfalls direkt verlinkt.
-- [ ] Ein bestätigter Stand ist auf den öffentlichen Datenschutzseiten ergänzt.
+- [ ] Optional: Nach Klärung des offenen satellite-Punkts ein Fassungsdatum auf
+      den öffentlichen Datenschutzseiten ergänzen. Ein Datum gehört nicht zu den
+      Pflichtangaben nach [Artikel 13 DSGVO](https://eur-lex.europa.eu/eli/reg/2016/679/oj/deu).
+      Der Inhalt muss unabhängig davon die tatsächliche Verarbeitung abbilden.
 - [x] Die Deploy-Preview vom 5. Oktober 2026 ist in beiden Sprachen mit der
       lokalen Datenschutzfassung abgeglichen. Der Produktionsabgleich folgt nach
       Veröffentlichung.
 
 Anbieterunterlagen für diese Prüfungen:
 
+Netlify am 6. Oktober 2026 geprüft: Der Account-DPA v5 ist bytegenau identisch mit
+der öffentlichen Fassung vom 9. Juni 2026. Exhibit 2, Abschnitt 5.A auf PDF-Seite 15
+nennt für das zentrale Logging der Service-Komponenten 90 Tage online und ein Jahr
+offline. Beide Datenschutzfassungen enthalten diese Angabe mit ihrem Geltungsbereich.
+Der DPA umfasst auch das Self-Serve Subscription Agreement; Abschnitt 7.1 verweist
+auf Exhibit II, dessen Überschrift „Enterprise Services“ lautet.
+Eine gesonderte Frist für einzelne CDN-Zugriffe wird daraus nicht abgeleitet.
+Die Trust-Center-Suche nach `retention` und `deletion` lieferte laut Betreiber
+keine Treffer.
+
 - [STRATO: Vereinbarung zur Auftragsverarbeitung](https://www.strato.de/agb/avv/)
 - [STRATO: Wiederherstellung gelöschter E-Mails](https://www.strato.de/faq/mail/wie-kann-ich-meine-geloeschten-e-mails-wiederherstellen/)
 - [Netlify: Self-Serve Subscription Agreement](https://www.netlify.com/pdf/self-serve-subscription-agreement.pdf/)
 - [Netlify: Data Processing Agreement](https://www.netlify.com/pdf/netlify-dpa.pdf)
+- [Netlify: Datenschutz und Aufbewahrung](https://www.netlify.com/privacy/#7-data-retention)
+- [Netlify: Zugriff auf das Trust Center](https://docs.netlify.com/manage/security/overview/#access-the-trust-center)
 - [Netlify: Observability und Verfügbarkeit nach Tarif](https://docs.netlify.com/manage/monitoring/observability/overview/)
 - [satellite: Datenschutz](https://www.satellite.me/datenschutz/)
 
 ## Barrierefreiheit und Performance
 
-- Die sichtbare Masonry-Reihenfolge mit DOM-, Tastatur- und Lightbox-Reihenfolge
-  abgleichen und störende Fokussprünge prüfen.
-- Die Galerie mit einem echten Screenreader in DE und EN prüfen: Öffnen per
-  Maus und Enter muss den lokalisierten Dialog ankündigen. Während der Dialog
-  offen ist, dürfen Header, Hauptinhalt und Footer im Lesemodus nicht erreichbar
-  sein. Tab, Shift+Tab, Bildwechsel, Escape und Fokusrückkehr prüfen; Zurück und
-  Vorwärts auch während Übergängen und mit reduzierter Bewegung wiederholen.
-- Touch-Gesten auf echter Hardware prüfen.
-- Reale Core-Web-Vitals-Feldwerte prüfen, sobald ausreichend Daten vorliegen.
+- Nach dem vollständigen Deploy reale Core-Web-Vitals-Feldwerte prüfen,
+  sobald ausreichend Besucherdaten vorliegen.

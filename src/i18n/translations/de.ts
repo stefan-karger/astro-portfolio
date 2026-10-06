@@ -63,6 +63,7 @@ export const de = {
     lager: {
       name: "Lagerabgleich & Preisautomatisierung",
       kind: "Projekt bei Junksplayground",
+      metricsAsOf: "Stand:",
       description:
         "Eine eigens entwickelte Schnittstelle, die JTL-Wawi und Cardmarket miteinander verbindet. Sie gleicht Bestände und Bestellungen automatisiert ab und aktualisiert die Verkaufspreise eigenständig anhand individueller Regeln und aktueller Marktdaten.",
       metrics: {

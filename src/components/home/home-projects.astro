@@ -6,6 +6,10 @@ import { projects as projectData } from "@/lib/projects"
 const locale = resolveLocale(Astro.currentLocale)
 const { projects, links } = getTranslations(locale)
 const number = new Intl.NumberFormat(locale)
+const metricsDate = new Intl.DateTimeFormat(locale, {
+  dateStyle: "long",
+  timeZone: "UTC"
+}).format(new Date(projectData.lager.metricsDate))
 const websiteLabel = new URL(projectData.solid.url).hostname.replace(/^www\./, "")
 const recordGridClasses =
   "grid grid-cols-[minmax(12rem,0.7fr)_minmax(0,1.3fr)] gap-[clamp(2rem,6vw,5rem)] max-[45rem]:grid-cols-1 max-[45rem]:gap-4"
@@ -70,6 +74,10 @@ const recordGridClasses =
           {projects.lager.name}
         </h3>
         <p class="mt-3 text-[0.84rem] text-muted">{projects.lager.kind}</p>
+        <p class="mt-1 text-[0.84rem] text-muted">
+          {projects.lager.metricsAsOf}{" "}
+          <time datetime={projectData.lager.metricsDate}>{metricsDate}</time>
+        </p>
       </div>
       <div class="max-w-172">
         <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">

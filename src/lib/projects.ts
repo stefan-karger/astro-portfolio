@@ -7,6 +7,7 @@ export const projects = {
   },
   lager: {
     id: "project-stock-sync",
+    metricsDate: "2026-10-06",
     metrics: [
       { id: "variants", value: 200_000, comparison: "≈" },
       { id: "stock", value: 4_000_000, comparison: "≈" },
