@@ -46,14 +46,16 @@ Graphen. Im [Google Rich Results Test](https://search.google.com/test/rich-resul
 fehlt bei beiden Artikeln lediglich das optionale `BlogPosting.image`.
 Beide Artikel bleiben gültig.
 
+Mermaid am 6. Oktober 2026 auf dem
+[erfolgreichen Deploy](https://6ac555f22d365200084bee83--stefan-karger.netlify.app/blog/astro-fuer-entwicklerblogs-mermaid-diagramme/)
+nachgeprüft: Chromium-Installation und SVG-Build funktionieren ohne `--with-deps`.
+Beide Sprachfassungen liefern jeweils fünf gültige SVGs mit eindeutigen IDs und
+aufklappbarem Quelltext direkt im HTML. Mermaid- und ELK-JavaScript werden nicht
+nachgeladen. Desktop und schmale Ansichten mit 320 und 375 Pixeln sind geprüft;
+die Diagramme verursachen keinen Seitenüberlauf. Die Auswahlfarbe ist hell.
+
 ### Noch offen
 
-- [ ] Beim nächsten Netlify-Deploy die Chromium-Installation und den Build der
-      Mermaid-SVGs prüfen. Die Artikel müssen fertige Diagramme ohne zusätzliche
-      Mermaid-JavaScript-Dateien ausliefern. Der Deploy vom 6. Oktober scheiterte
-      vor dem Astro-Build, weil `--with-deps` root-Rechte benötigt. Der Buildbefehl
-      verwendet jetzt `pnpm setup:diagrams` ohne Systempaketinstallation.
-      Die Prüfung auf Netlify bleibt offen.
 - [ ] Nach Veröffentlichung die Produktionsdomain prüfen: HTML-Indexierbarkeit,
       Auslieferungs-Header, Canonicals sowie RSS, Markdown, llms.txt, robots.txt
       und Sitemap. Das Preview-`noindex` darf dort nicht auf indexierbaren
