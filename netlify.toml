@@ -1,0 +1,3 @@
+[build]
+  command = "pnpm exec playwright install --with-deps --only-shell chromium && pnpm build"
+  publish = "dist"

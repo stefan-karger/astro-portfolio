@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config"
+import { satteri } from "@astrojs/markdown-satteri"
 
 import tailwindcss from "@tailwindcss/vite"
 import {
@@ -10,16 +11,21 @@ import {
 import { rendererRich, transformerTwoslash } from "@shikijs/twoslash"
 
 import { transformerCodeBlock } from "./src/lib/shiki/code-block.ts"
+import { mermaidDiagrams } from "./src/lib/mermaid.ts"
 import { defaultLocale, locales } from "./src/i18n/types.ts"
+
+const mermaid = mermaidDiagrams()
 
 // https://astro.build/config
 export default defineConfig({
+  integrations: [mermaid.integration],
   vite: {
     plugins: [tailwindcss()]
   },
   site: "https://stefan-karger.de",
 
   markdown: {
+    processor: satteri({ hastPlugins: [mermaid.plugin] }),
     shikiConfig: {
       theme: "github-light",
       transformers: [

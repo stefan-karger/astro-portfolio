@@ -159,7 +159,7 @@ export const en = {
     draft: "Draft",
     tags: "Tags",
     language: { de: "German", en: "English" },
-    contents: "On this page",
+    contents: "In this post",
     back: "Back to overview",
     navigation: "More posts",
     previous: "Previous post",
@@ -171,8 +171,7 @@ export const en = {
     series: "Article series",
     part: "Part",
     mermaidSource: "Show source",
-    mermaidDiagram: "Diagram",
-    mermaidError: "The diagram could not be loaded. Its source is still available."
+    mermaidDiagram: "Diagram"
   },
 
   prototype: {

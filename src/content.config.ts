@@ -9,7 +9,9 @@ const date = z.iso
   .transform((value) => new Date(`${value}T00:00:00.000Z`))
 
 const blog = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
+  // Render through Vite when the page uses the entry, so diagram assets follow
+  // configuration reloads instead of retaining HTML from the content store.
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog", deferRender: true }),
   schema: z
     .object({
       title: z.string().trim().min(1),

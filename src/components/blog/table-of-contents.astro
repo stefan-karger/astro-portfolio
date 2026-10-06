@@ -1,0 +1,143 @@
+---
+import type { MarkdownHeading } from "astro"
+
+import type { Locale } from "@/i18n/types"
+import { getTranslations } from "@/i18n/translations"
+
+interface Props {
+  headings: MarkdownHeading[]
+  locale: Locale
+  language: Locale
+}
+
+const { headings, locale, language } = Astro.props
+const t = getTranslations(locale)
+---
+
+{headings.length > 0 && (
+  <aside class="min-w-0 xl:col-start-2 xl:row-start-1">
+    <nav
+      id="blog-contents"
+      class="xl:sticky xl:top-[calc(var(--spacing-header)+2rem)] xl:max-h-[calc(100dvh-var(--spacing-header)-4rem)] xl:overflow-y-auto"
+      aria-label={t.blog.contents}
+    >
+      {/* Collapse the stacked variant; the sidebar stays visible without scripting. */}
+      {[true, false].map((collapsible) => {
+        const Container = collapsible ? "details" : "div"
+        const Heading = collapsible ? "summary" : "p"
+        return (
+          <Container class={collapsible ? "xl:hidden" : "hidden xl:block"}>
+            <Heading
+              class:list={[
+                "text-sm font-bold text-muted",
+                collapsible
+                  ? "contents-toggle flex min-h-11 cursor-pointer list-none items-center gap-2"
+                  : "mb-3"
+              ]}
+            >
+              {t.blog.contents}
+            </Heading>
+            <ul
+              class:list={["space-y-2 text-sm leading-snug text-muted", collapsible && "mt-3"]}
+              lang={language}
+            >
+              {headings.map((heading) => (
+                <li class:list={[heading.depth === 3 && "pl-3"]}>
+                  <a
+                    class="inline-block py-1 no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:font-bold aria-[current]:text-ink"
+                    href={`#${heading.slug}`}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        )
+      })}
+    </nav>
+  </aside>
+)}
+
+<style>
+  .contents-toggle::before {
+    content: "";
+    width: 0.4rem;
+    height: 0.4rem;
+    flex-shrink: 0;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(-45deg);
+  }
+
+  details[open] > .contents-toggle::before {
+    transform: rotate(45deg);
+  }
+
+  .contents-toggle::-webkit-details-marker {
+    display: none;
+  }
+</style>
+
+<script>
+  const contents = document.querySelector<HTMLElement>("#blog-contents")
+  if (contents) {
+    const sections: { heading: HTMLElement; links: HTMLAnchorElement[] }[] = []
+    for (const link of contents.querySelectorAll<HTMLAnchorElement>("a[href^='#']")) {
+      const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)))
+      if (!heading) continue
+      const section = sections.find((entry) => entry.heading === heading)
+      if (section) section.links.push(link)
+      else sections.push({ heading, links: [link] })
+    }
+
+    if (sections.length > 0) {
+      let active: (typeof sections)[number] | undefined
+      let frame: number | undefined
+
+      const update = () => {
+        frame = undefined
+        // Match the heading position after following a native anchor link.
+        const offset =
+          parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) +
+          parseFloat(getComputedStyle(sections[0].heading).scrollMarginTop)
+        let current = sections[0]
+
+        for (const section of sections) {
+          if (section.heading.getBoundingClientRect().top > offset + 1) break
+          current = section
+        }
+
+        if (active !== current) {
+          active?.links.forEach((link) => link.removeAttribute("aria-current"))
+          current.links.forEach((link) => link.setAttribute("aria-current", "location"))
+          active = current
+        }
+
+        const link = current.links.find(
+          (entry) => entry.getClientRects().length > 0 && !entry.closest("details:not([open])")
+        )
+        if (!link || contents.scrollHeight <= contents.clientHeight) return
+        if (current === sections[0]) contents.scrollTop = 0
+
+        const bounds = contents.getBoundingClientRect()
+        const linkBounds = link.getBoundingClientRect()
+        if (linkBounds.top < bounds.top) {
+          contents.scrollTop += linkBounds.top - bounds.top
+        } else if (linkBounds.bottom > bounds.bottom) {
+          contents.scrollTop += linkBounds.bottom - bounds.bottom
+        }
+      }
+
+      function scheduleUpdate() {
+        if (frame === undefined) frame = window.requestAnimationFrame(update)
+      }
+
+      window.addEventListener("scroll", scheduleUpdate, { passive: true })
+      window.addEventListener("resize", scheduleUpdate)
+      window.addEventListener("pageshow", scheduleUpdate)
+      contents.addEventListener("toggle", scheduleUpdate, true)
+      update()
+    }
+  }
+</script>

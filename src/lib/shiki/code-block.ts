@@ -8,10 +8,24 @@ import { en } from "../../i18n/translations/en.ts"
 
 function element(
   tagName: string,
-  properties: Properties,
+  properties: Omit<Properties, "className" | "ariaLabelledBy" | "strokeWidth"> & {
+    className?: string
+    ariaLabelledBy?: string
+    strokeWidth?: number
+  },
   children: ElementContent[] = []
 ): Element {
-  return { type: "element", tagName, properties, children }
+  return {
+    type: "element",
+    tagName,
+    properties: {
+      ...properties,
+      className: properties.className?.split(/\s+/),
+      ariaLabelledBy: properties.ariaLabelledBy?.split(/\s+/),
+      strokeWidth: properties.strokeWidth?.toString()
+    },
+    children
+  }
 }
 
 function hasClass(node: Element, name: string) {
@@ -233,8 +247,7 @@ export function transformerCodeBlock(): ShikiTransformer {
           ])
         : copy
 
-      if (!title)
-        copy.properties.className = `${copy.properties.className} absolute right-1 top-1 z-10`
+      if (!title) this.addClassToHast(copy, "absolute right-1 top-1 z-10")
       this.addClassToHast(pre, title ? "pt-4" : "pt-4 pr-16")
       if (mermaid) {
         root.children = [
@@ -246,7 +259,6 @@ export function transformerCodeBlock(): ShikiTransformer {
               role: "region",
               tabIndex: 0
             }),
-            element("p", { className: "mermaid-error", hidden: true, role: "status" }),
             element("details", { className: "mermaid-source", open: true }, [
               element("summary", {}, [
                 element("span", { className: "mermaid-label-de", lang: "de" }, [

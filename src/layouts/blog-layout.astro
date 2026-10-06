@@ -4,9 +4,9 @@ import { render, type CollectionEntry } from "astro:content"
 import BaseLayout from "@/layouts/base-layout.astro"
 import "@/styles/blog.css"
 import CodeBlockControls from "@/components/blog/code-block-controls.astro"
-import MermaidDiagrams from "@/components/blog/mermaid-diagrams.astro"
 import PostHeader from "@/components/blog/post-header.astro"
 import SeriesNavigation from "@/components/blog/series-navigation.astro"
+import TableOfContents from "@/components/blog/table-of-contents.astro"
 import PrototypeSwitch from "@/components/prototype-switch.astro"
 import StructuredData from "@/components/structured-data.astro"
 import { resolveLocale } from "@/i18n/types"
@@ -20,11 +20,6 @@ interface Props {
   post: CollectionEntry<"blog">
 }
 const { post } = Astro.props
-if (typeof post.rendered?.html !== "string") {
-  throw new Error(
-    `Markdown rendering failed for blog post "${post.id}". Check the content rendering errors above.`
-  )
-}
 const { Content, headings } = await render(post)
 const locale = resolveLocale(Astro.currentLocale)
 const t = getTranslations(locale)
@@ -81,31 +76,8 @@ const seriesPosts = series
     <PostHeader {post} {locale} />
     <SeriesNavigation {post} posts={seriesPosts} {locale} />
     <CodeBlockControls locale={locale} />
-    <MermaidDiagrams locale={locale} />
     <div class="mt-12 grid min-w-0 gap-10 xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-14">
-      {contents.length > 0 && (
-        <aside class="min-w-0 xl:col-start-2 xl:row-start-1">
-          <nav
-            id="blog-contents"
-            class="xl:sticky xl:top-[calc(var(--spacing-header)+2rem)] xl:max-h-[calc(100dvh-var(--spacing-header)-4rem)] xl:overflow-y-auto"
-            aria-label={t.blog.contents}
-          >
-            <p class="mb-3 text-sm font-bold text-muted">{t.blog.contents}</p>
-            <ul class="space-y-2 text-sm leading-snug text-muted" lang={post.data.language}>
-              {contents.map((heading) => (
-                <li class:list={[heading.depth === 3 && "pl-3"]}>
-                  <a
-                    class="inline-block py-1 no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:font-bold aria-[current]:text-ink"
-                    href={`#${heading.slug}`}
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </aside>
-      )}
+      <TableOfContents headings={contents} {locale} language={post.data.language} />
       <div
         class="blog-content min-w-0 max-w-[85ch] xl:col-start-1 xl:row-start-1 xl:max-w-none"
         lang={post.data.language}
@@ -144,56 +116,3 @@ const seriesPosts = series
     </nav>
   </article>
 </BaseLayout>
-
-<script>
-  const contents = document.querySelector<HTMLElement>("#blog-contents")
-  if (contents) {
-    const links = contents.querySelectorAll<HTMLAnchorElement>("a[href^='#']")
-    const sections = Array.from(links).flatMap((link) => {
-      const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)))
-      return heading ? [{ link, heading }] : []
-    })
-
-    if (sections.length > 0) {
-      let active: HTMLAnchorElement | undefined
-      let frame: number | undefined
-
-      const update = () => {
-        frame = undefined
-        // Match the heading position after following a native anchor link.
-        const offset =
-          parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) +
-          parseFloat(getComputedStyle(sections[0].heading).scrollMarginTop)
-        let current = sections[0]
-
-        for (const section of sections) {
-          if (section.heading.getBoundingClientRect().top > offset + 1) break
-          current = section
-        }
-
-        if (active === current.link) return
-        active?.removeAttribute("aria-current")
-        current.link.setAttribute("aria-current", "location")
-        active = current.link
-        if (current === sections[0]) contents.scrollTop = 0
-
-        const bounds = contents.getBoundingClientRect()
-        const linkBounds = active.getBoundingClientRect()
-        if (linkBounds.top < bounds.top) {
-          contents.scrollTop += linkBounds.top - bounds.top
-        } else if (linkBounds.bottom > bounds.bottom) {
-          contents.scrollTop += linkBounds.bottom - bounds.bottom
-        }
-      }
-
-      function scheduleUpdate() {
-        if (frame === undefined) frame = window.requestAnimationFrame(update)
-      }
-
-      window.addEventListener("scroll", scheduleUpdate, { passive: true })
-      window.addEventListener("resize", scheduleUpdate)
-      window.addEventListener("pageshow", scheduleUpdate)
-      update()
-    }
-  }
-</script>

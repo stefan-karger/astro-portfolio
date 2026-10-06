@@ -11,9 +11,10 @@
   --spacing-header: 3.5rem;
   --text-display: clamp(2.5rem, 5vw, 4.25rem);
   --text-page-title: clamp(2.25rem, calc(3vw + 1rem), 3.5rem);
+  --text-code: 0.875rem;
 }
 
-/* Mermaid reads this token at runtime; blog.css also uses it via @reference. */
+/* Mermaid reads these tokens during rendering; blog.css uses them via @reference. */
 @theme static {
   --color-code: #f8f8f8;
 }

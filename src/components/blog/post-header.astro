@@ -14,6 +14,7 @@ interface Props {
 
 const { post, locale } = Astro.props
 const t = getTranslations(locale)
+const date = post.data.updatedDate ?? post.data.pubDate
 ---
 
 <header class="post-header max-w-[75ch]">
@@ -24,12 +25,6 @@ const t = getTranslations(locale)
     {t.blog.back}
   </a>
   <div class="mt-6">
-    <p id="post-author" class="text-sm text-muted">
-      {t.blog.author}{" "}
-      <a class="site-link underline-offset-4" href={routeUrl(locale, "home")} rel="author">
-        {siteConfig.name.legal}
-      </a>
-    </p>
     {post.data.draft && <p class="mt-3 text-sm text-muted">{t.blog.draft}</p>}
     <h1
       id="post-title"
@@ -41,21 +36,18 @@ const t = getTranslations(locale)
     <p class="post-description mt-5 text-lg text-muted" lang={post.data.language}>
       {post.data.description}
     </p>
-    <div class="post-dates mt-5 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-muted">
-      <span>
-        {t.blog.published}{" "}
-        <time datetime={post.data.pubDate.toISOString()}>
-          {formatPostDate(locale, post.data.pubDate)}
-        </time>
+    <p id="post-author" class="mt-5 text-sm text-muted">
+      {t.blog.author}{" "}
+      <a class="underline-offset-4 hover:underline" href={routeUrl(locale, "home")} rel="author">
+        {siteConfig.name.legal}
+      </a>
+    </p>
+    <div class="post-dates mt-1.5 text-sm text-muted">
+      <span id={post.data.updatedDate ? "post-updated" : undefined}>
+        {post.data.updatedDate ? t.blog.updated : t.blog.published}
+        {": "}
+        <time datetime={date.toISOString()}>{formatPostDate(locale, date)}</time>
       </span>
-      {post.data.updatedDate && (
-        <span id="post-updated">
-          {t.blog.updated}{" "}
-          <time datetime={post.data.updatedDate.toISOString()}>
-            {formatPostDate(locale, post.data.updatedDate)}
-          </time>
-        </span>
-      )}
     </div>
     {post.data.tags.length > 0 && (
       <ul class="post-tags mt-5 flex flex-wrap gap-2" aria-label={t.blog.tags}>

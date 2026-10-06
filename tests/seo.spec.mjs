@@ -290,6 +290,20 @@ function checkArticle(data, slug, language, title, description, date, modified) 
     tags(author, "a").map(({ href, rel }) => ({ href, rel })),
     [{ href: data.lang === "de" ? "/" : "/en/", rel: "author" }]
   )
+  const dates = data.html.match(/<div\b[^>]*class="post-dates\b[^"]*"[^>]*>([\s\S]*?)<\/div>/)?.[1]
+  assert.ok(dates, "A visible article date exists")
+  assert.deepEqual(
+    tags(dates, "time").map(({ datetime }) => datetime),
+    [modified ?? date],
+    "Only the most recent article date is visible"
+  )
+  const label = translations[data.lang].blog[modified ? "updated" : "published"]
+  assert.ok(
+    decode(dates.replace(/<[^>]+>/g, ""))
+      .trim()
+      .startsWith(`${label}:`)
+  )
+  assert.ok(!dates.includes(translations[data.lang].blog[modified ? "published" : "updated"]))
   const updated = data.html.match(/<span\b[^>]*id="post-updated"[^>]*>([\s\S]*?)<\/span>/)?.[1]
   if (modified) {
     assert.ok(updated?.includes(translations[data.lang].blog.updated))
@@ -657,17 +671,9 @@ test("Published articles preserve their content language and canonical across bo
     const slug = data.file.replace(/^(?:en\/)?blog\//, "").replace(/\/index\.html$/, "")
     const language = tags(data.html, "h1").find((tag) => tag.id === "post-title").lang
     const title = decode(data.html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)[1].trim())
-    const date = tags(data.html, "time")[0].datetime
-    const modified = data.html.match(/<span\b[^>]*id="post-updated"[^>]*>([\s\S]*?)<\/span>/)?.[1]
-    checkArticle(
-      data,
-      slug,
-      language,
-      title,
-      data.meta.get("description"),
-      date,
-      modified ? tags(modified, "time")[0].datetime : undefined
-    )
+    const date = data.meta.get("article:published_time")
+    const modified = data.meta.get("article:modified_time")
+    checkArticle(data, slug, language, title, data.meta.get("description"), date, modified)
     const sibling = regularPages.find(
       (item) => item.file === `${data.lang === "de" ? "en/" : ""}blog/${slug}/index.html`
     )
@@ -679,6 +685,37 @@ test("Published articles preserve their content language and canonical across bo
       structuredData(sibling),
       "UI language does not change article identity or facts"
     )
+  }
+})
+
+test("Stacked article contents start closed and match the static sidebar links", () => {
+  for (const data of regularPages.filter((entry) => articles.includes(entry.file))) {
+    const headings = tags(data.html, "h[23]").filter((heading) => heading.id)
+    const navigation = data.html.match(/<nav\b[^>]*id="blog-contents"[^>]*>([\s\S]*?)<\/nav>/)?.[1]
+    if (headings.length === 0) {
+      assert.equal(navigation, undefined, "Articles without headings have no contents navigation")
+      continue
+    }
+    assert.ok(navigation, data.file)
+    const disclosure = navigation.match(/<details\b[^>]*>/)?.[0]
+    assert.ok(disclosure, "Stacked contents use native disclosure")
+    assert.doesNotMatch(disclosure, /\bopen(?:\s|=|>)/, "Stacked contents start closed")
+    assert.equal(tags(disclosure, "details")[0].class, "xl:hidden")
+    assert.equal(tags(navigation, "div")[0].class, "hidden xl:block")
+    const summary = navigation.match(/<summary\b[^>]*>([\s\S]*?)<\/summary>/)?.[1]
+    assert.equal(
+      decode(summary.replace(/<[^>]+>/g, "")).trim(),
+      translations[data.lang].blog.contents
+    )
+    const lists = [...navigation.matchAll(/<ul\b[^>]*>([\s\S]*?)<\/ul>/g)]
+    assert.equal(lists.length, 2, "Both responsive variants exist without JavaScript")
+    for (const [, list] of lists) {
+      assert.deepEqual(
+        tags(list, "a").map((link) => link.href),
+        headings.map((heading) => `#${heading.id}`),
+        "Each variant links to every article heading in reading order"
+      )
+    }
   }
 })
 
@@ -712,7 +749,7 @@ test("The Astro series is ordered by part and uses the current interface languag
   }
 })
 
-test("The Mermaid article builds five diagrams with source available before scripts execute", () => {
+test("The Mermaid article builds five SVG diagrams with expandable source before scripts execute", () => {
   for (const prefix of ["", "en/"]) {
     const data = regularPages.find(
       (entry) =>
@@ -722,7 +759,8 @@ test("The Mermaid article builds five diagrams with source available before scri
       (data.html.match(/<figure class="code-block mermaid-block" data-mermaid>/g) ?? []).length,
       5
     )
-    assert.equal((data.html.match(/<details class="mermaid-source" open>/g) ?? []).length, 5)
+    assert.equal((data.html.match(/<details class="mermaid-source">/g) ?? []).length, 5)
+    assert.equal((data.html.match(/<svg\b[^>]*\bid="mermaid-/g) ?? []).length, 5)
     const definitions = tags(data.html, "button")
       .map((button) => button["data-copy-code"])
       .filter((source) =>
@@ -1236,7 +1274,7 @@ test("Isolated SEO integration", async (t) => {
     // Dependencies are shared through a junction; writable caches must belong to this checkout.
     await writeFile(
       path.join(temporary, "astro.config.mjs"),
-      'import config from "./astro.project.config.mjs"\nexport default { ...config, cacheDir: "./.astro/cache", vite: { ...config.vite, cacheDir: "./.astro/vite" } }\n'
+      'const { default: config } = await import(`./astro.project.config.mjs?t=${Date.now()}`)\nexport default { ...config, cacheDir: "./.astro/cache", vite: { ...config.vite, cacheDir: "./.astro/vite" } }\n'
     )
     await symlink(
       path.join(project, "node_modules"),
@@ -1545,6 +1583,51 @@ test("Isolated SEO integration", async (t) => {
           assert.equal(response.headers.get("content-type"), "text/markdown; charset=utf-8")
           assert.equal(markdown(await response.text()).body, body)
         }
+        await devTest.test(
+          "Diagram colors and font sizes update after a live CSS change",
+          async () => {
+            const stylesFile = path.join(temporary, "src/styles/global.css")
+            const styles = await readFile(stylesFile, "utf8")
+            const modified = styles
+              .replace("--color-paper: #fcfcfb;", "--color-paper: #fffafa;")
+              .replace("--text-code: 0.875rem;", "--text-code: 1rem;")
+            assert.notEqual(modified, styles)
+            const diagrams = async (fontSize, paper) => {
+              for (let attempt = 0; attempt < 60; attempt++) {
+                try {
+                  const response = await fetchDev(
+                    "/blog/astro-fuer-entwicklerblogs-mermaid-diagramme/"
+                  )
+                  const html = await response.text()
+                  const svgs = [
+                    ...html.matchAll(/<svg\b[^>]*\bid="mermaid-[^"]+"[\s\S]*?<\/svg>/g)
+                  ].map((m) => m[0])
+                  if (
+                    svgs.length === 5 &&
+                    svgs.every(
+                      (svg) => svg.includes(`font-size:${fontSize}px`) && svg.includes(paper)
+                    )
+                  )
+                    return svgs
+                } catch {
+                  // A configuration restart can briefly interrupt an HTTP request.
+                }
+                await new Promise((resolve) => globalThis.setTimeout(resolve, 250))
+              }
+              assert.fail(`Diagram SVGs did not update to ${fontSize}px and ${paper}`)
+            }
+            const original = await diagrams(14, "#fcfcfb")
+            await withFiles(
+              new Map([[stylesFile, modified]]),
+              async () => {
+                const updated = await diagrams(16, "#fffafa")
+                assert.notDeepEqual(updated, original)
+              },
+              captureFailure
+            )
+            assert.deepEqual(await diagrams(14, "#fcfcfb"), original)
+          }
+        )
       } catch (error) {
         errors.push(error)
         for (const command of ["status", "logs"]) {
@@ -1570,6 +1653,19 @@ test("Isolated SEO integration", async (t) => {
         })
     })
     assert.ok(serverStopped, "Stop the isolated dev server before mutating fixtures or building")
+    await scenarioTest("An invalid Mermaid definition fails the production build", async () => {
+      await withFiles(
+        new Map([
+          [
+            path.join(content, "__seo-english.md"),
+            `${updatedPost}\n\n\`\`\`mermaid\nflowchart TD\n  A -->\n\`\`\``
+          ]
+        ]),
+        () =>
+          expectFailure(build, [/__seo-english\.md/, /Diagram 1/], "invalid Mermaid definition"),
+        captureFailure
+      )
+    })
     await scenarioTest(
       "Astro and Vite caches belong to the temporary checkout",
       { skip: !built },

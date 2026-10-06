@@ -16,6 +16,19 @@ npx --yes get-pnpm@0.0.5 12.10.0
 Anschließend ein neues Terminal öffnen, mit `pnpm --version` die Version prüfen
 und die Abhängigkeiten mit `pnpm install --frozen-lockfile` installieren.
 
+Für Mermaid-Diagramme einmalig `pnpm setup:diagrams` ausführen. Das installiert
+Chromium für Playwright. Mermaid rendert die SVGs bei der Markdown-Verarbeitung;
+die Website liefert keine Mermaid-Bibliothek an Besucher aus. CSS-Tokens,
+JetBrains Mono und die Schriftgröße `--text-code` gelten auch für den Buildrenderer.
+Fehlerhafte Diagramme stoppen den Build mit Dateipfad und Diagrammnummer.
+Die Blog-Collection verwendet `deferRender: true`, damit Vite die Diagramme beim
+Rendern der Seite verarbeitet. Registrierte CSS- und Schriftdateien lösen eine
+Konfigurationsaktualisierung aus; das HTML entsteht beim Produktionsbuild statisch.
+
+`netlify.toml` installiert Chromium einschließlich Linux-Systembibliotheken vor
+`pnpm build` und veröffentlicht `dist/`. Andere Linux-Buildumgebungen benötigen
+ebenfalls `pnpm exec playwright install --with-deps --only-shell chromium`.
+
 `pnpm-workspace.yaml` erlaubt Abhängigkeits-Buildskripte ausschließlich für
 esbuild und sharp. Neue Paketversionen müssen mindestens einen Tag alt sein;
 fehlende Veröffentlichungsdaten und ein Rückgang der Vertrauensnachweise beim
@@ -38,11 +51,11 @@ pnpm exec astro dev --background
 Den Server mit `pnpm exec astro dev status`, `pnpm exec astro dev logs` und
 `pnpm exec astro dev stop` verwalten.
 
-| Befehl          | Zweck                                                              |
-| --------------- | ------------------------------------------------------------------ |
-| `pnpm validate` | Formatierung, ESLint, Blog- und SEO-Tests, Astro-Prüfung und Build |
-| `pnpm build`    | Statische Produktionsseiten in `dist/` erzeugen                    |
-| `pnpm preview`  | Den Produktions-Build lokal anzeigen                               |
+| Befehl          | Zweck                                                                         |
+| --------------- | ----------------------------------------------------------------------------- |
+| `pnpm validate` | Formatierung, ESLint, Blog-, Diagramm- und SEO-Tests, Astro-Prüfung und Build |
+| `pnpm build`    | Statische Produktionsseiten in `dist/` erzeugen                               |
+| `pnpm preview`  | Den Produktions-Build lokal anzeigen                                          |
 
 Die SEO-Integration startet pro Lauf einen neuen Hintergrundserver in einem
 temporären Checkout mit eigenen Astro- und Vite-Caches. Bei einem unerwarteten

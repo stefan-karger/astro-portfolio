@@ -30,40 +30,43 @@ der Quelltext aufklappen und über den Button in der Kopfzeile kopieren.
 | [Astro und Content Collections](https://docs.astro.build/en/guides/content-collections/) | Laden die Markdown-Beiträge und erzeugen beim Build statische Seiten. |
 | Markdown                                                                                 | Enthält die Diagrammdefinition in einem `mermaid`-Fence.              |
 | [Shiki](https://shiki.style/)                                                            | Färbt den Mermaid-Quelltext bereits beim Build ein.                   |
-| [Mermaid 12.1.0](https://mermaid.js.org/config/usage.html)                               | Berechnet im Browser das Diagramm und erzeugt ein SVG.                |
+| [Mermaid 12.1.0](https://mermaid.js.org/config/usage.html)                               | Berechnet beim Build das Diagramm und erzeugt ein SVG.                |
 | Tailwind CSS und CSS-Tokens                                                              | Gestalten Blockrahmen, Diagramm und Quelltext passend zur Website.    |
-| Eine Astro-Komponente mit Script                                                         | Lädt Mermaid bei Bedarf und behandelt Renderingfehler.                |
+| Sätteri und Playwright                                                                   | Ergänzen das fertige SVG in Astros Markdown-Verarbeitung.             |
 
-Der Browserweg ist eine bewusste Entscheidung. Mermaid wird erst auf Artikeln mit
-Diagrammen importiert. Beim Öffnen des Artikels müssen die Bibliothek und die
-Schriften geladen sein, bevor die Diagramme erscheinen. Ohne JavaScript zeigt die
-Seite den vollständigen Quelltext.
+Die Diagramme stehen bereits im ausgelieferten HTML. Der Browser muss keine
+Mermaid-Bibliothek laden oder Diagramme berechnen. Auch ohne JavaScript bleiben
+die SVGs sichtbar und der Quelltext lässt sich mit einem nativen `details`-Element
+öffnen. Nur die Kopierfunktion benötigt JavaScript.
 
-SVGs schon beim Build zu erzeugen wäre eine Alternative. Beispielsweise benötigt
-[rehype-mermaid](https://github.com/remcohaszing/rehype-mermaid) dafür Playwright
-und einen installierten Browser. Hier bleibt der Build bei der bestehenden
-Markdown- und Shiki-Verarbeitung.
+Astro verwendet hier den [Sätteri-Markdown-Prozessor](https://docs.astro.build/en/guides/markdown-content/#markdown-processors).
+Ein HAST-Plugin ergänzt die SVGs nach dem bestehenden Shiki-Transformer.
+Playwright stellt dafür Chromium bereit. Der Browser läuft ausschließlich während
+der Inhaltsverarbeitung auf dem Entwicklungsrechner oder dem Buildserver.
 
 ## Mermaid installieren und Dateien ergänzen
 
-Die zusätzliche direkte Abhängigkeit wird mit pnpm installiert:
+Die zusätzlichen Abhängigkeiten werden nur für die Entwicklung und den Build benötigt:
 
 ```sh title="Mermaid installieren"
-pnpm add mermaid
+pnpm add -D mermaid playwright @astrojs/markdown-satteri satteri
+pnpm exec playwright install --only-shell chromium
 ```
 
 Dieser Beitrag verwendet Mermaid 12.1.0. Das Lockfile hält die tatsächlich
-installierte Version fest. In diesem Projekt sind weder ein zusätzliches
-Markdown-Plugin noch MDX oder eine hydratisierte UI-Komponente nötig.
+installierte Version fest. Auf einem Linux-Buildserver installiert
+`playwright install --with-deps --only-shell chromium` zusätzlich die benötigten
+Systembibliotheken. MDX und eine hydratisierte UI-Komponente sind nicht nötig.
 
 Die Diagrammverarbeitung liegt bei den bestehenden Blogdateien:
 
 ```text title="Dateien für die Mermaid-Integration"
 src/
-  lib/shiki/code-block.ts
+  lib/
+    mermaid.ts
+    shiki/code-block.ts
   components/blog/
     code-block-controls.astro
-    mermaid-diagrams.astro
   layouts/blog-layout.astro
   styles/
     global.css
@@ -73,8 +76,8 @@ src/
     en.ts
 ```
 
-Der Transformer erzeugt das HTML. `mermaid-diagrams.astro` ergänzt die SVGs und
-liest lokalisierte Fehlermeldungen aus den Übersetzungen. `global.css` enthält
+Der Transformer erzeugt das HTML. `mermaid.ts` ergänzt die SVGs im Markdown-Prozessor.
+Die Astro-Konfiguration bindet das Plugin ein. `global.css` enthält
 die gemeinsamen CSS-Tokens. `blog.css` gestaltet die erzeugten Elemente und wird
 nur im Bloglayout importiert. Die Kopierfunktion bleibt in `code-block-controls.astro`.
 
@@ -111,7 +114,6 @@ setzt er darunter einen zunächst verborgenen Diagrammbereich und ein geöffnete
     <!-- Titel und vorhandener Copy-Button mit data-copy-code -->
   </div>
   <div class="mermaid-diagram" hidden role="region" tabindex="0"></div>
-  <p class="mermaid-error" hidden role="status"></p>
   <details class="mermaid-source" open>
     <summary>Quelltext anzeigen</summary>
     <pre class="astro-code"><code><!-- Shiki-Quelltext --></code></pre>
@@ -123,61 +125,61 @@ Im tatsächlichen Markup stehen deutsche und englische Summary-Texte. CSS wählt
 anhand von `html[lang]` aus. Damit passt die Bedienoberfläche auch ohne JavaScript
 zur URL-Sprache. Die Diagrammbeschriftungen bleiben in der Sprache des Beitrags.
 
-## Das Diagramm im Browser rendern
+## Das Diagramm beim Build rendern
 
-Das Bloglayout bindet die Rendering-Komponente neben den vorhandenen Codeblock-
-Controls ein:
+Die Astro-Konfiguration ergänzt das Plugin im Markdown-Prozessor:
 
-```astro title="src/layouts/blog-layout.astro · Einbindung"
----
-import CodeBlockControls from "@/components/blog/code-block-controls.astro"
-import MermaidDiagrams from "@/components/blog/mermaid-diagrams.astro"
-import "@/styles/blog.css"
+```js title="astro.config.mjs · Einbindung"
+import { defineConfig } from "astro/config"
+import { satteri } from "@astrojs/markdown-satteri"
+import { mermaidDiagrams } from "./src/lib/mermaid.ts"
 
-const locale = Astro.currentLocale === "en" ? "en" : "de"
----
+const mermaid = mermaidDiagrams()
 
-<CodeBlockControls locale={locale} />
-<MermaidDiagrams locale={locale} />
-```
-
-Das Script sucht zunächst nach `[data-mermaid]`. Erst wenn Blöcke vorhanden sind,
-importiert es Mermaid. Parallel wartet es auf `document.fonts.ready`. Andernfalls
-könnte Mermaid die Beschriftungen mit einer Ersatzschrift ausmessen, und nach dem
-Schriftwechsel wären Abstände oder Knotenbreiten falsch.
-
-```ts title="mermaid-diagrams.astro · Laden"
-const blocks = document.querySelectorAll<HTMLElement>("[data-mermaid]")
-
-if (blocks.length) {
-  const [{ default: mermaid }] = await Promise.all([import("mermaid"), document.fonts.ready])
-
-  // Hier folgen die gemeinsame Konfiguration und das Rendering der Blöcke.
-}
-```
-
-Jeder Block erhält eine eindeutige SVG-ID. Die Fehlerbehandlung liegt innerhalb
-der Schleife, damit eine defekte Definition die folgenden Diagramme nicht stoppt.
-Der folgende Ausschnitt zeigt den Kern. Die Komponente ergänzt außerdem die
-Beschriftung des scrollbaren Bereichs aus dem SVG-Titel:
-
-```ts title="mermaid-diagrams.astro · Rendering"
-for (const [index, block] of blocks.entries()) {
-  const target = block.querySelector<HTMLElement>(".mermaid-diagram")
-  const source = block.querySelector<HTMLButtonElement>("[data-copy-code]")?.dataset.copyCode
-  if (!target || source === undefined) continue
-
-  try {
-    const { svg } = await mermaid.render(`mermaid-${index + 1}`, source)
-    target.innerHTML = svg
-    target.hidden = false
-    const details = block.querySelector("details")
-    if (details && !details.contains(document.activeElement)) details.open = false
-  } catch {
-    // Lokalisierte Fehlermeldung anzeigen und den Quelltext geöffnet lassen.
+export default defineConfig({
+  integrations: [mermaid.integration],
+  markdown: {
+    processor: satteri({ hastPlugins: [mermaid.plugin] })
+    // Die vorhandene shikiConfig bleibt hier erhalten.
   }
+})
+```
+
+Das Plugin sucht im HAST nach den vom Shiki-Transformer angelegten Diagrammblöcken.
+Bei Artikeln ohne Diagramme startet es keinen Browser. Für alle Diagramme eines
+Artikels öffnet es gemeinsam eine Chromium-Instanz und schließt sie anschließend.
+
+Der Renderer lädt die vorhandenen CSS-Tokens und die lokal installierte
+JetBrains Mono. Erst nach `document.fonts.load()` und `document.fonts.ready`
+misst Mermaid die Beschriftungen aus. Dadurch entstehen Knotenbreiten und
+Zeilenumbrüche mit derselben Schrift wie auf der Website.
+
+Jeder Artikel erhält ein stabiles ID-Präfix aus seinem Dateipfad. Die einzelnen
+Diagramme ergänzen ihre Position im Artikel. `deterministicIds` und
+`deterministicIDSeed` stabilisieren auch Mermaids interne IDs. Ein fester
+`handDrawnSeed` verhindert zufällige Unterschiede in den SVG-Pfaden von
+ER-Tabellen, die intern auch beim `classic`-Look Rough.js verwenden. Der Kern des
+Renderings läuft im Buildbrowser:
+
+```ts title="src/lib/mermaid.ts · Rendering im Buildbrowser"
+for (const [index, definition] of definitions.entries()) {
+  const { svg } = await mermaid.render(`${prefix}-${index + 1}`, definition)
+  // Das HAST-Plugin fügt dieses SVG in den zugehörigen Diagrammbereich ein.
 }
 ```
+
+Anschließend ergänzt das Plugin den zugänglichen Namen des Scrollbereichs aus
+dem SVG-Titel, zeigt das Diagramm an und klappt den Quelltext ein. Eine fehlerhafte
+Definition stoppt den Build mit Dateipfad und Diagrammnummer. So wird eine kaputte
+Grafik vor der Veröffentlichung erkannt.
+
+Die Collection verwendet Astros
+[`deferRender: true`](https://docs.astro.build/en/reference/content-loader-reference/#deferrender).
+Dadurch läuft die Markdown-Verarbeitung beim Rendern der Seite durch Vite.
+Die Integration registriert CSS- und Schriftdateien mit `addWatchFile`, damit
+Änderungen einen Neustart der Konfiguration auslösen. So bleiben im Devserver
+keine SVGs aus einem älteren Stand der Gestaltung im Inhaltscache erhalten.
+Beim Produktionsbuild entsteht weiterhin vollständiges statisches HTML.
 
 Die Definition bleibt am Copy-Button erhalten. Das SVG ersetzt den Quelltext nicht.
 Auch nach dem Rendern lässt sich die Definition mit dem nativen `details`-Element
@@ -213,12 +215,12 @@ deshalb dieses Format. Auch der Codeblock-Hintergrund steht als Hexwert im CSS:
 ```
 
 `@theme static` erhält den Token auch dann im erzeugten CSS, wenn Tailwind ihn
-nicht in einer Utility-Klasse findet. Mermaid liest ihn zur Laufzeit, und
+nicht in einer Utility-Klasse findet. Der Buildrenderer liest ihn beim Rendern, und
 `blog.css` verwendet ihn über eine `@reference` auf `global.css`.
 
 Der Renderer liest diese Werte direkt aus den CSS-Tokens:
 
-```ts title="mermaid-diagrams.astro · CSS-Farben lesen"
+```ts title="src/lib/mermaid.ts · CSS-Farben im Buildbrowser lesen"
 const style = getComputedStyle(document.documentElement)
 
 function color(name: string) {
@@ -230,14 +232,14 @@ So bleibt die Website die Quelle der Farben. Eine Änderung an den Tokens kommt
 auch bei Mermaid an. Die Konfiguration ergänzt die Grundfarben und die Stellen,
 an denen Mermaids abgeleitete Farben von der Websitegestaltung abweichen:
 
-```ts title="mermaid-diagrams.astro · Theme"
+```ts title="src/lib/mermaid.ts · Theme-Auszug"
 const paper = color("--color-paper")
 const ink = color("--color-ink")
 const muted = color("--color-muted")
 const rule = color("--color-rule")
 const surface = color("--color-code")
 const appearance = { theme: "base", look: "classic", useMaxWidth: false } as const
-const code = blocks[0].querySelector<HTMLElement>(".astro-code")!
+const code = document.querySelector<HTMLElement>(".astro-code")!
 const fontSize = getComputedStyle(code).fontSize
 
 mermaid.initialize({
@@ -245,6 +247,7 @@ mermaid.initialize({
   securityLevel: "strict",
   suppressErrorRendering: true,
   htmlLabels: false,
+  layout: "elk",
   theme: "base",
   look: "classic",
   fontFamily: "var(--font-mono)",
@@ -312,7 +315,7 @@ beschrieben.
 allgemeinen Markdown-Styles für Absätze, Tabellen und Inline-Code nicht auf
 HTML innerhalb eines Diagramms. `securityLevel: "strict"` deaktiviert unter
 anderem Mermaid-Klickaktionen. `suppressErrorRendering: true` überlässt die
-Fehleranzeige der eigenen Komponente.
+Fehlerbehandlung dem Buildrenderer.
 
 ### Den Block und die mobile Darstellung abstimmen
 
@@ -349,51 +352,52 @@ Inhalt zusätzlich. Siehe [Mermaids Barrierefreiheitsoptionen](https://mermaid.j
 
 ### Flowchart für den Blog-Stack
 
-Astro verarbeitet den Beitrag beim Build. Shiki erzeugt den Quelltextblock.
-Erst im Browser ergänzt Mermaid das Diagramm:
+Astro verarbeitet den Beitrag beim Build. Shiki erzeugt den Quelltextblock,
+anschließend ergänzt Mermaid das fertige SVG:
 
 ```mermaid title="Der Weg vom Markdown zum Diagramm" showLineNumbers
 flowchart LR
   accTitle: Markdown und Mermaid im Astro-Blog
-  accDescr: Astro lädt einen Markdown-Beitrag aus der Content Collection. Shiki färbt die Definition ein. Die statische Seite lädt Mermaid im Browser und zeigt das SVG zusammen mit dem aufklappbaren Quelltext.
+  accDescr: Astro lädt einen Markdown-Beitrag aus der Content Collection. Shiki färbt die Definition ein. Mermaid erzeugt beim Build das SVG. Der Browser zeigt die fertige Grafik mit aufklappbarem Quelltext.
   Markdown[Markdown] --> Build
   subgraph Build[Beim Build]
     direction TB
     Collection[Content Collection]
     Collection --> Shiki[Shiki und Codeblock]
-    Shiki --> HTML[Blogseite mit Quelltext]
+    Shiki --> Mermaid[Mermaid und lokale Schriften]
+    Mermaid --> HTML[Blogseite mit SVG und Quelltext]
   end
   Build --> Browser
   subgraph Browser[Im Browser]
     direction TB
-    Mermaid[Mermaid und geladene Schriften]
-    Mermaid --> SVG[SVG-Diagramm]
+    SVG[Fertiges SVG-Diagramm]
   end
 ```
 
 Dieser Block prüft Gruppen, Pfeile und mehrzeilige Abläufe. Beim Kopieren dürfen
 die eingeblendeten Zeilennummern nicht in der Definition stehen.
 
-### Sequenzdiagramm für das Laden
+### Sequenzdiagramm für das Rendering
 
-Das Script importiert die Bibliothek nur bei vorhandenen Diagrammblöcken. Ein
-fehlgeschlagenes Rendering lässt die Definition auf der Seite:
+Der Buildrenderer erzeugt die Grafik vor der Veröffentlichung. Eine ungültige
+Definition bricht den Build ab:
 
-```mermaid title="Diagramme beim Öffnen des Artikels laden"
+```mermaid title="Diagramme beim Build erzeugen"
 sequenceDiagram
-  accTitle: Ein Mermaid-Diagramm laden
-  accDescr: Der Browser empfängt die statische Blogseite. Das Script wartet auf Mermaid und die lokalen Schriften. Mermaid liefert bei Erfolg ein SVG. Bei einem Fehler bleibt der Quelltext geöffnet.
-  participant B as Browser
-  participant S as Blog-Script
+  accTitle: Ein Mermaid-Diagramm beim Build rendern
+  accDescr: Astro verarbeitet den Artikel. Der Renderer startet Chromium mit lokalen Schriften und Mermaid. Bei Erfolg ergänzt er das SVG im HTML. Bei einem Fehler stoppt der Build.
+  participant A as Astro
+  participant R as Buildrenderer
   participant M as Mermaid
-  B->>S: Artikel mit Diagrammblöcken öffnen
-  Note over S: Auf Bibliothek und Schriften warten
-  S->>M: Definition rendern
+  A->>R: Artikel mit Diagrammblöcken verarbeiten
+  Note over R: Chromium starten und Schriften laden
+  R->>M: Definition rendern
   alt Definition ist gültig
-    M-->>S: SVG
-    S-->>B: Diagramm anzeigen, Quelltext einklappen
+    M-->>R: SVG
+    R-->>A: HTML mit SVG und aufklappbarem Quelltext
   else Definition ist fehlerhaft
-    S-->>B: Meldung anzeigen, Quelltext geöffnet lassen
+    M-->>R: Fehler
+    R-->>A: Build mit Dateipfad und Diagrammnummer abbrechen
   end
 ```
 
@@ -471,10 +475,10 @@ flowchart LR
   und den Quelltext-Schalter. Enter öffnet den Quelltext.
 - **Auf schmalen Displays lesen.** Die Seite bleibt innerhalb der Fensterbreite.
   Breite Diagramme haben einen eigenen Scrollbereich.
-- **Ohne JavaScript lesen.** Die Mermaid-Definition bleibt geöffnet sichtbar.
-  Ein SVG entsteht bei diesem Renderingweg erst im Browser.
-- **Fehler behandeln.** Eine ungültige Definition muss ihren Quelltext behalten.
-  Ein späteres gültiges Diagramm muss weiterhin gerendert werden.
+- **Ohne JavaScript lesen.** Das SVG ist sofort sichtbar. Der Quelltext lässt
+  sich weiterhin öffnen und lesen.
+- **Fehler behandeln.** Eine ungültige Definition muss den Build mit Dateipfad
+  und Diagrammnummer abbrechen.
 
 Für den letzten Fall eignet sich eine temporäre Testdefinition:
 
@@ -492,3 +496,16 @@ mit den vorhandenen Projektprüfungen verifiziert:
 ```sh title="Projekt prüfen"
 pnpm validate
 ```
+
+## Nachtrag: weniger JavaScript durch fertige SVGs
+
+Die erste Fassung dieses Artikels renderte Mermaid im Browser. Ein späterer Blick
+auf den Produktionsbuild zeigte, dass der Artikel dafür rund 2,43 MB JavaScript
+lud, etwa 712 kB nach gzip-Kompression. Dazu gehörte auch die ELK-Layoutbibliothek.
+Die großen Chunks betrafen also den fertigen Build.
+
+Deshalb entstehen die SVGs inzwischen beim Build. Mermaid und ELK werden nicht
+mehr an Besucher ausgeliefert. Die Diagramme behalten ihre Gestaltung und sind
+auch ohne JavaScript sichtbar. Als zusätzlicher Schritt ist Chromium auf dem
+Buildrechner erforderlich. Dieser Artikel und seine Beispiele beschreiben bereits
+die neue Umsetzung.

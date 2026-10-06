@@ -114,7 +114,7 @@
   }
 
   .code-block .astro-code {
-    @apply m-0 max-w-full overflow-x-auto px-4 pb-4 font-mono text-sm leading-6;
+    @apply m-0 max-w-full overflow-x-auto px-4 pb-4 font-mono leading-6 text-code;
     border-radius: inherit;
     background-color: transparent !important;
     overflow-wrap: normal;
@@ -132,6 +132,11 @@
     display: block;
     height: auto;
     margin-inline: auto;
+  }
+
+  .mermaid-diagram :is(text, tspan)::selection {
+    fill: var(--color-paper);
+    -webkit-text-fill-color: var(--color-paper);
   }
 
   .mermaid-source > summary {
@@ -159,10 +164,6 @@
   html[lang="en"] .mermaid-label-de,
   html:not([lang="en"]) .mermaid-label-en {
     display: none;
-  }
-
-  .blog-content .mermaid-error {
-    @apply m-0 px-4 py-3 text-sm text-muted;
   }
 
   .code-block .line {

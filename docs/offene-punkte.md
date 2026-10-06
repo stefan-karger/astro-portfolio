@@ -48,6 +48,9 @@ Beide Artikel bleiben gültig.
 
 ### Noch offen
 
+- [ ] Beim nächsten Netlify-Deploy die Chromium-Installation und den Build der
+      Mermaid-SVGs prüfen. Die Artikel müssen fertige Diagramme ohne zusätzliche
+      Mermaid-JavaScript-Dateien ausliefern. Lokal ist dieser Ablauf geprüft.
 - [ ] Nach Veröffentlichung die Produktionsdomain prüfen: HTML-Indexierbarkeit,
       Auslieferungs-Header, Canonicals sowie RSS, Markdown, llms.txt, robots.txt
       und Sitemap. Das Preview-`noindex` darf dort nicht auf indexierbaren

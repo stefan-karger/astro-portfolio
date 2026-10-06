@@ -159,7 +159,7 @@ export const de = {
     draft: "Entwurf",
     tags: "Tags",
     language: { de: "Deutsch", en: "Englisch" },
-    contents: "Auf dieser Seite",
+    contents: "In diesem Beitrag",
     back: "Zur Übersicht",
     navigation: "Weitere Beiträge",
     previous: "Vorheriger Beitrag",
@@ -171,8 +171,7 @@ export const de = {
     series: "Artikelserie",
     part: "Teil",
     mermaidSource: "Quelltext anzeigen",
-    mermaidDiagram: "Diagramm",
-    mermaidError: "Das Diagramm konnte nicht geladen werden. Der Quelltext ist weiterhin verfügbar."
+    mermaidDiagram: "Diagramm"
   },
 
   prototype: {
