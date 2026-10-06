@@ -55,16 +55,12 @@ const legalLinks = [
                 <a
                   class="site-link inline-flex min-h-11 max-w-full items-center text-muted wrap-anywhere hover:text-ink"
                   href={social.href}
-                  target={social.external ? "_blank" : undefined}
-                  rel={social.external ? "me noopener noreferrer" : undefined}
+                  target="_blank"
+                  rel="me noopener noreferrer"
                 >
                   {social.label}
-                  {social.external && (
-                    <>
-                      <span aria-hidden="true">&nbsp;↗</span>
-                      <span class="sr-only"> ({t.links.opensInNewTab})</span>
-                    </>
-                  )}
+                  <span aria-hidden="true">&nbsp;↗</span>
+                  <span class="sr-only"> ({t.links.opensInNewTab})</span>
                 </a>
               </li>
             ))}

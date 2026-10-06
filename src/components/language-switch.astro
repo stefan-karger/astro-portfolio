@@ -1,9 +1,13 @@
 ---
-import { defaultLocale, locales } from "@/i18n/types"
+import { locales, type Locale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { switchLocale } from "@/i18n/url"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
 const t = getTranslations(locale)
 ---
 

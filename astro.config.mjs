@@ -10,6 +10,7 @@ import {
 import { rendererRich, transformerTwoslash } from "@shikijs/twoslash"
 
 import { transformerCodeBlock } from "./src/lib/shiki/code-block.ts"
+import { defaultLocale, locales } from "./src/i18n/types.ts"
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,7 +21,7 @@ export default defineConfig({
 
   markdown: {
     shikiConfig: {
-      themes: { light: "github-light", dark: "github-dark" },
+      theme: "github-light",
       transformers: [
         transformerTwoslash({
           explicitTrigger: true,
@@ -42,8 +43,8 @@ export default defineConfig({
   },
 
   i18n: {
-    defaultLocale: "de",
-    locales: ["de", "en"],
+    defaultLocale,
+    locales: [...locales],
     routing: {
       prefixDefaultLocale: false
     }

@@ -1,6 +1,14 @@
 allowBuilds:
   esbuild: true
   sharp: true
+minimumReleaseAge: 1440
+minimumReleaseAgeIgnoreMissingTime: false
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # @astrojs/check requires this 2024 release without npm provenance.
+  # Its registry integrity matches the lockfile; gitHead matches the signed tag:
+  # https://github.com/paulmillr/chokidar/releases/tag/4.0.3
+  - chokidar@4.0.3
 minimumReleaseAgeExclude:
   - "@astrojs/markdown-satteri@0.4.2"
   - astro@7.3.4

@@ -4,6 +4,10 @@
 
 Der Hero importiert `hero.jpg` in Astros `<Picture />`. Beim Build erzeugt Astro daraus responsive AVIF- und WebP-Dateien sowie einen JPEG-Fallback in `dist/_astro/`. Diese Builddateien werden nicht versioniert. Nach einer Bearbeitung an `hero.jpg` reicht `pnpm validate` aus, um alle Varianten neu zu erzeugen.
 
+Die JSON-LD-Daten beider Startseiten und aller veröffentlichten Artikel verwenden denselben optimierten JPEG-Fallback mit 840 × 1050 Pixeln und Qualität `high`. `src/lib/structured-data.ts` fordert ihn über Astros `getImage()` an. Astro führt identische Bildtransformationen zusammen, sodass keine zusätzliche Porträtvariante nötig ist.
+
+Die Quelldatei darf nicht im öffentlichen Build erscheinen. Das importierte Bildobjekt wird direkt an `getImage()` übergeben. Direkter Zugriff auf dessen `src` oder Dimensionen außerhalb der Bildpipeline kann Astro veranlassen, das Original zusätzlich zu veröffentlichen. Die SEO-Tests prüfen die gemeinsame URL, die Übereinstimmung mit dem sichtbaren JPEG-Fallback, Format und Dimensionen sowie das Fehlen von EXIF-, XMP- und IPTC-Metadaten. Ein SHA-256-Vergleich über alle Dateien in `dist/` prüft außerdem, dass das Original unter keinem Dateinamen enthalten ist.
+
 ## Portfolio
 
 Die aktiven Portfolio-Quellen liegen unter `src/assets/portfolio/`. Beide Sprachversionen lesen diesen Ordner beim Build automatisch ein. Es gibt keine separate Bildliste oder Sortierdatei.

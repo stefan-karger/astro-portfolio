@@ -168,7 +168,7 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
       window.history.pushState(
         {
           ...window.history.state,
-          portfolioLightbox: { path: window.location.pathname, index: options.index ?? 0 }
+          portfolioLightbox: { path: window.location.pathname, index: openingIndex }
         },
         ""
       )

@@ -13,13 +13,17 @@ const t = getTranslations("de")
 const title = `${siteConfig.name.public} - ${t.home.metaTitle}`
 const description = t.home.metaDescription
 const canonicalPath = routeUrl("de", "home")
+const graph = await profileGraph({
+  site: Astro.site,
+  canonicalPath,
+  locale: "de",
+  title,
+  description
+})
 ---
 
 <BaseLayout {title} {description} {canonicalPath} mainClass="w-full flex-1">
-  <StructuredData
-    slot="head"
-    data={profileGraph({ site: Astro.site, canonicalPath, locale: "de", title, description })}
-  />
+  <StructuredData slot="head" data={graph} />
   <HomeHero />
   <HomeProjects />
   <HomeCareer />

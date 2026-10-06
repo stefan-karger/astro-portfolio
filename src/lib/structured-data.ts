@@ -1,4 +1,5 @@
 import type { CollectionEntry } from "astro:content"
+import { getImage } from "astro:assets"
 
 import portrait from "@/assets/hero.jpg"
 import { locales, type Locale } from "@/i18n/types"
@@ -6,9 +7,16 @@ import { getTranslations } from "@/i18n/translations"
 import { siteConfig } from "@/lib/config"
 import { projects } from "@/lib/projects"
 
-function entities(site: URL | undefined) {
+async function entities(site: URL | undefined) {
   if (!site) throw new Error("Missing `site` in astro.config.mjs")
 
+  const image = await getImage({
+    src: portrait,
+    width: 840,
+    height: 1050,
+    format: "jpeg",
+    quality: "high"
+  })
   const personId = new URL("/#person", site).href
   const websiteId = new URL("/#website", site).href
   const url = new URL("/", site).href
@@ -28,13 +36,13 @@ function entities(site: URL | undefined) {
       name: siteConfig.name.legal,
       alternateName: siteConfig.name.public,
       url,
-      image: new URL(portrait.src, site).href,
+      image: new URL(image.src, site).href,
       sameAs: siteConfig.socialLinks.map(({ href }) => href)
     }
   }
 }
 
-export function profileGraph({
+export async function profileGraph({
   site,
   canonicalPath,
   locale,
@@ -47,7 +55,7 @@ export function profileGraph({
   title: string
   description: string
 }) {
-  const { website, person } = entities(site)
+  const { website, person } = await entities(site)
   const canonical = new URL(canonicalPath, website.url).href
   const copy = getTranslations(locale).projects
   const works = [
@@ -89,7 +97,7 @@ export function profileGraph({
   }
 }
 
-export function articleGraph({
+export async function articleGraph({
   site,
   canonicalPath,
   post
@@ -98,7 +106,7 @@ export function articleGraph({
   canonicalPath: string
   post: CollectionEntry<"blog">
 }) {
-  const { website, person } = entities(site)
+  const { website, person } = await entities(site)
   const canonical = new URL(canonicalPath, website.url).href
 
   return {
@@ -124,4 +132,4 @@ export function articleGraph({
   }
 }
 
-export type Graph = ReturnType<typeof profileGraph> | ReturnType<typeof articleGraph>
+export type Graph = Awaited<ReturnType<typeof profileGraph> | ReturnType<typeof articleGraph>>

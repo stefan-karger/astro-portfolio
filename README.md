@@ -6,8 +6,30 @@ Deutsch und Englisch. Astro erzeugt die statischen Seiten; das Hosting erfolgt
 
 ## Entwicklung
 
-Abhängigkeiten mit `pnpm install` installieren. Den Entwicklungsserver im
-Hintergrund starten:
+Voraussetzungen sind Node.js `^22.13.0 || >=24.0.0` und pnpm `12.10.0`.
+Die pnpm-Version ist in `package.json` festgelegt. pnpm lokal installieren:
+
+```sh
+npx --yes get-pnpm@0.0.5 12.10.0
+```
+
+Anschließend ein neues Terminal öffnen, mit `pnpm --version` die Version prüfen
+und die Abhängigkeiten mit `pnpm install --frozen-lockfile` installieren.
+
+`pnpm-workspace.yaml` erlaubt Abhängigkeits-Buildskripte ausschließlich für
+esbuild und sharp. Neue Paketversionen müssen mindestens einen Tag alt sein;
+fehlende Veröffentlichungsdaten und ein Rückgang der Vertrauensnachweise beim
+Veröffentlichen führen zum Abbruch der Installation. Die eingetragenen
+Ausnahmen vom Mindestalter gelten nur für die genannten Paketversionen.
+Diese Einstellungen folgen den [pnpm-Buildregeln](https://pnpm.io/settings/build)
+und der [pnpm-Abhängigkeitsprüfung](https://pnpm.io/settings/dependency-resolution).
+Die Vertrauensprüfung hat eine Ausnahme für `chokidar@4.0.3`, das
+`@astrojs/check` benötigt. Diese Version von Dezember 2024 hat keinen
+npm-Provenienznachweis. Ihre Registry-Prüfsumme stimmt mit dem Lockfile überein;
+der veröffentlichte Commit entspricht dem
+[signierten Release-Tag](https://github.com/paulmillr/chokidar/releases/tag/4.0.3).
+
+Den Entwicklungsserver im Hintergrund starten:
 
 ```sh
 pnpm exec astro dev --background
@@ -21,6 +43,20 @@ Den Server mit `pnpm exec astro dev status`, `pnpm exec astro dev logs` und
 | `pnpm validate` | Formatierung, ESLint, Blog- und SEO-Tests, Astro-Prüfung und Build |
 | `pnpm build`    | Statische Produktionsseiten in `dist/` erzeugen                    |
 | `pnpm preview`  | Den Produktions-Build lokal anzeigen                               |
+
+Die SEO-Integration startet pro Lauf einen neuen Hintergrundserver in einem
+temporären Checkout mit eigenen Astro- und Vite-Caches. Bei einem unerwarteten
+Fehler bleibt dieser Checkout erhalten. Zusätzlich liegen unter
+`.astro/seo-failures/failure-*` eine Kopie des Checkouts vor der Wiederherstellung
+geänderter Testdateien und eine `failure.json` mit Szenariofolge, Prozessausgaben,
+Exit-Details und Werkzeugversionen. Die Tests geben beide Verzeichnisse aus.
+Die Kopie behält Datei-Zeitstempel; der Test-Runner liegt als `seo.spec.mjs` daneben.
+Erwartete Validierungsfehler erzeugen keine Fehlerkopie.
+
+Zum Nachstellen im gesicherten `checkout`-Verzeichnis mit derselben Node-Version
+`pnpm install --frozen-lockfile` ausführen und den betroffenen Astro-Befehl aus
+`failure.json` mit der dort installierten CLI wiederholen. Die Fehlerkopie enthält
+das Lockfile und die ursprünglichen Caches, aber keine `node_modules`-Verknüpfung.
 
 ## Metadaten und Auffindbarkeit
 

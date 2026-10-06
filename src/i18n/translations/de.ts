@@ -77,41 +77,29 @@ export const de = {
   career: {
     title: "Werdegang",
     present: "heute",
-    jobs: [
-      {
-        id: "rhein" as const satisfies CareerId,
-        company: "BMW Rhein Gruppe",
-        url: "https://www.rhein-bmw.de/",
+    jobs: {
+      rhein: {
         role: "Senior Softwareentwickler",
         type: "Hauptberuflich",
         summary:
           "Eigenverantwortliche Konzeption, Entwicklung und langfristige Betreuung interner Software für Vertrieb, Service und IT. Ein Schwerpunkt ist der Aufbau einer zentralen Webanwendung, die Informationen und Funktionen bestehender Fachanwendungen schrittweise zusammenführt."
       },
-      {
-        id: "junksplayground" as const satisfies CareerId,
-        company: "Junksplayground",
-        url: "https://junksplayground.de/",
+      junksplayground: {
         role: "Softwareentwickler & technischer Berater",
         type: "Nebenberuflich",
         summary:
           "Entwicklung und langfristige Betreuung einer Schnittstelle zwischen JTL-Wawi und Cardmarket für automatisierte Bestands-, Bestell- und Preisabgleiche. Ergänzend technische Beratung der Geschäftsleitung bei Automatisierungen, Systemarchitektur und neuen Softwareprojekten."
       },
-      {
-        id: "paragon" as const satisfies CareerId,
-        company: "PARAGON Systemhaus GmbH",
+      paragon: {
         role: "Softwareentwickler"
       },
-      {
-        id: "huk" as const satisfies CareerId,
-        company: "HUK-COBURG",
+      huk: {
         role: "Softwareentwickler"
       },
-      {
-        id: "schwaebischHall" as const satisfies CareerId,
-        company: "Bausparkasse Schwäbisch Hall",
+      schwaebischHall: {
         role: "Duales Studium Wirtschaftsinformatik (B.Sc.)"
       }
-    ]
+    } satisfies Record<CareerId, { role: string; type?: string; summary?: string }>
   },
 
   contact: {
@@ -163,6 +151,7 @@ export const de = {
 
   blog: {
     author: "Von",
+    published: "Veröffentlicht am",
     updated: "Aktualisiert am",
     description: "Notizen zu Software, Webentwicklung und den Dingen, die ich dabei lerne.",
     empty: "Noch keine Beiträge veröffentlicht.",

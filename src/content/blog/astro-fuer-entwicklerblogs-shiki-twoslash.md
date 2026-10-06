@@ -2,7 +2,7 @@
 title: "Astro für Entwicklerblogs: Shiki & Twoslash"
 description: "Teil 1 der Serie: So entsteht dieser Blog mit Astro-Collections, Markdown und Codeblöcken mit Shiki und Twoslash. Vom Setup bis zum Praxisbeispiel."
 pubDate: "2026-10-02"
-updatedDate: "2026-10-05"
+updatedDate: "2026-10-06"
 language: de
 tags: "Astro, Markdown, Shiki, TypeScript"
 draft: false
@@ -145,7 +145,7 @@ export default defineConfig({
   },
   markdown: {
     shikiConfig: {
-      themes: { light: "github-light", dark: "github-dark" },
+      theme: "github-light",
       transformers: [
         transformerTwoslash({
           explicitTrigger: true,
@@ -182,13 +182,14 @@ Er übernimmt drei Aufgaben:
 - Typ-Popups neben das scrollbare `pre` setzen, damit sie nicht an dessen Rand
   abgeschnitten werden.
 
-Die Styles in `src/styles/global.css` importieren Tailwind und die Twoslash-Styles.
-Sie gestalten zusätzlich das erzeugte Markdown und die Klassen für Diffs und
+`src/styles/global.css` importiert Tailwind und definiert die gemeinsamen CSS-Tokens.
+Das Bloglayout importiert zusätzlich `src/styles/blog.css`. Diese Datei enthält
+die Twoslash-Styles und gestaltet das erzeugte Markdown sowie Diffs und
 Hervorhebungen. `code-block-controls.astro` verbindet die Copy-Buttons mit der
 Clipboard-API und ergänzt Hover, Fokus und Antippen für die nativen Popovers.
 
-Das verwendete Theme ist hell. Shiki erzeugt bereits zusätzliche Farbvariablen für
-`github-dark`; eine Dark-Mode-Umschaltung ist in dieser Version nicht eingerichtet.
+Dieser Blog verwendet das helle Theme `github-light`. Shiki erzeugt die
+Syntaxfarben beim Build direkt im HTML.
 
 ### Die Content Collection anlegen
 

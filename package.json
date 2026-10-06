@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@12.10.0",
   "engines": {
     "node": "^22.13.0 || >=24.0.0"
   },
@@ -11,7 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test:blog": "node --experimental-strip-types --test tests/code-block.test.mjs",
+    "test:blog": "node --experimental-strip-types --test tests/code-block.test.mjs tests/type-popovers.test.mjs",
     "test:seo": "node --experimental-strip-types --test tests/seo.spec.mjs",
     "lint": "eslint . --cache --max-warnings 0",
     "lint:fix": "eslint . --cache --fix",
@@ -29,9 +30,6 @@
     "photoswipe": "^5.4.4",
     "sharp": "0.35.4",
     "tailwindcss": "^4.3.3"
-  },
-  "allowScripts": {
-    "esbuild": true
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

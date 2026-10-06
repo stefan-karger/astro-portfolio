@@ -2,6 +2,7 @@
 title: "Astro für Entwicklerblogs: Mermaid-Diagramme"
 description: "Teil 2 der Serie: Mermaid in Astro-Markdown integrieren, Diagramme mit den vorhandenen Schriften und Farben gestalten und die Funktionen direkt ausprobieren."
 pubDate: "2026-10-05"
+updatedDate: "2026-10-06"
 language: de
 tags: "Astro, Markdown, Mermaid, CSS"
 draft: false
@@ -64,15 +65,18 @@ src/
     code-block-controls.astro
     mermaid-diagrams.astro
   layouts/blog-layout.astro
-  styles/global.css
+  styles/
+    global.css
+    blog.css
   i18n/translations/
     de.ts
     en.ts
 ```
 
 Der Transformer erzeugt das HTML. `mermaid-diagrams.astro` ergänzt die SVGs und
-liest lokalisierte Fehlermeldungen aus den Übersetzungen. `global.css` gestaltet
-die erzeugten Elemente. Die Kopierfunktion bleibt in `code-block-controls.astro`.
+liest lokalisierte Fehlermeldungen aus den Übersetzungen. `global.css` enthält
+die gemeinsamen CSS-Tokens. `blog.css` gestaltet die erzeugten Elemente und wird
+nur im Bloglayout importiert. Die Kopierfunktion bleibt in `code-block-controls.astro`.
 
 ## Mermaid im vorhandenen Transformer erkennen
 
@@ -128,6 +132,7 @@ Controls ein:
 ---
 import CodeBlockControls from "@/components/blog/code-block-controls.astro"
 import MermaidDiagrams from "@/components/blog/mermaid-diagrams.astro"
+import "@/styles/blog.css"
 
 const locale = Astro.currentLocale === "en" ? "en" : "de"
 ---
@@ -202,10 +207,14 @@ Mermaids Farbberechnung erwartet Hex-Werte. Die Farb-Tokens der Website verwende
 deshalb dieses Format. Auch der Codeblock-Hintergrund steht als Hexwert im CSS:
 
 ```css title="src/styles/global.css · Codeblock-Hintergrund"
-@theme {
+@theme static {
   --color-code: #f8f8f8;
 }
 ```
+
+`@theme static` erhält den Token auch dann im erzeugten CSS, wenn Tailwind ihn
+nicht in einer Utility-Klasse findet. Mermaid liest ihn zur Laufzeit, und
+`blog.css` verwendet ihn über eine `@reference` auf `global.css`.
 
 Der Renderer liest diese Werte direkt aus den CSS-Tokens:
 
@@ -310,7 +319,7 @@ Fehleranzeige der eigenen Komponente.
 Der äußere Rahmen verwendet `.code-block`, die neue Diagrammfläche ergänzt nur
 Innenabstand und einen lokalen Scrollbereich:
 
-```css title="src/styles/global.css · Diagrammfläche"
+```css title="src/styles/blog.css · Diagrammfläche"
 .mermaid-diagram {
   overflow-x: auto;
   padding: 1rem;

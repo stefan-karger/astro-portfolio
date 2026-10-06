@@ -1,5 +1,3 @@
-const contactEmail = "kontakt@stefan-karger.de"
-
 export const siteConfig = {
   name: {
     legal: "Stefan Eideloth-Karger",
@@ -14,7 +12,7 @@ export const siteConfig = {
   },
 
   contact: {
-    email: contactEmail,
+    email: "kontakt@stefan-karger.de",
     phone: "+49 15679 365744"
   },
 
@@ -28,23 +26,19 @@ export const siteConfig = {
   socialLinks: [
     {
       label: "GitHub",
-      href: "https://github.com/stefan-karger",
-      external: true
+      href: "https://github.com/stefan-karger"
     },
     {
       label: "X",
-      href: "https://x.com/stefan_e_k/",
-      external: true
+      href: "https://x.com/stefan_e_k/"
     },
     {
       label: "LinkedIn",
-      href: "https://www.linkedin.com/in/eideloth/",
-      external: true
+      href: "https://www.linkedin.com/in/eideloth/"
     },
     {
       label: "Instagram",
-      href: "https://www.instagram.com/stefans_schatzkammer",
-      external: true
+      href: "https://www.instagram.com/stefans_schatzkammer"
     }
   ]
 } as const

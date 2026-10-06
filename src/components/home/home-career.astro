@@ -1,9 +1,9 @@
 ---
-import { defaultLocale, locales } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
-import { periods } from "@/lib/career"
+import { jobs } from "@/lib/career"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const locale = resolveLocale(Astro.currentLocale)
 const { career, links } = getTranslations(locale)
 ---
 
@@ -20,8 +20,8 @@ const { career, links } = getTranslations(locale)
 
     <div class="border-t border-rule pt-[clamp(3rem,5vw,5rem)]">
       <div class="mx-auto w-full max-w-200 border-l border-rule pl-[clamp(1.4rem,3vw,2.5rem)]">
-        {career.jobs.map((job, index) => {
-          const period = periods[job.id]
+        {jobs.map((job, index) => {
+          const text = career.jobs[job.id]
           return (
             <article class="relative border-t border-rule pt-6 pb-9 first:border-t-0 first:pt-0 last:pb-0">
               <span
@@ -33,21 +33,21 @@ const { career, links } = getTranslations(locale)
               />
               <div class="flex flex-wrap items-baseline justify-between gap-x-5 gap-y-1">
                 <p class="m-0 font-mono text-[0.8rem] text-muted">
-                  <time datetime={String(period.start)}>{period.start}</time>
-                  {period.end !== period.start && (
+                  <time datetime={String(job.start)}>{job.start}</time>
+                  {job.end !== job.start && (
                     <>
                       {" — "}
-                      {period.end === null ? (
+                      {job.end === null ? (
                         career.present
                       ) : (
-                        <time datetime={String(period.end)}>{period.end}</time>
+                        <time datetime={String(job.end)}>{job.end}</time>
                       )}
                     </>
                   )}
                 </p>
-                {"type" in job && (
+                {"type" in text && (
                   <span class="font-mono text-[0.7rem] tracking-[0.08em] text-muted uppercase">
-                    {job.type}
+                    {text.type}
                   </span>
                 )}
               </div>
@@ -77,9 +77,9 @@ const { career, links } = getTranslations(locale)
                 )}
               </h3>
               <p class="mt-2 font-mono text-[clamp(0.9rem,1.25vw,1.05rem)] text-muted">
-                {job.role}
+                {text.role}
               </p>
-              {"summary" in job && <p class="mt-4 leading-[1.65] text-ink">{job.summary}</p>}
+              {"summary" in text && <p class="mt-4 leading-[1.65] text-ink">{text.summary}</p>}
             </article>
           )
         })}

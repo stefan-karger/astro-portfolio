@@ -3,9 +3,9 @@
 These guidelines define the preferred approach to designing and writing code in
 this repository.
 
-The goal is not to minimize lines of code. The goal is to minimize unnecessary
-complexity, concepts, indirection, and maintenance cost while keeping the code
-easy to understand and change.
+The goal is not to minimize lines of code, file count, or initial implementation
+effort. The goal is to minimize unnecessary complexity and maintenance cost while
+keeping the code easy to understand and change.
 
 ## KISS — Keep It Simple
 
@@ -28,6 +28,18 @@ modules merely to make individual functions shorter.
 Extract code when the resulting boundary has meaningful semantic value, hides
 real complexity, represents a reusable concept, or materially improves
 maintainability.
+
+### Separate assets from application logic
+
+Prefer dedicated asset files for substantial SVG geometry and other opaque
+asset data. Keep asset selection and usage logic close to its consumers.
+
+A single consumer is sufficient when separation improves readability,
+editing, previewing, or review. A small private loader or adapter is an
+acceptable cost for those benefits.
+
+Keep short, readable literals inline when extraction offers little benefit.
+Use the simplest loading approach that supports the existing build and tests.
 
 ### Make abstractions earn their existence
 
@@ -139,7 +151,13 @@ implementing guessed future requirements.
 ## Decision rule
 
 When multiple implementations satisfy the current requirements equally well,
-prefer the one with:
+first compare how easy each result is to find, understand, edit, and verify.
+
+Accept a small initial implementation cost when it improves ongoing development
+and maintenance. Also account for recurring costs, such as dependency maintenance,
+slower builds, or loss of automatic reloads.
+
+When those benefits and costs are comparable, prefer the one with:
 
 - fewer concepts,
 - fewer layers and indirections,

@@ -1,12 +1,25 @@
 import assert from "node:assert/strict"
 import { execFile } from "node:child_process"
-import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises"
+import { createHash } from "node:crypto"
+import {
+  cp,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  realpath,
+  rm,
+  stat,
+  symlink,
+  writeFile
+} from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
+import { performance } from "node:perf_hooks"
 import process from "node:process"
 import { test } from "node:test"
 import { fileURLToPath, pathToFileURL, URL } from "node:url"
-import { promisify } from "node:util"
+import { inspect, promisify } from "node:util"
 import sharp from "sharp"
 import { XMLParser } from "fast-xml-parser"
 import { SyntaxValidator } from "fast-xml-validator"
@@ -351,6 +364,52 @@ test("Public pages preserve the brand while both homepages identify the person i
     assert.ok(
       !data.html.includes('type="application/ld+json"'),
       `${data.file} is not a profile page`
+    )
+  }
+})
+
+test("Profiles and published articles share the optimized hero portrait without source metadata", async () => {
+  const profiles = regularPages.filter(({ file }) => ["index.html", "en/index.html"].includes(file))
+  const pages = [...profiles, ...regularPages.filter(({ file }) => articles.includes(file))]
+  const images = pages.map((data) => {
+    const person = structuredData(data).find((node) => node["@type"] === "Person")
+    assert.ok(person, `${data.file} identifies the person`)
+    const image = new URL(person.image)
+    assert.equal(image.origin, site.origin, data.file)
+    assert.equal(image.protocol, "https:", data.file)
+    assert.equal(image.search, "", data.file)
+    assert.equal(image.hash, "", data.file)
+    return image.href
+  })
+  assert.equal(new Set(images).size, 1, "All person graphs use the same portrait URL")
+  const image = new URL(images[0])
+  const metadata = await sharp(path.join(dist, decodeURIComponent(image.pathname))).metadata()
+  assert.equal(metadata.format, "jpeg")
+  assert.equal(metadata.width, 840)
+  assert.equal(metadata.height, 1050)
+  for (const field of ["exif", "xmp", "iptc"]) {
+    assert.equal(metadata[field], undefined, `The portrait has no ${field.toUpperCase()} metadata`)
+  }
+  for (const data of profiles) {
+    const hero = tags(data.html, "img")[0]
+    assert.equal(new URL(hero.src, site).href, image.href, `${data.file} reuses its JPEG fallback`)
+  }
+})
+
+test("The build does not publish the original portrait under any filename", async () => {
+  const source = await readFile(path.join(project, "src/assets/hero.jpg"))
+  const sourceHash = createHash("sha256").update(source).digest("hex")
+  for (const entry of await readdir(dist, { recursive: true, withFileTypes: true })) {
+    if (!entry.isFile()) continue
+    const file = path.join(entry.parentPath, entry.name)
+    if ((await stat(file)).size !== source.length) continue
+    const hash = createHash("sha256")
+      .update(await readFile(file))
+      .digest("hex")
+    assert.notEqual(
+      hash,
+      sourceHash,
+      `${path.relative(dist, file)} publishes the original portrait`
     )
   }
 })
@@ -719,14 +778,462 @@ test("One German 404 artifact has usable return links and no content-page SEO ta
 
 const run = promisify(execFile)
 
-test("An isolated build checks articles, updates, drafts, escaping and invalid content", async () => {
+async function runNode(args, { cwd, timeout = 60000 }) {
+  const started = performance.now()
+  const details = {
+    command: [process.execPath, ...args],
+    cwd,
+    timeout,
+    startedAt: new Date().toISOString()
+  }
+  try {
+    const pending = run(process.execPath, args, {
+      cwd,
+      timeout,
+      maxBuffer: 4 * 1024 * 1024,
+      windowsHide: true
+    })
+    details.pid = pending.child.pid
+    const output = await pending
+    const duration = Math.round(performance.now() - started)
+    return {
+      ...output,
+      duration,
+      process: { ...details, ...output, duration, code: 0, signal: null, killed: false }
+    }
+  } catch (error) {
+    throw Object.assign(
+      new Error(
+        [
+          `Command: ${JSON.stringify([process.execPath, ...args])}`,
+          `Directory: ${cwd}`,
+          `Duration: ${Math.round(performance.now() - started)} ms; timeout: ${timeout} ms`,
+          `Code: ${error.code}; signal: ${error.signal ?? "none"}; killed: ${error.killed ?? false}`,
+          `Original error: ${error.message}`,
+          `stdout: ${JSON.stringify(error.stdout ?? "")}`,
+          `stderr: ${JSON.stringify(error.stderr ?? "")}`
+        ].join("\n"),
+        { cause: error }
+      ),
+      {
+        code: error.code,
+        signal: error.signal,
+        killed: error.killed,
+        stdout: error.stdout,
+        stderr: error.stderr,
+        process: {
+          ...details,
+          duration: Math.round(performance.now() - started),
+          code: error.code,
+          signal: error.signal ?? null,
+          killed: error.killed ?? false,
+          stdout: error.stdout ?? "",
+          stderr: error.stderr ?? ""
+        }
+      }
+    )
+  }
+}
+
+async function expectFailure(action, messages, fixture) {
+  let output
+  let error
+  try {
+    output = await action()
+  } catch (failure) {
+    error = failure
+  }
+  assert.ok(
+    error,
+    `Fixture: ${fixture} must fail validation, but the process succeeded.\nDuration: ${output?.duration} ms\nstdout: ${JSON.stringify(output?.stdout ?? "")}\nstderr: ${JSON.stringify(output?.stderr ?? "")}`
+  )
+  const details = `Fixture: ${fixture}\n${error.message}`
+  try {
+    assert.ok(Number.isInteger(error.code) && error.code !== 0, details)
+    assert.ok(!error.signal && !error.killed, details)
+    for (const message of messages) {
+      assert.match(`${error.stdout ?? ""}\n${error.stderr ?? ""}`, message, details)
+    }
+  } catch (failure) {
+    failure.cause = error
+    throw failure
+  }
+}
+
+async function saveFailure(
+  directory,
+  error,
+  history,
+  destination = path.join(project, ".astro/seo-failures")
+) {
+  await mkdir(destination, { recursive: true })
+  const artifact = await mkdtemp(path.join(destination, "failure-"))
+  const packageData = JSON.parse(await readFile(path.join(project, "package.json"), "utf8"))
+  const astro = JSON.parse(
+    await readFile(path.join(project, "node_modules/astro/package.json"), "utf8")
+  )
+  await writeFile(
+    path.join(artifact, "failure.json"),
+    JSON.stringify(
+      {
+        capturedAt: new Date().toISOString(),
+        checkout: directory,
+        node: process.version,
+        platform: process.platform,
+        arch: process.arch,
+        packageManager: packageData.packageManager,
+        astro: astro.version,
+        error: inspect(error, { depth: 8 }),
+        ...history
+      },
+      null,
+      2
+    ) + "\n"
+  )
+  await cp(fileURLToPath(import.meta.url), path.join(artifact, "seo.spec.mjs"))
+  // Exclude the dependency junction so a snapshot never copies or mutates shared dependencies.
+  for (const entry of await readdir(directory)) {
+    if (entry === "node_modules") continue
+    await cp(path.join(directory, entry), path.join(artifact, "checkout", entry), {
+      recursive: true,
+      preserveTimestamps: true
+    })
+  }
+  return artifact
+}
+
+async function withFiles(changes, action, onFailure) {
+  const originals = new Map()
+  for (const file of changes.keys()) originals.set(file, await readFile(file, "utf8"))
+  const errors = []
+  try {
+    for (const [file, source] of changes) await writeFile(file, source)
+    await action()
+  } catch (error) {
+    errors.push(error)
+    if (onFailure) {
+      try {
+        await onFailure(error)
+      } catch (captureError) {
+        errors.push(captureError)
+      }
+    }
+  } finally {
+    for (const [file, source] of originals) {
+      try {
+        await writeFile(file, source)
+      } catch (error) {
+        errors.push(error)
+      }
+    }
+  }
+  if (errors.length === 1) throw errors[0]
+  if (errors.length > 1)
+    throw new AggregateError(errors, "Scenario and fixture restoration failed", {
+      cause: errors[0]
+    })
+}
+
+test("Subprocess validation assertions distinguish content errors from process failures", async (t) => {
+  const child = (source, timeout) => () => runNode(["--eval", source], { cwd: project, timeout })
+  const message = /Expected a valid date string/
+  await t.test("A normal validation error is accepted", async () => {
+    await expectFailure(
+      child('console.error("pubDate: Expected a valid date string"); process.exitCode = 1'),
+      [/pubDate/, message],
+      "valid rejection"
+    )
+  })
+  for (const [name, source, timeout] of [
+    ["An unrelated error", 'console.error("unrelated failure"); process.exitCode = 1'],
+    ["An empty-output exit", "process.exitCode = 1"],
+    [
+      "A timeout after printing the expected message",
+      'console.error("Expected a valid date string"); setInterval(() => {}, 1000)',
+      1000
+    ],
+    [
+      "A successful process printing the expected message",
+      'console.error("Expected a valid date string")'
+    ]
+  ]) {
+    await t.test(name, async () => {
+      await assert.rejects(
+        () => expectFailure(child(source, timeout), [message], name),
+        (error) => {
+          assert.ok(error.message.includes(`Fixture: ${name}`), error.message)
+          if (name.startsWith("A successful")) {
+            assert.match(error.message, /the process succeeded/)
+            assert.match(error.message, /stderr: "Expected a valid date string\\n"/)
+          } else {
+            assert.ok(error.cause.cause instanceof Error)
+            for (const detail of [
+              "Command:",
+              "Directory:",
+              "Duration:",
+              "Code:",
+              "signal:",
+              "killed:",
+              "Original error:",
+              "stdout:",
+              "stderr:"
+            ]) {
+              assert.ok(error.message.includes(detail), error.message)
+            }
+            if (name === "An empty-output exit")
+              assert.match(error.message, /stdout: ""\nstderr: ""/)
+            if (timeout) assert.match(error.message, /killed: true/)
+          }
+          return true
+        }
+      )
+    })
+  }
+  await t.test("The original launch error is preserved", async () => {
+    await assert.rejects(
+      () =>
+        runNode(["--eval", ""], { cwd: path.join(project, "__missing-subprocess-directory__") }),
+      (error) => {
+        assert.equal(error.code, "ENOENT")
+        assert.equal(error.cause.code, "ENOENT")
+        assert.match(error.message, /Original error:/)
+        return true
+      }
+    )
+  })
+})
+
+test("Fixture restoration survives scenario failures and reports cleanup errors", async (t) => {
+  const directory = await mkdtemp(path.join(tmpdir(), "stefan-karger-seo-files-"))
+  const artifacts = await mkdtemp(path.join(tmpdir(), "stefan-karger-seo-artifacts-"))
+  let artifact
+  try {
+    const first = path.join(directory, "first.md")
+    const second = path.join(directory, "second.md")
+    await writeFile(first, "first original")
+    await writeFile(second, "second original")
+    const changes = new Map([
+      [first, "first changed"],
+      [second, "second changed"]
+    ])
+    await t.test("A failed scenario restores both fixtures before the next scenario", async () => {
+      const failure = new Error("deliberate scenario failure")
+      await assert.rejects(
+        () =>
+          withFiles(changes, async () => {
+            assert.equal(await readFile(first, "utf8"), "first changed")
+            assert.equal(await readFile(second, "utf8"), "second changed")
+            throw failure
+          }),
+        (error) => error === failure
+      )
+      assert.equal(await readFile(first, "utf8"), "first original")
+      assert.equal(await readFile(second, "utf8"), "second original")
+      await withFiles(changes, async () => {
+        assert.equal(await readFile(first, "utf8"), "first changed")
+        assert.equal(await readFile(second, "utf8"), "second changed")
+      })
+      assert.equal(await readFile(first, "utf8"), "first original")
+      assert.equal(await readFile(second, "utf8"), "second original")
+    })
+    await t.test(
+      "An unexpected exit preserves the failing fixture and cache before restoration",
+      async () => {
+        const cache = path.join(directory, ".astro/cache")
+        await mkdir(cache, { recursive: true })
+        await writeFile(path.join(cache, "data-store.json"), "failing cache state")
+        await symlink(
+          path.join(project, "node_modules"),
+          path.join(directory, "node_modules"),
+          process.platform === "win32" ? "junction" : "dir"
+        )
+        const commands = []
+        const action = async () => {
+          try {
+            await runNode(["--eval", "process.exitCode = 1"], { cwd: directory })
+          } catch (error) {
+            commands.push(error.process)
+            throw error
+          }
+        }
+        await assert.rejects(
+          () =>
+            withFiles(
+              changes,
+              () => expectFailure(action, [/pubDate/], "invalid date fixture"),
+              async (error) => {
+                artifact = await saveFailure(
+                  directory,
+                  error,
+                  {
+                    scenario: "invalid date fixture",
+                    scenarios: ["initial build", "invalid date fixture"],
+                    commands
+                  },
+                  artifacts
+                )
+              }
+            ),
+          /stdout: ""\nstderr: ""/
+        )
+        assert.equal(await readFile(first, "utf8"), "first original")
+        assert.equal(await readFile(second, "utf8"), "second original")
+        assert.equal(
+          await readFile(path.join(artifact, "checkout/first.md"), "utf8"),
+          "first changed"
+        )
+        assert.equal(
+          await readFile(path.join(artifact, "checkout/.astro/cache/data-store.json"), "utf8"),
+          "failing cache state"
+        )
+        await assert.rejects(stat(path.join(artifact, "checkout/node_modules")), { code: "ENOENT" })
+        const saved = JSON.parse(await readFile(path.join(artifact, "failure.json"), "utf8"))
+        assert.equal(saved.scenario, "invalid date fixture")
+        assert.deepEqual(saved.scenarios, ["initial build", "invalid date fixture"])
+        assert.equal(saved.node, process.version)
+        assert.equal(
+          await readFile(path.join(artifact, "seo.spec.mjs"), "utf8"),
+          await readFile(fileURLToPath(import.meta.url), "utf8")
+        )
+        assert.equal(saved.commands[0].code, 1)
+        assert.equal(saved.commands[0].stdout, "")
+        assert.equal(saved.commands[0].stderr, "")
+        assert.equal(typeof saved.commands[0].pid, "number")
+      }
+    )
+    await t.test("Expected validation rejections do not capture artifacts", async () => {
+      let captured = false
+      await withFiles(
+        changes,
+        () =>
+          expectFailure(
+            () =>
+              runNode(
+                [
+                  "--eval",
+                  'console.error("pubDate: Expected a valid date string"); process.exitCode = 1'
+                ],
+                { cwd: directory }
+              ),
+            [/pubDate/, /Expected a valid date string/],
+            "expected rejection"
+          ),
+        () => {
+          captured = true
+        }
+      )
+      assert.equal(captured, false)
+      assert.equal(await readFile(first, "utf8"), "first original")
+      assert.equal(await readFile(second, "utf8"), "second original")
+    })
+    await t.test(
+      "Capture errors preserve the scenario failure and still restore both fixtures",
+      async () => {
+        const failure = new Error("unexpected process exit")
+        const captureError = new Error("artifact write failed")
+        await assert.rejects(
+          () =>
+            withFiles(
+              changes,
+              () => {
+                throw failure
+              },
+              () => {
+                throw captureError
+              }
+            ),
+          (error) => {
+            assert.ok(error instanceof AggregateError)
+            assert.equal(error.cause, failure)
+            assert.deepEqual(error.errors, [failure, captureError])
+            return true
+          }
+        )
+        assert.equal(await readFile(first, "utf8"), "first original")
+        assert.equal(await readFile(second, "utf8"), "second original")
+      }
+    )
+    await t.test("Restoration attempts continue and retain the original failure", async () => {
+      const failure = new Error("scenario failed before cleanup")
+      await assert.rejects(
+        () =>
+          withFiles(changes, async () => {
+            await rm(first)
+            await mkdir(first)
+            throw failure
+          }),
+        (error) => {
+          assert.ok(error instanceof AggregateError)
+          assert.equal(error.cause, failure)
+          assert.equal(error.errors[0], failure)
+          assert.equal(error.errors.length, 2)
+          return true
+        }
+      )
+      assert.equal(await readFile(second, "utf8"), "second original")
+    })
+  } finally {
+    const resolved = path.resolve(directory)
+    assert.equal(path.dirname(resolved), path.resolve(tmpdir()))
+    assert.ok(path.basename(resolved).startsWith("stefan-karger-seo-files-"))
+    await rm(resolved, { recursive: true, force: true })
+    // Failure artifacts survive removal of the original checkout.
+    if (artifact)
+      assert.equal(
+        await readFile(path.join(artifact, "checkout/first.md"), "utf8"),
+        "first changed"
+      )
+    const resolvedArtifacts = path.resolve(artifacts)
+    assert.equal(path.dirname(resolvedArtifacts), path.resolve(tmpdir()))
+    assert.ok(path.basename(resolvedArtifacts).startsWith("stefan-karger-seo-artifacts-"))
+    await rm(resolvedArtifacts, { recursive: true, force: true })
+  }
+})
+
+test("Isolated SEO integration", async (t) => {
   const temporary = await mkdtemp(path.join(tmpdir(), "stefan-karger-seo-"))
+  const scenarios = []
+  const commands = []
+  let scenario
+  let preserved = false
+  let failure
+  const captureFailure = async (error) => {
+    if (preserved) return
+    failure = error
+    preserved = true
+    t.diagnostic(`Retaining failed checkout: ${temporary}`)
+    const artifact = await saveFailure(temporary, error, { scenario, scenarios, commands })
+    t.diagnostic(`Failure snapshot before fixture restoration: ${artifact}`)
+  }
+  t.beforeEach((context) => {
+    scenario = context.name
+    scenarios.push(scenario)
+  })
+  t.afterEach(async (context) => {
+    if (context.error) await captureFailure(context.error.cause ?? context.error)
+  })
+  // Node records subtest failures without rejecting t.test(); stop before another scenario runs.
+  const scenarioTest = async (...args) => {
+    await t.test(...args)
+    if (preserved) throw failure
+  }
+  let cli
+  let serverStopped = true
   try {
     await cp(path.join(project, "src"), path.join(temporary, "src"), { recursive: true })
     await cp(path.join(project, "public"), path.join(temporary, "public"), { recursive: true })
-    for (const file of ["astro.config.mjs", "tsconfig.json", "package.json"]) {
+    for (const file of ["tsconfig.json", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml"]) {
       await cp(path.join(project, file), path.join(temporary, file))
     }
+    await cp(
+      path.join(project, "astro.config.mjs"),
+      path.join(temporary, "astro.project.config.mjs")
+    )
+    // Dependencies are shared through a junction; writable caches must belong to this checkout.
+    await writeFile(
+      path.join(temporary, "astro.config.mjs"),
+      'import config from "./astro.project.config.mjs"\nexport default { ...config, cacheDir: "./.astro/cache", vite: { ...config.vite, cacheDir: "./.astro/vite" } }\n'
+    )
     await symlink(
       path.join(project, "node_modules"),
       path.join(temporary, "node_modules"),
@@ -765,157 +1272,197 @@ test("An isolated build checks articles, updates, drafts, escaping and invalid c
     const template = (titleValue, descriptionValue, canonical) =>
       `---\nimport BaseLayout from "@/layouts/base-layout.astro"\n---\n<BaseLayout title={${JSON.stringify(titleValue)}} description={${JSON.stringify(descriptionValue)}} canonicalPath={${JSON.stringify(canonical)}}><h1>Fixture</h1></BaseLayout>\n`
     await writeFile(fixturePage, template(title, description, "/fotografie/?campaign=test#hero"))
-    const build = () =>
-      run(process.execPath, [path.join(project, "node_modules/astro/bin/astro.mjs"), "build"], {
-        cwd: temporary,
-        maxBuffer: 4 * 1024 * 1024
-      })
-    const cli = (...args) =>
-      run(process.execPath, [path.join(project, "node_modules/astro/bin/astro.mjs"), ...args], {
-        cwd: temporary,
-        timeout: 60000,
-        maxBuffer: 4 * 1024 * 1024
-      })
-    await build()
+    cli = async (...args) => {
+      try {
+        const output = await runNode(
+          [path.join(project, "node_modules/astro/bin/astro.mjs"), ...args],
+          { cwd: temporary }
+        )
+        commands.push({ scenario, ...output.process })
+        t.diagnostic(`astro ${args.join(" ")} completed in ${output.duration} ms`)
+        return output
+      } catch (error) {
+        commands.push({ scenario, ...error.process })
+        throw error
+      }
+    }
+    const build = () => cli("build")
+    let built = false
+    await scenarioTest("Production fixture build", async () => {
+      await build()
+      built = true
+    })
     const fixtureDist = path.join(temporary, "dist")
-    const feed = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8"))
     const fixtureUrl = new URL("/en/blog/__seo-english/", site).href
-    const fixtureItem = feed.channel.item.find(({ link }) => link === fixtureUrl)
-    assert.ok(fixtureItem)
-    assert.equal(fixtureItem.title, title)
-    assert.equal(fixtureItem.description, description)
-    assert.equal(fixtureItem["dc:creator"], siteConfig.name.legal)
-    assert.equal(fixtureItem["dc:language"], "en")
-    assert.equal(fixtureItem["dcterms:modified"], "2026-10-03")
-    assert.deepEqual(fixtureItem.category, ["Astro", "TypeScript"])
-    assert.equal(feed.channel.item.filter(({ link }) => link === fixtureUrl).length, 1)
-    assert.ok(feed.channel.item.every(({ link }) => !link.includes("draft")))
     const nestedUrl = new URL("/en/blog/__seo-nested/entry/", site).href
-    assert.ok(
-      feed.channel.item.findIndex(({ link }) => link === fixtureUrl) <
-        feed.channel.item.findIndex(({ link }) => link === nestedUrl),
-      "Equal publication dates use ID ordering"
-    )
-    assert.deepEqual(
-      markdown(await readFile(path.join(fixtureDist, "en/blog/__seo-english.md"), "utf8")),
-      {
-        data: {
-          title,
-          description,
-          author: siteConfig.name.legal,
-          language: "en",
-          pubDate: "2026-10-01",
-          updatedDate: "2026-10-03",
-          tags: ["Astro", "TypeScript"],
-          canonical: fixtureUrl
-        },
-        body
+    let feed
+    let fixtureItem
+    await scenarioTest("Production feed metadata and ordering", { skip: !built }, async () => {
+      feed = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8"))
+      fixtureItem = feed.channel.item.find(({ link }) => link === fixtureUrl)
+      assert.ok(fixtureItem)
+      assert.equal(fixtureItem.title, title)
+      assert.equal(fixtureItem.description, description)
+      assert.equal(fixtureItem["dc:creator"], siteConfig.name.legal)
+      assert.equal(fixtureItem["dc:language"], "en")
+      assert.equal(fixtureItem["dcterms:modified"], "2026-10-03")
+      assert.deepEqual(fixtureItem.category, ["Astro", "TypeScript"])
+      assert.equal(feed.channel.item.filter(({ link }) => link === fixtureUrl).length, 1)
+      assert.ok(feed.channel.item.every(({ link }) => !link.includes("draft")))
+      assert.ok(
+        feed.channel.item.findIndex(({ link }) => link === fixtureUrl) <
+          feed.channel.item.findIndex(({ link }) => link === nestedUrl),
+        "Equal publication dates use ID ordering"
+      )
+    })
+
+    await scenarioTest("Markdown exports and draft exclusions", { skip: !built }, async () => {
+      assert.deepEqual(
+        markdown(await readFile(path.join(fixtureDist, "en/blog/__seo-english.md"), "utf8")),
+        {
+          data: {
+            title,
+            description,
+            author: siteConfig.name.legal,
+            language: "en",
+            pubDate: "2026-10-01",
+            updatedDate: "2026-10-03",
+            tags: ["Astro", "TypeScript"],
+            canonical: fixtureUrl
+          },
+          body
+        }
+      )
+      const nested = markdown(
+        await readFile(path.join(fixtureDist, "en/blog/__seo-nested/entry.md"), "utf8")
+      )
+      assert.deepEqual(nested.data.series, { name: "Nested series", part: 1 })
+      assert.equal(nested.data.canonical, nestedUrl)
+      assert.equal(nested.body, body)
+      assert.ok(!Object.hasOwn(nested.data, "updatedDate"))
+      for (const file of [
+        "blog/__seo-english.md",
+        "blog/__seo-nested/entry.md",
+        "blog/__seo-german-draft.md",
+        "en/blog/__seo-draft.md"
+      ]) {
+        await assert.rejects(readFile(path.join(fixtureDist, file)), { code: "ENOENT" })
+      }
+    })
+
+    await scenarioTest(
+      "Sitemap content language and draft exclusion",
+      { skip: !built },
+      async () => {
+        const sitemap = await readFile(path.join(fixtureDist, "sitemap.xml"), "utf8")
+        const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) =>
+          decode(match[1])
+        )
+        assert.ok(sitemapUrls.includes(new URL("/en/blog/__seo-english/", site).href))
+        assert.ok(!sitemapUrls.includes(new URL("/blog/__seo-english/", site).href))
+        assert.ok(!sitemap.includes("__seo-draft"), "Drafts are excluded from the sitemap")
       }
     )
-    const nested = markdown(
-      await readFile(path.join(fixtureDist, "en/blog/__seo-nested/entry.md"), "utf8")
+
+    await scenarioTest(
+      "Localized article metadata, tags and ordering",
+      { skip: !built },
+      async () => {
+        for (const prefix of ["", "en/"]) {
+          const article = await readPage(`${prefix}blog/__seo-english/index.html`, fixtureDist)
+          checkArticle(
+            article,
+            "__seo-english",
+            "en",
+            title,
+            description,
+            "2026-10-01T00:00:00.000Z",
+            "2026-10-03T00:00:00.000Z"
+          )
+          assert.deepEqual(
+            structuredData(article).find((node) => node["@type"] === "BlogPosting").keywords,
+            ["Astro", "TypeScript"]
+          )
+          checkArticle(
+            await readPage(`${prefix}blog/__seo-older/index.html`, fixtureDist),
+            "__seo-older",
+            "en",
+            title,
+            description,
+            "2026-09-30T00:00:00.000Z"
+          )
+          checkArticle(
+            await readPage(`${prefix}blog/__seo-leap/index.html`, fixtureDist),
+            "__seo-leap",
+            "en",
+            title,
+            description,
+            "2024-02-29T00:00:00.000Z",
+            "2024-02-29T00:00:00.000Z"
+          )
+          assert.equal(article.lang, prefix ? "en" : "de")
+          assert.ok(!article.meta.has("robots"))
+          const index = await readPage(`${prefix}blog/index.html`, fixtureDist)
+          assert.ok(!index.html.includes("__seo-draft"))
+          assert.ok(!index.html.includes("__seo-german-draft"))
+          assert.deepEqual(
+            article.links.filter(({ type }) => type === "text/markdown"),
+            [{ rel: "alternate", type: "text/markdown", href: "/en/blog/__seo-english.md" }]
+          )
+          const tagList = article.html.match(
+            /<ul\b[^>]*aria-label="Tags"[^>]*>([\s\S]*?)<\/ul>/
+          )?.[1]
+          assert.ok(tagList, "Article tags are rendered")
+          assert.deepEqual(
+            [...tagList.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1].trim()),
+            ["Astro", "TypeScript"],
+            "Tag order is preserved while duplicates, whitespace and empty tags are removed"
+          )
+          const articleLinks = tags(index.html, "a")
+            .map((link) => link.href.replace(/\/+$/, ""))
+            .filter((href) => href.startsWith(`/${prefix}blog/`))
+          const position = articleLinks.indexOf(`/${prefix}blog/__seo-english`)
+          const olderPosition = articleLinks.indexOf(`/${prefix}blog/__seo-older`)
+          assert.ok(position >= 0 && olderPosition > position, "Newest articles appear first")
+          const navigation = article.html.match(
+            /<nav\b[^>]*aria-label="(?:Weitere Beiträge|More posts)"[^>]*>([\s\S]*?)<\/nav>/
+          )?.[1]
+          assert.ok(navigation, "Article navigation is rendered")
+          const neighbors = tags(navigation, "a").map((link) => link.href.replace(/\/+$/, ""))
+          assert.ok(
+            neighbors.includes(articleLinks[position + 1]),
+            "Previous links to the older article"
+          )
+          assert.ok(
+            neighbors.includes(articleLinks[position - 1]),
+            "Next links to the newer article"
+          )
+        }
+      }
     )
-    assert.deepEqual(nested.data.series, { name: "Nested series", part: 1 })
-    assert.equal(nested.data.canonical, nestedUrl)
-    assert.equal(nested.body, body)
-    assert.ok(!Object.hasOwn(nested.data, "updatedDate"))
-    for (const file of [
-      "blog/__seo-english.md",
-      "blog/__seo-nested/entry.md",
-      "blog/__seo-german-draft.md",
-      "en/blog/__seo-draft.md"
-    ]) {
-      await assert.rejects(readFile(path.join(fixtureDist, file)), { code: "ENOENT" })
-    }
-    const sitemap = await readFile(path.join(fixtureDist, "sitemap.xml"), "utf8")
-    const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) =>
-      decode(match[1])
-    )
-    assert.ok(sitemapUrls.includes(new URL("/en/blog/__seo-english/", site).href))
-    assert.ok(!sitemapUrls.includes(new URL("/blog/__seo-english/", site).href))
-    assert.ok(!sitemap.includes("__seo-draft"), "Drafts are excluded from the sitemap")
-    for (const prefix of ["", "en/"]) {
-      const article = await readPage(`${prefix}blog/__seo-english/index.html`, fixtureDist)
-      checkArticle(
-        article,
-        "__seo-english",
-        "en",
-        title,
-        description,
-        "2026-10-01T00:00:00.000Z",
-        "2026-10-03T00:00:00.000Z"
-      )
-      assert.deepEqual(
-        structuredData(article).find((node) => node["@type"] === "BlogPosting").keywords,
-        ["Astro", "TypeScript"]
-      )
-      checkArticle(
-        await readPage(`${prefix}blog/__seo-older/index.html`, fixtureDist),
-        "__seo-older",
-        "en",
-        title,
-        description,
-        "2026-09-30T00:00:00.000Z"
-      )
-      checkArticle(
-        await readPage(`${prefix}blog/__seo-leap/index.html`, fixtureDist),
-        "__seo-leap",
-        "en",
-        title,
-        description,
-        "2024-02-29T00:00:00.000Z",
-        "2024-02-29T00:00:00.000Z"
-      )
-      assert.equal(article.lang, prefix ? "en" : "de")
-      assert.ok(!article.meta.has("robots"))
-      const index = await readPage(`${prefix}blog/index.html`, fixtureDist)
-      assert.ok(!index.html.includes("__seo-draft"))
-      assert.ok(!index.html.includes("__seo-german-draft"))
-      assert.deepEqual(
-        article.links.filter(({ type }) => type === "text/markdown"),
-        [{ rel: "alternate", type: "text/markdown", href: "/en/blog/__seo-english.md" }]
-      )
-      const tagList = article.html.match(/<ul\b[^>]*aria-label="Tags"[^>]*>([\s\S]*?)<\/ul>/)?.[1]
-      assert.ok(tagList, "Article tags are rendered")
-      assert.deepEqual(
-        [...tagList.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g)].map((match) => match[1].trim()),
-        ["Astro", "TypeScript"],
-        "Tag order is preserved while duplicates, whitespace and empty tags are removed"
-      )
-      const articleLinks = tags(index.html, "a")
-        .map((link) => link.href.replace(/\/+$/, ""))
-        .filter((href) => href.startsWith(`/${prefix}blog/`))
-      const position = articleLinks.indexOf(`/${prefix}blog/__seo-english`)
-      const olderPosition = articleLinks.indexOf(`/${prefix}blog/__seo-older`)
-      assert.ok(position >= 0 && olderPosition > position, "Newest articles appear first")
-      const navigation = article.html.match(
-        /<nav\b[^>]*aria-label="(?:Weitere Beiträge|More posts)"[^>]*>([\s\S]*?)<\/nav>/
-      )?.[1]
-      assert.ok(navigation, "Article navigation is rendered")
-      const neighbors = tags(navigation, "a").map((link) => link.href.replace(/\/+$/, ""))
+
+    await scenarioTest("Draft artifacts and llms.txt exports", { skip: !built }, async () => {
+      assert.ok(!(await htmlFiles(fixtureDist)).some((file) => file.includes("__seo-draft")))
+      const llms = await readFile(path.join(fixtureDist, "llms.txt"), "utf8")
+      assert.ok(!llms.includes("__seo-draft"))
+      assert.ok(!llms.includes("__seo-german-draft"))
+      assert.ok(llms.includes(new URL("/en/blog/__seo-english/", site).href))
+      assert.ok(!llms.includes(new URL("/blog/__seo-english/", site).href))
+      assert.ok(llms.includes(new URL("/en/blog/__seo-english.md", site).href))
+      assert.ok(llms.includes(new URL("/en/blog/__seo-nested/entry.md", site).href))
       assert.ok(
-        neighbors.includes(articleLinks[position + 1]),
-        "Previous links to the older article"
+        llms.includes("\\[brackets\\] \\\\path"),
+        "Markdown link titles escape brackets and backslashes"
       )
-      assert.ok(neighbors.includes(articleLinks[position - 1]), "Next links to the newer article")
-    }
-    assert.ok(!(await htmlFiles(fixtureDist)).some((file) => file.includes("__seo-draft")))
-    const llms = await readFile(path.join(fixtureDist, "llms.txt"), "utf8")
-    assert.ok(!llms.includes("__seo-draft"))
-    assert.ok(!llms.includes("__seo-german-draft"))
-    assert.ok(llms.includes(new URL("/en/blog/__seo-english/", site).href))
-    assert.ok(!llms.includes(new URL("/blog/__seo-english/", site).href))
-    assert.ok(llms.includes(new URL("/en/blog/__seo-english.md", site).href))
-    assert.ok(llms.includes(new URL("/en/blog/__seo-nested/entry.md", site).href))
-    assert.ok(
-      llms.includes("\\[brackets\\] \\\\path"),
-      "Markdown link titles escape brackets and backslashes"
-    )
-    const escaped = await readPage("seo-fixture/index.html", fixtureDist)
-    assert.equal(escaped.title, title)
-    assert.equal(escaped.meta.get("description"), description)
-    assert.ok(escaped.html.match(/<title>([\s\S]*?)<\/title>/)[1].includes("&lt;text&gt;"))
-    assert.equal(escaped.meta.get("og:url"), new URL("/fotografie/", site).href)
+    })
+
+    await scenarioTest("SEO escaping and canonical normalization", { skip: !built }, async () => {
+      const escaped = await readPage("seo-fixture/index.html", fixtureDist)
+      assert.equal(escaped.title, title)
+      assert.equal(escaped.meta.get("description"), description)
+      assert.ok(escaped.html.match(/<title>([\s\S]*?)<\/title>/)[1].includes("&lt;text&gt;"))
+      assert.equal(escaped.meta.get("og:url"), new URL("/fotografie/", site).href)
+    })
 
     const robotsFile = path.join(temporary, "src/pages/robots.txt.ts")
     const robotsSource = await readFile(robotsFile, "utf8")
@@ -923,88 +1470,179 @@ test("An isolated build checks articles, updates, drafts, escaping and invalid c
       const key = agent.includes("-") ? JSON.stringify(agent) : agent
       const blockedSource = robotsSource.replace(`${key}: true`, `${key}: false`)
       assert.notEqual(blockedSource, robotsSource, `The ${agent} switch exists`)
-      await writeFile(robotsFile, blockedSource)
-      const { GET } = await import(`${pathToFileURL(robotsFile).href}?blocked=${agent}`)
-      const response = GET({ site })
-      assert.equal(response.headers.get("content-type"), "text/plain; charset=utf-8")
-      const groups = (await response.text()).trim().split("\n\n")
-      assert.deepEqual(groups, [
-        "User-agent: *\nAllow: /",
-        ...["GPTBot", "ClaudeBot", "Google-Extended"].map(
-          (name) => `User-agent: ${name}\n${name === agent ? "Disallow" : "Allow"}: /`
-        ),
-        `Sitemap: ${new URL("/sitemap.xml", site).href}`
-      ])
+      await scenarioTest(`Crawler switch: ${agent}`, async () => {
+        await withFiles(
+          new Map([[robotsFile, blockedSource]]),
+          async () => {
+            const { GET } = await import(`${pathToFileURL(robotsFile).href}?blocked=${agent}`)
+            const response = GET({ site })
+            assert.equal(response.headers.get("content-type"), "text/plain; charset=utf-8")
+            const groups = (await response.text()).trim().split("\n\n")
+            assert.deepEqual(groups, [
+              "User-agent: *\nAllow: /",
+              ...["GPTBot", "ClaudeBot", "Google-Extended"].map(
+                (name) => `User-agent: ${name}\n${name === agent ? "Disallow" : "Allow"}: /`
+              ),
+              `Sitemap: ${new URL("/sitemap.xml", site).href}`
+            ])
+          },
+          captureFailure
+        )
+      })
     }
-    await writeFile(robotsFile, robotsSource)
 
-    try {
-      await cli("dev", "--background", "--json")
-      const { url } = JSON.parse(await readFile(path.join(temporary, ".astro/dev.json"), "utf8"))
-      const fetchDev = (pathname) =>
-        globalThis.fetch(new URL(pathname, url), { signal: globalThis.AbortSignal.timeout(30000) })
-      const devFeed = await fetchDev("/rss.xml")
-      assert.equal(devFeed.status, 200)
-      assert.equal(devFeed.headers.get("content-type"), "application/rss+xml; charset=utf-8")
-      assert.ok(rss(await devFeed.text()).channel.item.every(({ link }) => !link.includes("draft")))
-      const devLlms = await fetchDev("/llms.txt")
-      assert.ok(!(await devLlms.text()).includes("draft"))
-      for (const pathname of ["/blog/__seo-german-draft/", "/en/blog/__seo-draft/"]) {
-        const response = await fetchDev(pathname)
-        assert.equal(response.status, 200, "Draft HTML remains available during development")
-        const data = page(await response.text())
+    serverStopped = false
+    await scenarioTest("Development drafts and exports", async (devTest) => {
+      const errors = []
+      try {
+        const lock = path.join(temporary, ".astro/dev.json")
+        await assert.rejects(readFile(lock), { code: "ENOENT" })
+        const started = Date.now()
+        await cli("dev", "--background", "--json")
+        const server = JSON.parse(await readFile(lock, "utf8"))
+        assert.equal(server.background, true, "The fixture server runs in background mode")
+        assert.ok(Date.parse(server.startedAt) >= started, "The fixture server is freshly started")
+        commands.at(-1).server = server
+        devTest.diagnostic(
+          `Fresh dev server: pid ${server.pid}, started ${server.startedAt}, ${server.url}`
+        )
+        const { url } = server
+        const fetchDev = (pathname) =>
+          globalThis.fetch(new URL(pathname, url), {
+            signal: globalThis.AbortSignal.timeout(30000)
+          })
+        const devFeed = await fetchDev("/rss.xml")
+        assert.equal(devFeed.status, 200)
+        assert.equal(devFeed.headers.get("content-type"), "application/rss+xml; charset=utf-8")
         assert.ok(
-          !data.links.some(({ type }) => ["text/markdown", "application/rss+xml"].includes(type))
+          rss(await devFeed.text()).channel.item.every(({ link }) => !link.includes("draft"))
         )
-        assert.ok(!data.html.includes('type="application/ld+json"'))
+        const devLlms = await fetchDev("/llms.txt")
+        assert.ok(!(await devLlms.text()).includes("draft"))
+        for (const pathname of ["/blog/__seo-german-draft/", "/en/blog/__seo-draft/"]) {
+          const response = await fetchDev(pathname)
+          assert.equal(response.status, 200, "Draft HTML remains available during development")
+          const data = page(await response.text())
+          assert.ok(
+            !data.links.some(({ type }) => ["text/markdown", "application/rss+xml"].includes(type))
+          )
+          assert.ok(!data.html.includes('type="application/ld+json"'))
+        }
+        for (const pathname of ["/blog/__seo-german-draft.md", "/en/blog/__seo-draft.md"]) {
+          assert.equal(
+            (await fetchDev(pathname)).status,
+            404,
+            "Draft Markdown is not exported in development"
+          )
+        }
+        for (const pathname of ["/en/blog/__seo-english.md", "/en/blog/__seo-nested/entry.md"]) {
+          const response = await fetchDev(pathname)
+          assert.equal(response.status, 200)
+          assert.equal(response.headers.get("content-type"), "text/markdown; charset=utf-8")
+          assert.equal(markdown(await response.text()).body, body)
+        }
+      } catch (error) {
+        errors.push(error)
+        for (const command of ["status", "logs"]) {
+          try {
+            const output = await cli("dev", command)
+            devTest.diagnostic(`astro dev ${command}: ${output.stdout}\n${output.stderr}`)
+          } catch (diagnosticError) {
+            devTest.diagnostic(diagnosticError.message)
+          }
+        }
+      } finally {
+        try {
+          await cli("dev", "stop")
+          serverStopped = true
+        } catch (error) {
+          errors.push(error)
+        }
       }
-      for (const pathname of ["/blog/__seo-german-draft.md", "/en/blog/__seo-draft.md"]) {
-        assert.equal(
-          (await fetchDev(pathname)).status,
-          404,
-          "Draft Markdown is not exported in development"
+      if (errors.length === 1) throw errors[0]
+      if (errors.length > 1)
+        throw new AggregateError(errors, "Development scenario and shutdown failed", {
+          cause: errors[0]
+        })
+    })
+    assert.ok(serverStopped, "Stop the isolated dev server before mutating fixtures or building")
+    await scenarioTest(
+      "Astro and Vite caches belong to the temporary checkout",
+      { skip: !built },
+      async () => {
+        const root = await realpath(temporary)
+        for (const directory of [".astro/cache", ".astro/vite"]) {
+          const resolved = await realpath(path.join(temporary, directory))
+          const relative = path.relative(root, resolved)
+          assert.ok(relative && !relative.startsWith("..") && !path.isAbsolute(relative), resolved)
+        }
+        const store = await readFile(path.join(temporary, ".astro/cache/data-store.json"), "utf8")
+        assert.ok(store.includes("__seo-english"), "The build reads its own fixture content store")
+      }
+    )
+
+    await scenarioTest(
+      "Updates preserve feed identity and ordering",
+      { skip: !fixtureItem },
+      async () => {
+        await withFiles(
+          new Map([
+            [
+              path.join(content, "__seo-english.md"),
+              updatedPost.replace('updatedDate: "2026-10-03"', 'updatedDate: "2026-10-04"')
+            ]
+          ]),
+          async () => {
+            await build()
+            const changedFeed = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8"))
+            const changedItem = changedFeed.channel.item.find(({ link }) => link === fixtureUrl)
+            assert.deepEqual(changedItem.guid, fixtureItem.guid)
+            assert.equal(changedItem.pubDate, fixtureItem.pubDate)
+            assert.equal(changedItem["dcterms:modified"], "2026-10-04")
+            assert.equal(
+              changedFeed.channel.item.filter(({ link }) => link === fixtureUrl).length,
+              1
+            )
+            assert.deepEqual(
+              changedFeed.channel.item.map(({ link }) => link),
+              feed.channel.item.map(({ link }) => link)
+            )
+            assert.equal(
+              markdown(await readFile(path.join(fixtureDist, "en/blog/__seo-english.md"), "utf8"))
+                .data.updatedDate,
+              "2026-10-04"
+            )
+          },
+          captureFailure
         )
       }
-      for (const pathname of ["/en/blog/__seo-english.md", "/en/blog/__seo-nested/entry.md"]) {
-        const response = await fetchDev(pathname)
-        assert.equal(response.status, 200)
-        assert.equal(response.headers.get("content-type"), "text/markdown; charset=utf-8")
-        assert.equal(markdown(await response.text()).body, body)
-      }
-    } finally {
-      await cli("dev", "stop")
-    }
-
-    await writeFile(
-      path.join(content, "__seo-english.md"),
-      updatedPost.replace('updatedDate: "2026-10-03"', 'updatedDate: "2026-10-04"')
-    )
-    await build()
-    const changedFeed = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8"))
-    const changedItem = changedFeed.channel.item.find(({ link }) => link === fixtureUrl)
-    assert.deepEqual(changedItem.guid, fixtureItem.guid)
-    assert.equal(changedItem.pubDate, fixtureItem.pubDate)
-    assert.equal(changedItem["dcterms:modified"], "2026-10-04")
-    assert.equal(changedFeed.channel.item.filter(({ link }) => link === fixtureUrl).length, 1)
-    assert.deepEqual(
-      changedFeed.channel.item.map(({ link }) => link),
-      feed.channel.item.map(({ link }) => link)
-    )
-    assert.equal(
-      markdown(await readFile(path.join(fixtureDist, "en/blog/__seo-english.md"), "utf8")).data
-        .updatedDate,
-      "2026-10-04"
     )
 
-    for (const [badTitle, badDescription, canonical, message] of [
-      [" ", description, "/", /Missing SEO title or description/],
-      [title, " ", "/", /Missing SEO title or description/],
-      [title, description, "https://example.com/wrong/", /Canonical must use the site origin/]
+    for (const [name, badTitle, badDescription, canonical, message] of [
+      ["Missing title", " ", description, "/", /Missing SEO title or description/],
+      ["Missing description", title, " ", "/", /Missing SEO title or description/],
+      [
+        "Foreign canonical origin",
+        title,
+        description,
+        "https://example.com/wrong/",
+        /Canonical must use the site origin/
+      ]
     ]) {
-      await writeFile(fixturePage, template(badTitle, badDescription, canonical))
-      await assert.rejects(build, (error) => message.test(`${error.stdout}\n${error.stderr}`))
+      await scenarioTest(name, async () => {
+        await withFiles(
+          new Map([[fixturePage, template(badTitle, badDescription, canonical)]]),
+          async () => {
+            await expectFailure(
+              build,
+              [message],
+              `seo-fixture.astro: title=${JSON.stringify(badTitle)}, description=${JSON.stringify(badDescription)}, canonical=${canonical}`
+            )
+          },
+          captureFailure
+        )
+      })
     }
-    await writeFile(fixturePage, template(title, description, "/fotografie/"))
     for (const [field, value] of [
       ["pubDate", '"2026-02-29"'],
       ["pubDate", '"2026-13-01"'],
@@ -1020,49 +1658,105 @@ test("An isolated build checks articles, updates, drafts, escaping and invalid c
       ["updatedDate", "2026-10-03"]
     ]) {
       const invalid = updatedPost.replace(new RegExp(`^${field}: .+$`, "m"), `${field}: ${value}`)
-      await writeFile(path.join(content, "__seo-english.md"), invalid)
-      await assert.rejects(build, (error) => {
-        assert.match(`${error.stdout}\n${error.stderr}`, new RegExp(field), `${field}: ${value}`)
-        return true
+      await scenarioTest(`Invalid date: ${field}: ${value}`, async () => {
+        await withFiles(
+          new Map([[path.join(content, "__seo-english.md"), invalid]]),
+          async () => {
+            await expectFailure(
+              build,
+              [
+                new RegExp(field),
+                field === "updatedDate" && value === '"2026-09-30"'
+                  ? /updatedDate must be on or after pubDate/
+                  : /Expected a valid date string/
+              ],
+              `__seo-english.md: ${field}: ${value}`
+            )
+          },
+          captureFailure
+        )
       })
     }
-    const seriesPost = post.replace(
-      "draft: false",
-      'draft: false\nseries:\n  name: "Test series"\n  part: 1'
-    )
-    await writeFile(path.join(content, "__seo-english.md"), seriesPost)
-    await writeFile(path.join(content, "__seo-older.md"), seriesPost)
-    await assert.rejects(build, (error) =>
-      /Duplicate part 1 in series "Test series"/.test(`${error.stdout}\n${error.stderr}`)
-    )
+    await scenarioTest("Duplicate series parts are rejected", async () => {
+      const seriesPost = post.replace(
+        "draft: false",
+        'draft: false\nseries:\n  name: "Test series"\n  part: 1'
+      )
+      await withFiles(
+        new Map([
+          [path.join(content, "__seo-english.md"), seriesPost],
+          [path.join(content, "__seo-older.md"), seriesPost]
+        ]),
+        async () => {
+          await expectFailure(
+            build,
+            [/Duplicate part 1 in series "Test series"/],
+            "__seo-english.md and __seo-older.md: duplicate series part"
+          )
+        },
+        captureFailure
+      )
+    })
 
-    for (const file of await readdir(content, { recursive: true })) {
-      if (!file.endsWith(".md")) continue
-      const filename = path.join(content, file)
-      const source = await readFile(filename, "utf8")
-      await writeFile(
-        filename,
-        source.replace(/^---\r?\n([\s\S]*?)\r?\n---/, (_, frontmatter) => {
-          const fields = frontmatter.replace(/^draft:.*\r?$/m, "draft: true")
-          return `---\n${/^draft:/m.test(fields) ? fields : `${fields}\ndraft: true`}\n---`
-        })
-      )
-    }
-    await build()
-    const emptyFeed = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8"))
-    assert.equal(emptyFeed.channel.title, `${siteConfig.name.public} - Blog`)
-    assert.deepEqual(emptyFeed.channel.item ?? [], [])
-    for (const directory of ["blog", "en/blog"]) {
-      assert.ok(
-        !(await readdir(path.join(fixtureDist, directory), { recursive: true })).some((file) =>
-          file.endsWith(".md")
+    await scenarioTest(
+      "An empty published collection has no feed items or Markdown exports",
+      async () => {
+        const drafts = new Map()
+        for (const file of await readdir(content, { recursive: true })) {
+          if (!file.endsWith(".md")) continue
+          const filename = path.join(content, file)
+          const source = await readFile(filename, "utf8")
+          drafts.set(
+            filename,
+            source.replace(/^---\r?\n([\s\S]*?)\r?\n---/, (_, frontmatter) => {
+              const fields = frontmatter.replace(/^draft:.*\r?$/m, "draft: true")
+              return `---\n${/^draft:/m.test(fields) ? fields : `${fields}\ndraft: true`}\n---`
+            })
+          )
+        }
+        await withFiles(
+          drafts,
+          async () => {
+            await build()
+            const emptyFeed = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8"))
+            assert.equal(emptyFeed.channel.title, `${siteConfig.name.public} - Blog`)
+            assert.deepEqual(emptyFeed.channel.item ?? [], [])
+            for (const directory of ["blog", "en/blog"]) {
+              assert.ok(
+                !(await readdir(path.join(fixtureDist, directory), { recursive: true })).some(
+                  (file) => file.endsWith(".md")
+                )
+              )
+            }
+          },
+          captureFailure
         )
+      }
+    )
+  } catch (error) {
+    failure = error
+    try {
+      await captureFailure(error)
+    } catch (captureError) {
+      failure = new AggregateError(
+        [error, captureError],
+        "Integration and failure capture failed",
+        {
+          cause: error
+        }
       )
     }
-  } finally {
+  }
+  try {
+    if (!serverStopped) await cli("dev", "stop")
     const resolved = path.resolve(temporary)
     assert.equal(path.dirname(resolved), path.resolve(tmpdir()))
     assert.ok(path.basename(resolved).startsWith("stefan-karger-seo-"))
-    await rm(resolved, { recursive: true, force: true })
+    if (!preserved) await rm(resolved, { recursive: true, force: true })
+  } catch (error) {
+    if (failure)
+      throw new AggregateError([failure, error], "Integration and cleanup failed", { cause: error })
+    throw error
   }
+  if (failure) throw failure
 })

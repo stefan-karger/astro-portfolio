@@ -5,7 +5,7 @@ import { createHighlighter } from "shiki"
 import config from "../astro.config.mjs"
 
 const highlighter = await createHighlighter({
-  themes: ["github-light", "github-dark"],
+  themes: [config.markdown.shikiConfig.theme],
   langs: ["ts", "md", "mermaid"]
 })
 after(() => highlighter.dispose())
@@ -197,11 +197,29 @@ test("Hover popups escape the scroll container, have unique targets and retain J
   assert.equal(new Set(ids).size, ids.length)
 })
 
-test("Both theme palettes are generated", () => {
-  const root = render("const count = 1")
-  assert.ok(
-    elements(root, (node) => String(node.properties.style ?? "").includes("--shiki-dark")).length >
+test("Light syntax colors are generated without an unused dark palette", () => {
+  const roots = [
+    render("const count = 1"),
+    render('const user = { name: "Ada" }\nconsole.log(user.name)', "twoslash")
+  ]
+  for (const root of roots) {
+    const tokens = elements(
+      root,
+      (node) => node.tagName === "span" && String(node.properties.style ?? "").includes("color:")
+    )
+    assert.ok(tokens.length > 0)
+    assert.equal(
+      elements(root, (node) => String(node.properties.style ?? "").includes("--shiki-dark")).length,
       0
+    )
+  }
+  const popups = elements(roots[1], (node) => node.properties.popover)
+  assert.ok(popups.length > 0)
+  assert.ok(
+    popups.some(
+      (popup) =>
+        elements(popup, (node) => String(node.properties.style ?? "").includes("color:")).length
+    )
   )
 })
 

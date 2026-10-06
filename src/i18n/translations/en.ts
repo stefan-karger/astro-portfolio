@@ -77,41 +77,29 @@ export const en = {
   career: {
     title: "Career",
     present: "present",
-    jobs: [
-      {
-        id: "rhein",
-        company: "BMW Rhein Gruppe",
-        url: "https://www.rhein-bmw.de/",
+    jobs: {
+      rhein: {
         role: "Senior Software Engineer",
         type: "Day job",
         summary:
           "Independent design, development, and long-term maintenance of internal software for sales, service, and IT. A key focus is building a central web application that gradually brings together information and functionality from existing business applications."
       },
-      {
-        id: "junksplayground",
-        company: "Junksplayground",
-        url: "https://junksplayground.de/",
+      junksplayground: {
         role: "Software Engineer & Technical Advisor",
         type: "Side job",
         summary:
           "Development and long-term maintenance of an integration between JTL-Wawi and Cardmarket for automated inventory, order, and price synchronization. Technical advice to company management on automation, system architecture, and new software projects."
       },
-      {
-        id: "paragon",
-        company: "PARAGON Systemhaus GmbH",
+      paragon: {
         role: "Software Engineer"
       },
-      {
-        id: "huk",
-        company: "HUK-COBURG",
+      huk: {
         role: "Software Engineer"
       },
-      {
-        id: "schwaebischHall",
-        company: "Bausparkasse Schwäbisch Hall",
+      schwaebischHall: {
         role: "Dual Study Program in Business Information Systems (B.Sc.)"
       }
-    ]
+    }
   },
 
   contact: {
@@ -163,6 +151,7 @@ export const en = {
 
   blog: {
     author: "By",
+    published: "Published",
     updated: "Updated",
     description: "Notes on software, web development and what I learn along the way.",
     empty: "No posts published yet.",

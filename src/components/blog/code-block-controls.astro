@@ -27,28 +27,31 @@ const t = getTranslations(locale)
 </div>
 
 <script>
+  import { initTypePopovers } from "./type-popovers"
+
   const controls = document.querySelector<HTMLElement>("#code-controls")
   const status = document.querySelector<HTMLElement>("#code-copy-status")
   const timers = new WeakMap<HTMLButtonElement, number>()
   const copying = new WeakSet<HTMLButtonElement>()
 
   if (controls && status && navigator.clipboard?.writeText) {
+    // This component always emits these labels from its required translations.
+    const copyLabel = controls.dataset.copy!
+    const copiedLabel = controls.dataset.copied!
+    const errorLabel = controls.dataset.error!
+
     document.querySelectorAll<HTMLButtonElement>("[data-copy-code]").forEach((button) => {
       button.hidden = false
-      button.lang = controls.dataset.locale ?? ""
-      button.title = controls.dataset.copy ?? ""
+      button.lang = controls.lang
+      button.title = copyLabel
     })
 
     document.addEventListener("click", async (event) => {
       if (!(event.target instanceof Element)) return
       const button = event.target.closest<HTMLButtonElement>("[data-copy-code]")
-      if (
-        !button ||
-        button.disabled ||
-        copying.has(button) ||
-        button.dataset.copyCode === undefined
-      )
-        return
+      if (!button || copying.has(button)) return
+      const source = button.dataset.copyCode
+      if (source === undefined) return
 
       window.clearTimeout(timers.get(button))
       copying.add(button)
@@ -56,12 +59,12 @@ const t = getTranslations(locale)
       status.textContent = ""
       let message: string
       try {
-        await navigator.clipboard.writeText(button.dataset.copyCode)
+        await navigator.clipboard.writeText(source)
         button.dataset.state = "copied"
-        message = controls.dataset.copied ?? ""
+        message = copiedLabel
       } catch {
         button.dataset.state = "error"
-        message = controls.dataset.error ?? ""
+        message = errorLabel
       } finally {
         copying.delete(button)
         button.removeAttribute("aria-busy")
@@ -72,90 +75,11 @@ const t = getTranslations(locale)
         button,
         window.setTimeout(() => {
           button.dataset.state = "idle"
-          button.title = controls.dataset.copy ?? ""
+          button.title = copyLabel
         }, 2_000)
       )
     })
   }
 
-  if ("showPopover" in HTMLElement.prototype) {
-    let active: HTMLElement | undefined
-    let activeTrigger: HTMLButtonElement | undefined
-    let closeTimer: number | undefined
-
-    function position(popup: HTMLElement, trigger: HTMLElement) {
-      const rect = trigger.getBoundingClientRect()
-      const gap = 8
-      popup.style.transform = "none"
-      popup.style.left = `${gap}px`
-      const maxLeft = Math.max(gap, window.innerWidth - popup.offsetWidth - gap)
-      const top =
-        rect.bottom + gap + popup.offsetHeight <= window.innerHeight - gap
-          ? rect.bottom + gap
-          : Math.max(gap, rect.top - popup.offsetHeight - gap)
-      popup.style.left = `${Math.min(Math.max(gap, rect.left), maxLeft)}px`
-      popup.style.top = `${Math.min(top, Math.max(gap, window.innerHeight - popup.offsetHeight - gap))}px`
-    }
-
-    function open(trigger: HTMLButtonElement) {
-      window.clearTimeout(closeTimer)
-      const popup = document.getElementById(trigger.dataset.twoslashTrigger ?? "")
-      if (!popup) return
-      if (active && active !== popup) active.hidePopover()
-      if (!popup.matches(":popover-open")) popup.showPopover()
-      active = popup
-      activeTrigger = trigger
-      position(popup, trigger)
-    }
-
-    function close() {
-      window.clearTimeout(closeTimer)
-      if (active?.matches(":popover-open")) active.hidePopover()
-      active = undefined
-      activeTrigger = undefined
-    }
-
-    document.querySelectorAll<HTMLButtonElement>("[data-twoslash-trigger]").forEach((trigger) => {
-      const popup = document.getElementById(trigger.dataset.twoslashTrigger ?? "")
-      if (!popup) return
-      trigger.addEventListener("pointerenter", (event) => {
-        if (event.pointerType === "mouse") open(trigger)
-      })
-      trigger.addEventListener("focus", () => open(trigger))
-      trigger.addEventListener("click", (event) => {
-        event.preventDefault()
-        open(trigger)
-      })
-      const scheduleClose = () => {
-        closeTimer = window.setTimeout(() => {
-          if (document.activeElement !== trigger && !popup.matches(":hover")) close()
-        }, 150)
-      }
-      trigger.addEventListener("pointerleave", scheduleClose)
-      trigger.addEventListener("blur", scheduleClose)
-      popup.addEventListener("pointerenter", () => window.clearTimeout(closeTimer))
-      popup.addEventListener("pointerleave", scheduleClose)
-      popup.addEventListener("toggle", () => {
-        if (popup.matches(":popover-open")) position(popup, trigger)
-        else if (active === popup) {
-          active = undefined
-          activeTrigger = undefined
-        }
-      })
-    })
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") close()
-    })
-    document.addEventListener(
-      "scroll",
-      (event) => {
-        if (event.target instanceof Node && active?.contains(event.target)) return
-        close()
-      },
-      { capture: true, passive: true }
-    )
-    window.addEventListener("resize", () => {
-      if (active && activeTrigger) position(active, activeTrigger)
-    })
-  }
+  initTypePopovers()
 </script>

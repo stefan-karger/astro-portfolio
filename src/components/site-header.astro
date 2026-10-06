@@ -18,19 +18,22 @@ function normalizePath(path: string) {
   return path.replace(/\/+$/, "") || "/"
 }
 
+const currentPath = normalizePath(Astro.url.pathname)
 const navItems = navRoutes.map((route) => {
   const href = routeUrl(locale, route)
-  const path = normalizePath(Astro.url.pathname)
-  const isCurrent = path === normalizePath(href)
+  const targetPath = normalizePath(href)
+  let current: "page" | "location" | undefined
+
+  if (currentPath === targetPath) {
+    current = "page"
+  } else if (route === "blog" && currentPath.startsWith(`${targetPath}/`)) {
+    current = "location"
+  }
 
   return {
     href,
     label: t.nav[route],
-    current: isCurrent
-      ? ("page" as const)
-      : route === "blog" && path.startsWith(`${normalizePath(href)}/`)
-        ? ("location" as const)
-        : undefined
+    current
   }
 })
 ---
@@ -73,7 +76,7 @@ const navItems = navRoutes.map((route) => {
       </ul>
     </nav>
 
-    {!isErrorPage && <LanguageSwitch />}
+    {!isErrorPage && <LanguageSwitch {locale} />}
 
     <nav
       id="mobile-nav"

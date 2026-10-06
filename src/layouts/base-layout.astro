@@ -3,7 +3,7 @@ import "@fontsource-variable/jetbrains-mono/wght.css"
 import "@fontsource-variable/ibm-plex-sans/wght.css"
 import "@/styles/global.css"
 
-import { defaultLocale, locales, type Locale } from "@/i18n/types"
+import { defaultLocale, resolveLocale, type Locale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import SiteHeader from "@/components/site-header.astro"
 import SiteFooter from "@/components/site-footer.astro"
@@ -33,9 +33,7 @@ const {
   mainClass = "mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8"
 } = Astro.props
 
-const locale = isErrorPage
-  ? defaultLocale
-  : (locales.find((locale) => locale === Astro.currentLocale) ?? defaultLocale)
+const locale = isErrorPage ? defaultLocale : resolveLocale(Astro.currentLocale)
 const t = getTranslations(locale)
 ---
 

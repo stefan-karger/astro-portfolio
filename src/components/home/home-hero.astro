@@ -2,12 +2,12 @@
 import { Picture } from "astro:assets"
 
 import portrait from "@/assets/hero.jpg"
-import { defaultLocale, locales } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { siteConfig } from "@/lib/config"
 import EmailButton from "@/components/email-button.astro"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const locale = resolveLocale(Astro.currentLocale)
 const t = getTranslations(locale)
 ---
 
@@ -43,7 +43,7 @@ const t = getTranslations(locale)
         {t.home.hero.intro}
       </p>
       <p class="mt-4 max-w-160 text-lg leading-[1.6] text-muted">{t.home.hero.photography}</p>
-      <EmailButton class="mt-6" />
+      <EmailButton {locale} class="mt-6" />
     </div>
   </div>
 </section>

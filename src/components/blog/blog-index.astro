@@ -1,10 +1,10 @@
 ---
 import PageIntro from "@/components/page-intro.astro"
-import { defaultLocale, locales } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
 import { formatPostDate, getPosts, postUrl } from "@/lib/blog"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const locale = resolveLocale(Astro.currentLocale)
 const t = getTranslations(locale)
 const posts = await getPosts()
 ---
@@ -17,11 +17,7 @@ const posts = await getPosts()
     ) : (
       <ul class="divide-y divide-rule border-y border-rule">
         {posts.map((post) => (
-          <li
-            class="py-8 sm:py-10"
-            data-post-language={post.data.language}
-            data-post-date={post.data.pubDate.toISOString().slice(0, 10)}
-          >
+          <li class="py-8 sm:py-10">
             <article class="grid gap-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8">
               <div class="flex flex-wrap items-center gap-3 text-sm text-muted sm:flex-col sm:items-start">
                 <time datetime={post.data.pubDate.toISOString()}>
