@@ -576,6 +576,21 @@ test("The sitemap lists each indexable canonical once and robots.txt advertises 
     expected,
     "Exclude noindex pages, redirects and duplicate article interfaces"
   )
+  assert.equal(SyntaxValidator.validate(xml, { multipleRoots: false }), true)
+  const entries = new XMLParser({ parseTagValue: false }).parse(xml).urlset.url
+  for (const entry of entries) {
+    const data = regularPages.find(({ meta }) => meta.get("og:url") === entry.loc)
+    if (data.meta.get("og:type") === "article") {
+      const article = structuredData(data).find((node) => node["@type"] === "BlogPosting")
+      assert.equal(
+        entry.lastmod,
+        (article.dateModified ?? article.datePublished).slice(0, 10),
+        entry.loc
+      )
+    } else {
+      assert.ok(!Object.hasOwn(entry, "lastmod"), entry.loc)
+    }
+  }
   const robots = await readFile(path.join(dist, "robots.txt"), "utf8")
   assert.equal(
     robots,
@@ -1584,6 +1599,16 @@ test("Isolated SEO integration", async (t) => {
         assert.ok(sitemapUrls.includes(new URL("/en/blog/__seo-english/", site).href))
         assert.ok(!sitemapUrls.includes(new URL("/blog/__seo-english/", site).href))
         assert.ok(!sitemap.includes("__seo-draft"), "Drafts are excluded from the sitemap")
+        const entries = new XMLParser({ parseTagValue: false }).parse(sitemap).urlset.url
+        for (const [slug, date] of [
+          ["__seo-english", "2026-10-03"],
+          ["__seo-older", "2026-09-30"],
+          ["__seo-leap", "2024-02-29"],
+          ["__seo-nested/entry", "2026-10-01"]
+        ]) {
+          const canonical = new URL(`/en/blog/${slug}/`, site).href
+          assert.equal(entries.find(({ loc }) => loc === canonical).lastmod, date, canonical)
+        }
       }
     )
 

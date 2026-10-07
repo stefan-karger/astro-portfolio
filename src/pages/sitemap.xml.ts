@@ -8,20 +8,29 @@ import { blogPageSize, getPosts, postUrl } from "@/lib/blog"
 export const GET: APIRoute = async ({ site }) => {
   if (!site) throw new Error("Missing `site` in astro.config.mjs")
 
-  const paths = locales.flatMap((locale) =>
-    (["home", "portfolio", "blog"] as const).map((route) => routeUrl(locale, route))
+  const pages: { path: string; lastmod?: string }[] = locales.flatMap((locale) =>
+    (["home", "portfolio", "blog"] as const).map((route) => ({
+      path: routeUrl(locale, route)
+    }))
   )
   const posts = (await getPosts()).filter(({ data }) => !data.draft)
   const lastPage = Math.ceil(posts.length / blogPageSize)
   for (let number = 2; number <= lastPage; number++) {
-    paths.push(...locales.map((locale) => getRelativeLocaleUrl(locale, `blog/${number}`)))
+    pages.push(
+      ...locales.map((locale) => ({ path: getRelativeLocaleUrl(locale, `blog/${number}`) }))
+    )
   }
-  paths.push(...posts.map((post) => postUrl(post.data.language, post.id)))
+  pages.push(
+    ...posts.map(({ data, id }) => ({
+      path: postUrl(data.language, id),
+      lastmod: (data.updatedDate ?? data.pubDate).toISOString().slice(0, 10)
+    }))
+  )
 
-  const urls = paths.map((path) => {
+  const urls = pages.map(({ path, lastmod }) => {
     const url = new URL(path, site)
     url.pathname = url.pathname.replace(/\/?$/, "/")
-    return `<url><loc>${url.href.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</loc></url>`
+    return `<url><loc>${url.href.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ""}</url>`
   })
 
   return new Response(

@@ -91,6 +91,8 @@ Oberflächensprache.
 `/sitemap.xml` enthält die indexierbaren Hauptseiten beider Sprachen und
 veröffentlichte Artikel in ihrer kanonischen Inhaltssprache. Legal-Seiten,
 Entwürfe, Weiterleitungen und zusätzliche Artikel-Oberflächen sind ausgeschlossen.
+Artikel erhalten `lastmod` aus `updatedDate`, andernfalls aus `pubDate`.
+Andere Seiten enthalten kein `lastmod`.
 `/llms.txt` ist eine englische Übersicht mit Links auf Hauptseiten,
 Projektabschnitte und veröffentlichte Artikel sowie deren weitere Formate.
 Beide Endpunkte entstehen beim statischen Build.
