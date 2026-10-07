@@ -17,6 +17,11 @@ const { width: sourceWidth, height: sourceHeight } = await imageMetadata(
   await readFile(`.${sourcePath}`),
   sourcePath
 )
+if (import.meta.env.PROD && Math.min(sourceWidth, sourceHeight) < 2000) {
+  console.info(
+    `[portfolio] Hinweis: ${sourcePath.split("/").pop()} hat ${sourceWidth} × ${sourceHeight} Pixel. Für neue Exporte sind mindestens 2000 Pixel an der kurzen Seite empfohlen. Das Bild bleibt verwendbar; der Build wird fortgesetzt.`
+  )
+}
 const width = Math.min(sourceWidth, 1280)
 const widths = [...new Set([320, 480, 640, 768, 960, 1280].map((size) => Math.min(size, width)))]
 const edge = Math.min(Math.max(sourceWidth, sourceHeight), 3000)
@@ -36,7 +41,7 @@ const srcset = lightboxImages.map((image) => `${image.src} ${image.attributes.wi
 ---
 
 <a
-  class="portfolio-image"
+  class="mb-(--portfolio-gap) block break-inside-avoid cursor-zoom-in text-ink no-underline group-data-[enhanced]/portfolio:absolute group-data-[enhanced]/portfolio:top-0 group-data-[enhanced]/portfolio:left-0 [html[data-portfolio-js]_&]:mb-0"
   data-portfolio-item
   data-image-width={sourceWidth}
   data-image-height={sourceHeight}
@@ -46,6 +51,7 @@ const srcset = lightboxImages.map((image) => `${image.src} ${image.attributes.wi
   data-pswp-srcset={srcset}
 >
   <Image
+    class="block h-auto w-full"
     src={image}
     alt={alt}
     format="webp"
@@ -58,20 +64,3 @@ const srcset = lightboxImages.map((image) => `${image.src} ${image.attributes.wi
     decoding="async"
   />
 </a>
-
-<style>
-  .portfolio-image {
-    display: block;
-    margin-bottom: var(--portfolio-gap);
-    break-inside: avoid;
-    cursor: zoom-in;
-    color: var(--color-ink);
-    text-decoration: none;
-  }
-
-  .portfolio-image :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-</style>

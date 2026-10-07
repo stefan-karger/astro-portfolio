@@ -51,7 +51,7 @@ const images = Object.entries(modules)
   </script>
   <div class="mx-auto w-full max-w-[105rem] px-4 sm:px-6 lg:px-8">
     <div
-      class="portfolio-grid"
+      class="group/portfolio columns-(--portfolio-columns) gap-(--portfolio-gap) [--portfolio-columns:1] [--portfolio-gap:12px] sm:[--portfolio-columns:2] lg:[--portfolio-columns:3] 2xl:[--portfolio-columns:4] [html[data-portfolio-js]_&]:grid [html[data-portfolio-js]_&]:grid-cols-[repeat(var(--portfolio-columns),minmax(0,1fr))] [html[data-portfolio-js]_&]:items-start [html[data-portfolio-js]_&[data-enhanced]]:relative [html[data-portfolio-js]_&[data-enhanced]]:block [html[data-portfolio-js]_&[data-enhanced]]:columns-auto"
       data-portfolio-gallery
       data-dialog-label={portfolio.lightbox.label}
       data-carousel-description={portfolio.lightbox.carousel}
@@ -75,36 +75,7 @@ const images = Object.entries(modules)
 </script>
 
 <style>
-  .portfolio-grid {
-    --portfolio-columns: 1;
-    --portfolio-gap: 12px;
-    column-count: var(--portfolio-columns);
-    column-gap: var(--portfolio-gap);
-  }
-
-  :global(html[data-portfolio-js]) .portfolio-grid {
-    display: grid;
-    grid-template-columns: repeat(var(--portfolio-columns), minmax(0, 1fr));
-    align-items: start;
-    gap: var(--portfolio-gap);
-  }
-
-  :global(html[data-portfolio-js]) .portfolio-grid :global([data-portfolio-item]) {
-    margin-bottom: 0;
-  }
-
-  :global(html[data-portfolio-js]) .portfolio-grid[data-enhanced] {
-    position: relative;
-    display: block;
-    column-count: auto;
-  }
-
-  .portfolio-grid[data-enhanced] :global([data-portfolio-item]) {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
+  /* PhotoSwipe creates these elements after the lightbox opens. */
   :global(.portfolio-lightbox) {
     --pswp-bg: #151513;
     --pswp-icon-color: #fcfcfb;
@@ -114,23 +85,5 @@ const images = Object.entries(modules)
   :global(.portfolio-lightbox .pswp__button:focus-visible) {
     outline: 2px solid #fcfcfb;
     outline-offset: -6px;
-  }
-
-  @media (min-width: 640px) {
-    .portfolio-grid {
-      --portfolio-columns: 2;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .portfolio-grid {
-      --portfolio-columns: 3;
-    }
-  }
-
-  @media (min-width: 1536px) {
-    .portfolio-grid {
-      --portfolio-columns: 4;
-    }
   }
 </style>

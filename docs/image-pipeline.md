@@ -15,12 +15,14 @@ Die aktiven Portfolio-Quellen liegen unter `src/assets/portfolio/`. Beide Sprach
 Dateinamen bestimmen die Reihenfolge und den Schlüssel für die Bildübersetzungen. Der beschreibende Teil ohne Nummer und Dateiendung verweist auf `portfolio.imageAlts` in `src/i18n/translations/de.ts` und `en.ts`. Die Texte sind vorerst kurze Motivbezeichnungen aus den Dateinamen: `001-bathtub-in-meadow.jpg` hat den Schlüssel `bathtub-in-meadow`, englisch `bathtub in meadow` und deutsch `Badewanne auf einer Wiese`. Für neue Bilder:
 
 1. Das Original außerhalb der aktiven Bildpipeline sichern. `private/photo-backup/` ist bereits von Git ausgeschlossen.
-2. Einen fertigen Export mit korrekter Orientierung und möglichst eingebettetem sRGB-Profil ablegen. JPG, JPEG, PNG und WebP werden unterstützt. Vorhandene kleine Exporte dürfen ihre Auflösung behalten.
+2. Einen fertig bearbeiteten Export mit korrekter Orientierung und möglichst eingebettetem sRGB-Profil ablegen. Für neue Bilder werden JPEG in sRGB und mindestens 2000 Pixel an der kurzen Seite empfohlen, beispielsweise 2000 × 3000 Pixel für ein 2:3-Hochformat. JPG, JPEG, PNG und WebP werden unterstützt. Vorhandene kleine Exporte dürfen ihre Auflösung behalten; kleinere Dateien nicht künstlich hochskalieren.
 3. Einen Namen wie `018-short-description.jpg` vergeben. Das numerische Präfix legt die Reihenfolge fest. Bindestriche oder Unterstriche trennen die Wörter der Beschreibung.
 4. Den beschreibenden Dateinamenteil als Schlüssel in beiden `portfolio.imageAlts`-Zuordnungen ergänzen. Englisch die lesbare Dateinamenfassung verwenden, Deutsch sinngemäß übertragen.
 5. `pnpm validate` ausführen und beide Portfolio-Seiten prüfen. Für eine andere Reihenfolge die Präfixe umbenennen; die Übersetzungsschlüssel bleiben dabei gleich.
 
 Ungültige Dateinamen, nicht unterstützte Dateien im aktiven Ordner und fehlende Bildübersetzungen führen zu einem Buildfehler. Doppelte numerische Präfixe erzeugen eine Warnung. Bei gleichem Präfix entscheidet der restliche Dateiname.
+
+Bei jedem Produktionsbuild gibt die Portfolio-Komponente für Quellen mit weniger als 2000 Pixeln an der kurzen Seite einen unverbindlichen Hinweis mit Dateiname und Auflösung aus. Das gilt auch für bestehende Bilder. Da beide Sprachversionen gerendert werden, erscheint der Hinweis je Bild zweimal. Die Ausgabe erfolgt über `console.info` im Buildlog, ohne Warnungsdiagnose, Exception oder Änderung des Exit-Codes. Die Auflösung allein lässt den Build nicht fehlschlagen und zählt nicht zu den ESLint-Warnungen, die `pnpm lint` mit `--max-warnings 0` ablehnt.
 
 Die Originale des ersten Bildsatzes und ein Importprotokoll mit SHA-256-Prüfsummen liegen unter `private/photo-backup/portfolio/`.
 

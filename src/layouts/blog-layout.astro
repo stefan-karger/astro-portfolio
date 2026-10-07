@@ -7,7 +7,6 @@ import CodeBlockControls from "@/components/blog/code-block-controls.astro"
 import PostHeader from "@/components/blog/post-header.astro"
 import SeriesNavigation from "@/components/blog/series-navigation.astro"
 import TableOfContents from "@/components/blog/table-of-contents.astro"
-import PrototypeSwitch from "@/components/prototype-switch.astro"
 import StructuredData from "@/components/structured-data.astro"
 import { resolveLocale } from "@/i18n/types"
 import { getTranslations } from "@/i18n/translations"
@@ -68,7 +67,6 @@ const seriesPosts = series
       </>
     )}
   </Fragment>
-  <PrototypeSwitch />
   <article
     class="mx-auto min-w-0 max-w-6xl pt-10 pb-16 sm:pt-16 sm:pb-24"
     aria-labelledby="post-title"

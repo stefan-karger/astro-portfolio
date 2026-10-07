@@ -87,6 +87,16 @@ codebase already provides a suitable solution.
 
 Prefer established project patterns when multiple approaches are equally valid.
 
+### Style controlled markup with Tailwind
+
+Use Tailwind utility classes on markup the project controls, including Astro
+image components, responsive layouts, pseudo-elements, and interactive states.
+Existing shared link styles may compose utilities with `@apply`.
+
+Keep custom CSS for generated Markdown, diagrams, syntax highlighting, or library
+elements where classes cannot be applied directly. Keep dynamically calculated
+positions and dimensions in the code that calculates them.
+
 ### Treat dependencies as complexity
 
 Every dependency expands the amount of code and behavior that can affect the

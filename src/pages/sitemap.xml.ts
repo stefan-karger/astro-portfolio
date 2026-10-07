@@ -1,8 +1,9 @@
 import type { APIRoute } from "astro"
+import { getRelativeLocaleUrl } from "astro:i18n"
 
 import { locales } from "@/i18n/types"
 import { routeUrl } from "@/i18n/url"
-import { getPosts, postUrl } from "@/lib/blog"
+import { blogPageSize, getPosts, postUrl } from "@/lib/blog"
 
 export const GET: APIRoute = async ({ site }) => {
   if (!site) throw new Error("Missing `site` in astro.config.mjs")
@@ -10,10 +11,12 @@ export const GET: APIRoute = async ({ site }) => {
   const paths = locales.flatMap((locale) =>
     (["home", "portfolio", "blog"] as const).map((route) => routeUrl(locale, route))
   )
-  const posts = await getPosts()
-  paths.push(
-    ...posts.filter(({ data }) => !data.draft).map((post) => postUrl(post.data.language, post.id))
-  )
+  const posts = (await getPosts()).filter(({ data }) => !data.draft)
+  const lastPage = Math.ceil(posts.length / blogPageSize)
+  for (let number = 2; number <= lastPage; number++) {
+    paths.push(...locales.map((locale) => getRelativeLocaleUrl(locale, `blog/${number}`)))
+  }
+  paths.push(...posts.map((post) => postUrl(post.data.language, post.id)))
 
   const urls = paths.map((path) => {
     const url = new URL(path, site)

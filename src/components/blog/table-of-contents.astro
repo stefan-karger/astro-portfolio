@@ -31,7 +31,7 @@ const t = getTranslations(locale)
               class:list={[
                 "text-sm font-bold text-muted",
                 collapsible
-                  ? "contents-toggle flex min-h-11 cursor-pointer list-none items-center gap-2"
+                  ? "flex min-h-11 cursor-pointer list-none items-center gap-2 before:size-[0.4rem] before:shrink-0 before:-rotate-45 before:border-r before:border-b before:content-[''] [details[open]_&]:before:rotate-45 [&::-webkit-details-marker]:hidden"
                   : "mb-3"
               ]}
             >
@@ -58,26 +58,6 @@ const t = getTranslations(locale)
     </nav>
   </aside>
 )}
-
-<style>
-  .contents-toggle::before {
-    content: "";
-    width: 0.4rem;
-    height: 0.4rem;
-    flex-shrink: 0;
-    border-right: 1px solid currentColor;
-    border-bottom: 1px solid currentColor;
-    transform: rotate(-45deg);
-  }
-
-  details[open] > .contents-toggle::before {
-    transform: rotate(45deg);
-  }
-
-  .contents-toggle::-webkit-details-marker {
-    display: none;
-  }
-</style>
 
 <script>
   const contents = document.querySelector<HTMLElement>("#blog-contents")

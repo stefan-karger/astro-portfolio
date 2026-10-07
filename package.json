@@ -14,7 +14,7 @@
     "check": "astro check",
     "setup:diagrams": "playwright install --only-shell chromium",
     "test:mermaid": "node --experimental-strip-types --test tests/mermaid.test.mjs",
-    "test:blog": "node --experimental-strip-types --test tests/code-block.test.mjs tests/type-popovers.test.mjs",
+    "test:blog": "node --experimental-strip-types --test tests/blog-filters.test.mjs tests/code-block.test.mjs tests/type-popovers.test.mjs",
     "test:seo": "node --experimental-strip-types --test tests/seo.spec.mjs",
     "lint": "eslint . --cache --max-warnings 0",
     "lint:fix": "eslint . --cache --fix",

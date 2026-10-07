@@ -33,8 +33,10 @@ export const en = {
       "maternity-portrait-on-bed": "maternity portrait on bed",
       "bridal-portrait-outdoors": "bridal portrait outdoors",
       "tattooed-portrait-by-mural": "tattooed portrait by mural",
+      "seated-portrait-on-piano": "seated portrait on piano",
       "portrait-facing-mirror": "portrait facing mirror",
       "seated-portrait-by-window": "seated portrait by window",
+      "split-portrait-by-mural": "split portrait by mural",
       "antler-portrait-in-forest": "antler portrait in forest",
       "maternity-portrait-by-window": "maternity portrait by window",
       "silhouette-above-city-at-night": "silhouette above city at night"
@@ -154,11 +156,29 @@ export const en = {
     author: "By",
     published: "Published",
     updated: "Updated",
-    description: "Notes on software, web development and what I learn along the way.",
+    description: "How my projects take shape and what I learn along the way.",
     empty: "No posts published yet.",
     draft: "Draft",
     tags: "Tags",
     language: { de: "German", en: "English" },
+    pagination: {
+      label: "Pagination",
+      previous: "Previous",
+      next: "Next",
+      page: (number: number) => `Page ${number}`,
+      status: (current: number, total: number) => `Page ${current} of ${total}`
+    },
+    filters: {
+      label: "Filters",
+      all: "All posts",
+      month: "Published",
+      language: "Language",
+      description: {
+        month: "Posts published in",
+        language: "Posts in",
+        tag: "Posts tagged"
+      }
+    },
     contents: "In this post",
     back: "Back to overview",
     navigation: "More posts",
@@ -172,11 +192,5 @@ export const en = {
     part: "Part",
     mermaidSource: "Show source",
     mermaidDiagram: "Diagram"
-  },
-
-  prototype: {
-    navigationLabel: "Choose page prototype",
-    label: "Draft",
-    itemLabel: "Prototype"
   }
 } satisfies Translations

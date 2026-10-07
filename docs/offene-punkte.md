@@ -1,14 +1,12 @@
 # Offene Punkte
 
-Stand: 6. Oktober 2026. Hier stehen ausstehende Inhaltsentscheidungen und
+Stand: 7. Oktober 2026. Hier stehen ausstehende Inhaltsentscheidungen und
 Prüfungen. Die aktuelle Umsetzung beschreibt die [README](../README.md).
 
 ## Inhalte und Fotografie
 
-- Höher aufgelöste, gleichwertig bearbeitete Exporte für die Bilder 002, 011,
-  012, 014 und 016 prüfen. Die vorhandenen Quellen sind nur 1080 Pixel breit.
-  Die Spiegelaufnahme hat 1350 × 1350 Pixel. Kleine Quellen werden nicht
-  künstlich hochskaliert.
+Die vorhandenen Portfolio-Bilder bleiben vorerst unverändert. Größere Exporte
+werden derzeit nicht gesucht. Kleine Quellen werden nicht künstlich hochskaliert.
 
 ## Netlify-Abnahme
 

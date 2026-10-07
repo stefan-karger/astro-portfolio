@@ -1,0 +1,34 @@
+---
+import type { Page } from "astro"
+import type { CollectionEntry } from "astro:content"
+import BaseLayout from "@/layouts/base-layout.astro"
+import BlogIndex from "@/components/blog/blog-index.astro"
+import { resolveLocale } from "@/i18n/types"
+import { getTranslations } from "@/i18n/translations"
+import { formatBlogFilter } from "@/lib/blog"
+import type { BlogFilter } from "@/lib/blog-filters"
+import { siteConfig } from "@/lib/config"
+
+interface Props {
+  page: Page<CollectionEntry<"blog">>
+  filter: BlogFilter
+  filters: BlogFilter[]
+}
+
+const { page, filter, filters } = Astro.props
+const locale = resolveLocale(Astro.currentLocale)
+const t = getTranslations(locale)
+const label = formatBlogFilter(locale, filter)
+const heading = filter.type === "tag" ? t.blog.tags : t.blog.filters[filter.type]
+const title = `${heading}: ${label} - Blog - ${siteConfig.name.public}${page.currentPage > 1 ? ` - ${t.blog.pagination.page(page.currentPage)}` : ""}`
+---
+
+<BaseLayout
+  {title}
+  description={`${t.blog.filters.description[filter.type]} ${label}. ${t.blog.description}`}
+  mainClass="w-full flex-1"
+  noindex
+>
+  <link slot="head" rel="alternate" type="application/rss+xml" href="/rss.xml" />
+  <BlogIndex {page} {filter} {filters} />
+</BaseLayout>

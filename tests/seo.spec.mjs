@@ -28,6 +28,7 @@ import config from "../astro.config.mjs"
 import { siteConfig } from "../src/lib/config.ts"
 import { de } from "../src/i18n/translations/de.ts"
 import { en } from "../src/i18n/translations/en.ts"
+import { getBlogFilters, matchesBlogFilter } from "../src/lib/blog-filters.ts"
 
 const project = fileURLToPath(new URL("../", import.meta.url))
 const dist = path.join(project, "dist")
@@ -130,11 +131,22 @@ const files = await htmlFiles(dist)
 const redirectFiles = new Set(
   Object.keys(config.redirects).map((route) => `${route.replace(/^\//, "")}/index.html`)
 )
+const archivePages = files.filter((file) => /^(?:en\/)?blog\/\d+\/index\.html$/.test(file))
+const filterPages = files.filter((file) =>
+  /^(?:en\/)?blog\/filter\/[^/]+(?:\/\d+)?\/index\.html$/.test(file)
+)
 const articles = files.filter(
-  (file) => /^(?:en\/)?blog\/.+\/index\.html$/.test(file) && !redirectFiles.has(file)
+  (file) =>
+    /^(?:en\/)?blog\/.+\/index\.html$/.test(file) &&
+    !redirectFiles.has(file) &&
+    !archivePages.includes(file) &&
+    !filterPages.includes(file)
 )
 const regularPages = await Promise.all(
-  [...fixedPages, ...articles].map(async (file) => ({ file, ...(await readPage(file)) }))
+  [...fixedPages, ...archivePages, ...filterPages, ...articles].map(async (file) => ({
+    file,
+    ...(await readPage(file))
+  }))
 )
 
 test("All content pages have complete, consistent metadata and the correct indexing policy", () => {
@@ -142,7 +154,11 @@ test("All content pages have complete, consistent metadata and the correct index
     const { file, title, meta, lang, html } = data
     assert.ok(title.trim(), file)
     assert.ok(meta.get("description")?.trim(), file)
-    assert.equal(meta.get("robots"), legal.has(file) ? "noindex, follow" : undefined, file)
+    assert.equal(
+      meta.get("robots"),
+      legal.has(file) || filterPages.includes(file) ? "noindex, follow" : undefined,
+      file
+    )
     assert.equal(meta.get("og:title"), title, file)
     assert.equal(meta.get("twitter:title"), title, file)
     assert.equal(meta.get("og:description"), meta.get("description"), file)
@@ -550,7 +566,9 @@ test("The sitemap lists each indexable canonical once and robots.txt advertises 
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => decode(match[1]))
   const expected = [
     ...new Set(
-      regularPages.filter(({ file }) => !legal.has(file)).map(({ meta }) => meta.get("og:url"))
+      regularPages
+        .filter(({ meta }) => !meta.get("robots")?.includes("noindex"))
+        .map(({ meta }) => meta.get("og:url"))
     )
   ].sort()
   assert.deepEqual(
@@ -633,7 +651,10 @@ test("RSS and Markdown publish each canonical article once and are discovered on
   }
   for (const data of regularPages) {
     const isArticle = articles.includes(data.file)
-    const isBlog = ["blog/index.html", "en/blog/index.html"].includes(data.file)
+    const isBlog =
+      ["blog/index.html", "en/blog/index.html"].includes(data.file) ||
+      archivePages.includes(data.file) ||
+      filterPages.includes(data.file)
     assert.deepEqual(
       data.links.filter(({ type }) => type === "application/rss+xml"),
       isArticle || isBlog
@@ -663,6 +684,160 @@ test("RSS and Markdown publish each canonical article once and are discovered on
     await readFile(path.join(dist, "_headers"), "utf8"),
     "/rss.xml\n  Content-Type: application/rss+xml; charset=utf-8\n\n/blog/*.md\n  Content-Type: text/markdown; charset=utf-8\n  X-Robots-Tag: noindex, follow\n\n/en/blog/*.md\n  Content-Type: text/markdown; charset=utf-8\n  X-Robots-Tag: noindex, follow\n"
   )
+})
+
+async function checkBlogPagination(directory, entries) {
+  const filters = getBlogFilters(entries)
+  const pageCount = (posts) => Math.max(1, Math.ceil(posts.length / 12))
+  const pagePath = (base, number) => `${base}${number > 1 ? `/${number}` : ""}`
+  const builtFiles = await htmlFiles(directory)
+  assert.deepEqual(
+    new Set(builtFiles.filter((file) => /^(?:en\/)?blog\/filter\//.test(file))),
+    new Set(
+      ["", "en/"].flatMap((prefix) =>
+        filters.flatMap((filter) =>
+          Array.from(
+            { length: pageCount(entries.filter((post) => matchesBlogFilter(post, filter))) },
+            (_, index) => `${pagePath(`${prefix}blog/filter/${filter.key}`, index + 1)}/index.html`
+          )
+        )
+      )
+    )
+  )
+  assert.deepEqual(
+    new Set(builtFiles.filter((file) => /^(?:en\/)?blog(?:\/\d+)?\/index\.html$/.test(file))),
+    new Set(
+      ["", "en/"].flatMap((prefix) =>
+        Array.from(
+          { length: pageCount(entries) },
+          (_, index) => `${pagePath(`${prefix}blog`, index + 1)}/index.html`
+        )
+      )
+    )
+  )
+  const navigation = (html) =>
+    html.match(/<nav\b[^>]*id="blog-filters"[^>]*>([\s\S]*?)<\/nav>/)?.[1]
+  const postLinks = (html) =>
+    [...html.matchAll(/<article\b[^>]*>([\s\S]*?)<\/article>/g)].map(([, article]) =>
+      tags(article, "a")[0].href.replace(/\/$/, "")
+    )
+
+  for (const prefix of ["", "en/"]) {
+    const t = translations[prefix ? "en" : "de"]
+    const archive = await readPage(`${prefix}blog/index.html`, directory)
+    const nav = navigation(archive.html)
+    if (entries.length === 0) {
+      assert.equal(nav, undefined)
+      assert.ok(archive.html.includes(t.blog.empty))
+      assert.equal(postLinks(archive.html).length, 0)
+      assert.ok(
+        !tags(archive.html, "nav").some(
+          ({ "aria-label": label }) => label === t.blog.pagination.label
+        )
+      )
+      continue
+    }
+    assert.ok(nav)
+    assert.equal(tags(nav, "details")[0].class, "xl:hidden")
+    assert.ok(!/<details\b[^>]*\bopen(?:\s|>)/.test(nav))
+    const baseline = nav.replace(/ aria-current="page"/g, "")
+    const reset = tags(nav, "a").filter((link) => link["aria-current"] === "page")
+    assert.equal(reset.length, 2, "One reset link in each responsive variant")
+    assert.ok(reset.every(({ href }) => href.replace(/\/$/, "") === `/${prefix}blog`))
+    const checkPages = async (base, posts, filter) => {
+      const seen = []
+      const count = pageCount(posts)
+      for (let number = 1; number <= count; number++) {
+        const pathname = pagePath(base, number)
+        const data = await readPage(`${pathname}/index.html`, directory)
+        const visible = postLinks(data.html)
+        assert.deepEqual(
+          visible,
+          posts.slice((number - 1) * 12, number * 12).map(({ id }) => `/${prefix}blog/${id}`),
+          pathname
+        )
+        assert.ok(visible.length <= 12, pathname)
+        seen.push(...visible)
+        assert.equal(data.meta.get("robots"), filter ? "noindex, follow" : undefined)
+        assert.equal(
+          new URL(data.links.find(({ rel }) => rel === "canonical").href).pathname.replace(
+            /\/$/,
+            ""
+          ),
+          `/${pathname}`
+        )
+        if (number > 1)
+          assert.ok(data.title.endsWith(` - ${t.blog.pagination.page(number)}`), pathname)
+        const sidebar = navigation(data.html)
+        assert.equal(sidebar.replace(/ aria-current="page"/g, ""), baseline)
+        const current = tags(sidebar, "a").filter((link) => link["aria-current"] === "page")
+        assert.equal(current.length, 2, "One selected link in each responsive variant")
+        assert.ok(current.every(({ href }) => href.replace(/\/$/, "") === `/${base}`))
+        assert.ok(
+          tags(sidebar, "a").every(({ href }) => !/\/\d+\/?$/.test(href)),
+          "Filter selection returns to page 1"
+        )
+        const rows = [...data.html.matchAll(/<li\b([^>]*)>\s*<article\b([^>]*)>/g)]
+        assert.equal(rows.length, visible.length)
+        for (const [index, [, item, article]] of rows.entries()) {
+          const itemClasses = tags(`<li${item}>`, "li")[0].class.split(/\s+/)
+          const articleClasses = tags(`<article${article}>`, "article")[0].class.split(/\s+/)
+          assert.equal(articleClasses.includes("bg-ink"), number === 1 && index === 0, pathname)
+          assert.equal(itemClasses.includes("border-t"), index > (number === 1 ? 1 : 0), pathname)
+        }
+        const pagination = data.html.match(
+          /<nav\b[^>]*aria-label="(?:Seitennavigation|Pagination)"[^>]*>([\s\S]*?)<\/nav>/
+        )?.[1]
+        if (count === 1) {
+          assert.equal(pagination, undefined)
+        } else {
+          assert.ok(pagination?.includes(t.blog.pagination.status(number, count)))
+          const expected = []
+          if (number > 1) expected.push({ rel: "prev", href: `/${pagePath(base, number - 1)}` })
+          if (number < count) expected.push({ rel: "next", href: `/${pagePath(base, number + 1)}` })
+          assert.deepEqual(
+            tags(pagination, "a").map(({ rel, href }) => ({ rel, href: href.replace(/\/$/, "") })),
+            expected
+          )
+        }
+        const otherPath = prefix ? pathname.replace(/^en\//, "") : `en/${pathname}`
+        const switchLink = tags(data.html, "a").find(
+          (link) => link.hreflang === (prefix ? "de" : "en")
+        )
+        assert.equal(switchLink.href.replace(/\/$/, ""), `/${otherPath}`)
+        assert.equal(
+          new URL(
+            data.links.find(({ hreflang }) => hreflang === (prefix ? "de" : "en")).href
+          ).pathname.replace(/\/$/, ""),
+          `/${otherPath}`
+        )
+      }
+      assert.deepEqual(
+        seen,
+        posts.map(({ id }) => `/${prefix}blog/${id}`),
+        "The complete archive has no gaps or duplicates"
+      )
+    }
+    await checkPages(`${prefix}blog`, entries)
+    for (const filter of filters) {
+      const matching = entries.filter((post) => matchesBlogFilter(post, filter))
+      assert.equal(matching.length, filter.count)
+      await checkPages(`${prefix}blog/filter/${filter.key}`, matching, filter)
+    }
+  }
+}
+
+test("Blog pagination preserves ordering, filter counts and localized navigation", async () => {
+  const feed = rss(await readFile(path.join(dist, "rss.xml"), "utf8"))
+  const entries = feed.channel.item.map((item) => ({
+    id: new URL(item.link).pathname.replace(/^\/(?:en\/)?blog\//, "").replace(/\/$/, ""),
+    data: {
+      pubDate: new Date(item.pubDate),
+      language: item["dc:language"],
+      tags: item.category ?? []
+    }
+  }))
+  await checkBlogPagination(dist, entries)
 })
 
 test("Published articles preserve their content language and canonical across both interfaces", () => {
@@ -1288,6 +1463,12 @@ test("Isolated SEO integration", async (t) => {
     const post = `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\npubDate: "2026-10-01"\nlanguage: en\ntags: "Astro, TypeScript, Astro, , TypeScript "\ndraft: false\n---\n\n${body}\n`
     const updatedPost = post.replace("language: en", 'updatedDate: "2026-10-03"\nlanguage: en')
     const content = path.join(temporary, "src/content/blog")
+    for (let number = 1; number <= 25; number++) {
+      await writeFile(
+        path.join(content, `__pagination-${String(number).padStart(2, "0")}.md`),
+        post.replace("draft: false", "draft: true")
+      )
+    }
     await writeFile(path.join(content, "__seo-english.md"), updatedPost)
     await writeFile(
       path.join(content, "__seo-older.md"),
@@ -1318,7 +1499,7 @@ test("Isolated SEO integration", async (t) => {
       try {
         const output = await runNode(
           [path.join(project, "node_modules/astro/bin/astro.mjs"), ...args],
-          { cwd: temporary }
+          { cwd: temporary, timeout: args[0] === "build" ? 180000 : 60000 }
         )
         commands.push({ scenario, ...output.process })
         t.diagnostic(`astro ${args.join(" ")} completed in ${output.duration} ms`)
@@ -1403,6 +1584,31 @@ test("Isolated SEO integration", async (t) => {
         assert.ok(sitemapUrls.includes(new URL("/en/blog/__seo-english/", site).href))
         assert.ok(!sitemapUrls.includes(new URL("/blog/__seo-english/", site).href))
         assert.ok(!sitemap.includes("__seo-draft"), "Drafts are excluded from the sitemap")
+      }
+    )
+
+    await scenarioTest(
+      "Blog filters include published languages and months but exclude drafts",
+      { skip: !built },
+      async () => {
+        for (const prefix of ["", "en/"]) {
+          const index = await readPage(`${prefix}blog/index.html`, fixtureDist)
+          const english = await readPage(`${prefix}blog/filter/language-en/index.html`, fixtureDist)
+          const leapMonth = await readPage(
+            `${prefix}blog/filter/month-2024-02/index.html`,
+            fixtureDist
+          )
+          assert.ok(english.html.includes("__seo-english"))
+          assert.ok(!english.html.includes("__seo-draft"))
+          assert.ok(!english.html.includes("__seo-german-draft"))
+          assert.ok(!english.html.includes("astro-fuer-entwicklerblogs-shiki-twoslash"))
+          assert.ok(leapMonth.html.includes("__seo-leap"))
+          assert.ok(!leapMonth.html.includes("__seo-english"))
+          const language = prefix ? "English" : "Englisch"
+          assert.ok(index.html.includes(`${language} (4)`))
+          assert.ok(english.html.includes(`${language} (4)`))
+          assert.equal(english.meta.get("robots"), "noindex, follow")
+        }
       }
     )
 
@@ -1553,6 +1759,25 @@ test("Isolated SEO integration", async (t) => {
           globalThis.fetch(new URL(pathname, url), {
             signal: globalThis.AbortSignal.timeout(30000)
           })
+        for (const prefix of ["", "en/"]) {
+          for (const number of [0, 1, 999]) {
+            for (const base of ["blog", "blog/filter/tag-astro"]) {
+              assert.equal(
+                (await fetchDev(`/${prefix}${base}/${number}/`)).status,
+                404,
+                "Unknown page numbers do not fall through to the article route"
+              )
+            }
+          }
+          const second = await fetchDev(`/${prefix}blog/2/`)
+          assert.equal(second.status, 200)
+          const html = await second.text()
+          assert.equal(tags(html, "article").length, 12)
+          assert.ok(html.includes(translations[prefix ? "en" : "de"].blog.pagination.previous))
+          const sidebar = html.match(/<nav\b[^>]*id="blog-filters"[^>]*>([\s\S]*?)<\/nav>/)?.[1]
+          assert.ok(sidebar)
+          assert.ok(!tags(sidebar, "a").some(({ href }) => /\/2\/?$/.test(href)))
+        }
         const devFeed = await fetchDev("/rss.xml")
         assert.equal(devFeed.status, 200)
         assert.equal(devFeed.headers.get("content-type"), "application/rss+xml; charset=utf-8")
@@ -1653,6 +1878,93 @@ test("Isolated SEO integration", async (t) => {
         })
     })
     assert.ok(serverStopped, "Stop the isolated dev server before mutating fixtures or building")
+    await scenarioTest("Pagination boundaries, filtered archives and sitemap", async () => {
+      const drafts = new Map()
+      for (const file of await readdir(content, { recursive: true })) {
+        if (!file.endsWith(".md")) continue
+        const filename = path.join(content, file)
+        const source = await readFile(filename, "utf8")
+        drafts.set(
+          filename,
+          source.replace(/^---\r?\n([\s\S]*?)\r?\n---/, (_, frontmatter) => {
+            const fields = frontmatter.replace(/^draft:.*\r?$/m, "draft: true")
+            return `---\n${/^draft:/m.test(fields) ? fields : `${fields}\ndraft: true`}\n---`
+          })
+        )
+      }
+      await withFiles(
+        drafts,
+        async () => {
+          for (const count of [1, 12, 13, 25]) {
+            const fixtures = new Map(
+              Array.from({ length: count }, (_, index) => [
+                path.join(content, `__pagination-${String(index + 1).padStart(2, "0")}.md`),
+                post
+                  .replace('pubDate: "2026-10-01"', 'pubDate: "2023-08-01"')
+                  .replace("language: en", `language: ${index % 2 === 0 ? "de" : "en"}`)
+              ])
+            )
+            await withFiles(
+              fixtures,
+              async () => {
+                await build()
+                const items = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8")).channel
+                  .item
+                assert.equal(items.length, count)
+                const entries = items.map((item) => ({
+                  id: new URL(item.link).pathname
+                    .replace(/^\/(?:en\/)?blog\//, "")
+                    .replace(/\/$/, ""),
+                  data: {
+                    pubDate: new Date(item.pubDate),
+                    language: item["dc:language"],
+                    tags: item.category ?? []
+                  }
+                }))
+                await checkBlogPagination(fixtureDist, entries)
+                const sitemap = await readFile(path.join(fixtureDist, "sitemap.xml"), "utf8")
+                const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) =>
+                  decode(match[1])
+                )
+                const expected = [
+                  "/",
+                  "/en/",
+                  "/fotografie/",
+                  "/en/photography/",
+                  ...["", "en/"].flatMap((prefix) =>
+                    Array.from(
+                      { length: Math.ceil(count / 12) },
+                      (_, index) => `/${prefix}blog/${index ? `${index + 1}/` : ""}`
+                    )
+                  ),
+                  ...items.map(({ link }) => new URL(link).pathname)
+                ]
+                assert.deepEqual(
+                  [...listed].sort(),
+                  expected.map((pathname) => new URL(pathname, site).href).sort()
+                )
+                assert.equal(new Set(listed).size, listed.length)
+              },
+              captureFailure
+            )
+          }
+        },
+        captureFailure
+      )
+    })
+    await scenarioTest("Numeric article IDs cannot overwrite paginated archive pages", async () => {
+      await writeFile(path.join(content, "2.md"), post.replace("draft: false", "draft: true"))
+      await withFiles(
+        new Map([[path.join(content, "2.md"), post]]),
+        () =>
+          expectFailure(
+            build,
+            [/Numeric blog ID "2" is reserved for pagination/],
+            "2.md conflicts with the archive"
+          ),
+        captureFailure
+      )
+    })
     await scenarioTest("An invalid Mermaid definition fails the production build", async () => {
       await withFiles(
         new Map([
@@ -1821,6 +2133,7 @@ test("Isolated SEO integration", async (t) => {
             const emptyFeed = rss(await readFile(path.join(fixtureDist, "rss.xml"), "utf8"))
             assert.equal(emptyFeed.channel.title, `${siteConfig.name.public} - Blog`)
             assert.deepEqual(emptyFeed.channel.item ?? [], [])
+            await checkBlogPagination(fixtureDist, [])
             for (const directory of ["blog", "en/blog"]) {
               assert.ok(
                 !(await readdir(path.join(fixtureDist, directory), { recursive: true })).some(

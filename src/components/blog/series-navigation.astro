@@ -19,11 +19,15 @@ const series = post.data.series
 {series && posts.length > 0 && (
   <nav class="post-series mt-8 max-w-[75ch]" aria-label={t.blog.series}>
     <h2 class="text-sm font-semibold text-muted">{t.blog.series}</h2>
-    <ol class="series-list mt-2 text-sm">
+    <ol class="mt-2 ml-1 grid grid-cols-1 border-l border-rule text-sm">
       {posts.map((entry) => (
-        <li class="series-item" data-series-part={entry.data.series!.part}>
+        <li
+          class="relative pl-5 before:absolute before:top-[1.125rem] before:-left-1 before:size-[0.4375rem] before:rounded-full before:border before:border-muted before:bg-paper before:content-[''] has-[[aria-current]]:before:border-ink has-[[aria-current]]:before:bg-ink"
+          data-series-part={entry.data.series!.part}
+        >
+          {/* One inline text flow keeps the hover underline continuous between words. */}
           <a
-            class="series-link text-link inline-block min-h-11 py-2.5 text-muted no-underline hover:bg-transparent hover:text-ink hover:underline focus-visible:text-ink aria-[current]:font-bold aria-[current]:text-ink"
+            class="text-link inline-block min-h-11 py-2.5 text-muted no-underline [text-decoration-skip-ink:none] hover:bg-transparent hover:text-ink hover:underline focus-visible:text-ink aria-[current]:font-bold aria-[current]:text-ink"
             href={postUrl(locale, entry.id)}
             aria-current={entry.id === post.id ? "page" : undefined}
           >
@@ -37,39 +41,3 @@ const series = post.data.series
     </ol>
   </nav>
 )}
-
-<style>
-  .series-list {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    margin-left: 0.25rem;
-    border-left: 1px solid var(--color-rule);
-  }
-
-  .series-link {
-    /* One inline text flow keeps the hover underline continuous between words. */
-    text-decoration-skip-ink: none;
-  }
-
-  .series-item {
-    position: relative;
-    padding-left: 1.25rem;
-  }
-
-  .series-item::before {
-    content: "";
-    position: absolute;
-    top: 1.125rem;
-    left: -0.25rem;
-    width: 0.4375rem;
-    height: 0.4375rem;
-    border: 1px solid var(--color-muted);
-    border-radius: 50%;
-    background: var(--color-paper);
-  }
-
-  .series-item:has([aria-current])::before {
-    border-color: var(--color-ink);
-    background: var(--color-ink);
-  }
-</style>

@@ -33,8 +33,10 @@ export const de = {
       "maternity-portrait-on-bed": "Schwangerschaftsporträt auf einem Bett",
       "bridal-portrait-outdoors": "Brautporträt im Freien",
       "tattooed-portrait-by-mural": "Porträt mit Tattoos vor einem Wandbild",
+      "seated-portrait-on-piano": "Porträt im Sitzen auf einem Klavier",
       "portrait-facing-mirror": "Porträt vor einem Spiegel",
       "seated-portrait-by-window": "Porträt im Sitzen am Fenster",
+      "split-portrait-by-mural": "Porträt im Spagat vor einem Wandbild",
       "antler-portrait-in-forest": "Porträt mit Geweih im Wald",
       "maternity-portrait-by-window": "Schwangerschaftsporträt am Fenster",
       "silhouette-above-city-at-night": "Silhouette über der nächtlichen Stadt"
@@ -154,11 +156,29 @@ export const de = {
     author: "Von",
     published: "Veröffentlicht am",
     updated: "Aktualisiert am",
-    description: "Notizen zu Software, Webentwicklung und den Dingen, die ich dabei lerne.",
+    description: "Wie meine Projekte entstehen und was ich daraus lerne.",
     empty: "Noch keine Beiträge veröffentlicht.",
     draft: "Entwurf",
     tags: "Tags",
     language: { de: "Deutsch", en: "Englisch" },
+    pagination: {
+      label: "Seitennavigation",
+      previous: "Vorherige",
+      next: "Nächste",
+      page: (number: number) => `Seite ${number}`,
+      status: (current: number, total: number) => `Seite ${current} von ${total}`
+    },
+    filters: {
+      label: "Filter",
+      all: "Alle Beiträge",
+      month: "Veröffentlicht",
+      language: "Sprache",
+      description: {
+        month: "Beiträge veröffentlicht im",
+        language: "Beiträge auf",
+        tag: "Beiträge mit dem Tag"
+      }
+    },
     contents: "In diesem Beitrag",
     back: "Zur Übersicht",
     navigation: "Weitere Beiträge",
@@ -172,12 +192,6 @@ export const de = {
     part: "Teil",
     mermaidSource: "Quelltext anzeigen",
     mermaidDiagram: "Diagramm"
-  },
-
-  prototype: {
-    navigationLabel: "Seitenentwurf auswählen",
-    label: "Entwurf",
-    itemLabel: "Prototyp"
   }
 }
 

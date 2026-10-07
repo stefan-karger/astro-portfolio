@@ -112,6 +112,28 @@ gibt es weder eine sichtbare Aktualisierungsangabe noch einen Platzhalter oder
 entsprechende JSON-LD-/Open-Graph-Daten. Die Autorenzeile nennt
 Stefan Eideloth-Karger und verlinkt auf die Homepage der aktuellen Oberflächensprache.
 
+Die Blogübersicht zeigt höchstens zwölf Beiträge pro Seite. Übersicht und Filter
+entstehen beim Build mit Astros `paginate()` über `[...page].astro`; im Browser
+steht nur die aktuelle Seite im HTML. Die erste Seite liegt weiterhin unter
+`/blog/`, weitere Seiten unter `/blog/2/`, `/blog/3/` und den entsprechenden
+englischen Pfaden. Die Navigation verwendet Astros `page.url.prev` und
+`page.url.next`. Der erste Beitrag ist nur auf Seite 1 hervorgehoben.
+
+Die Blogübersicht filtert über normale Links nach einem Veröffentlichungsmonat,
+einer Inhaltssprache oder einem Tag. Es ist jeweils ein Filter aktiv; die Zahlen
+in der Seitenleiste zählen immer alle verfügbaren Beiträge. Die Filterseiten
+entstehen beim Build über `blog/filter/[filter]/[...page].astro`, beispielsweise
+unter `/blog/filter/month-2026-10/` oder `/en/blog/filter/tag-astro/2/`.
+Ein Filterwechsel startet auf Seite 1. Monats- und
+Sprachbezeichnungen folgen der Oberflächensprache. Tag-Bezeichnungen bleiben
+unverändert; bei gleichen URL-Namen unterscheidet ein kurzer Hash die Tags.
+Filterseiten verwenden `noindex, follow` und erscheinen nicht in der Sitemap.
+Öffentliche Übersichtsseiten sind in der Sitemap enthalten. Rein numerische
+Artikel-IDs auf oberster Ebene sind für die Pagination reserviert.
+
+Die Umsetzung folgt [Astros Pagination-Beispiel](https://docs.astro.build/en/guides/routing/#pagination)
+und [Nested Pagination](https://docs.astro.build/en/guides/routing/#nested-pagination).
+
 ## RSS und Markdown
 
 `/rss.xml` enthält alle veröffentlichten deutschen und englischen Artikel einmal
