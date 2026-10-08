@@ -64,6 +64,7 @@ die Diagramme verursachen keinen Seitenüberlauf. Die Auswahlfarbe ist hell.
       Auslieferungs-Header, Canonicals sowie RSS, Markdown, llms.txt, robots.txt
       und Sitemap. Das Preview-`noindex` darf dort nicht auf indexierbaren
       Inhaltsseiten erscheinen.
+      Beide veröffentlichten Datenschutzfassungen mit dem aktuellen Build abgleichen.
 - [ ] Nach dem erfolgreichen Produktionsdeploy die `og:image`-URL
       `https://stefan-karger.de/social/sk-wordmark.png` und die Linkvorschau
       abschließend prüfen: HTTP 200, PNG mit 1200 × 630 Pixeln.
@@ -92,43 +93,6 @@ die Diagramme verursachen keinen Seitenüberlauf. Die Auswahlfarbe ist hell.
 
 Diese Schritte benötigen Zugriff auf die jeweiligen Konten. Die Codeumsetzung
 erledigt sie nicht.
-
-## Datenschutz und Betreiberprüfungen
-
-Die öffentlichen Texte liegen in [datenschutz.astro](../src/pages/datenschutz.astro)
-und [privacy-policy.astro](../src/pages/en/privacy-policy.astro).
-
-- [ ] satellite ist freigeschaltet. Voicemail, Abschriften und KI-Zusammenfassungen
-      sind soweit verfügbar deaktiviert. Die tatsächliche Konfiguration stimmt
-      mit dem Telefonabschnitt überein; der Löschablauf der Anrufliste ist geklärt.
-- [ ] Optional: Nach Klärung des offenen satellite-Punkts ein Fassungsdatum auf
-      den öffentlichen Datenschutzseiten ergänzen. Ein Datum gehört nicht zu den
-      Pflichtangaben nach [Artikel 13 DSGVO](https://eur-lex.europa.eu/eli/reg/2016/679/oj/deu).
-      Der Inhalt muss unabhängig davon die tatsächliche Verarbeitung abbilden.
-- [x] Die Deploy-Preview vom 5. Oktober 2026 ist in beiden Sprachen mit der
-      lokalen Datenschutzfassung abgeglichen. Der Produktionsabgleich folgt nach
-      Veröffentlichung.
-
-Anbieterunterlagen für diese Prüfungen:
-
-Netlify am 6. Oktober 2026 geprüft: Der Account-DPA v5 ist bytegenau identisch mit
-der öffentlichen Fassung vom 9. Juni 2026. Exhibit 2, Abschnitt 5.A auf PDF-Seite 15
-nennt für das zentrale Logging der Service-Komponenten 90 Tage online und ein Jahr
-offline. Beide Datenschutzfassungen enthalten diese Angabe mit ihrem Geltungsbereich.
-Der DPA umfasst auch das Self-Serve Subscription Agreement; Abschnitt 7.1 verweist
-auf Exhibit II, dessen Überschrift „Enterprise Services“ lautet.
-Eine gesonderte Frist für einzelne CDN-Zugriffe wird daraus nicht abgeleitet.
-Die Trust-Center-Suche nach `retention` und `deletion` lieferte laut Betreiber
-keine Treffer.
-
-- [STRATO: Vereinbarung zur Auftragsverarbeitung](https://www.strato.de/agb/avv/)
-- [STRATO: Wiederherstellung gelöschter E-Mails](https://www.strato.de/faq/mail/wie-kann-ich-meine-geloeschten-e-mails-wiederherstellen/)
-- [Netlify: Self-Serve Subscription Agreement](https://www.netlify.com/pdf/self-serve-subscription-agreement.pdf/)
-- [Netlify: Data Processing Agreement](https://www.netlify.com/pdf/netlify-dpa.pdf)
-- [Netlify: Datenschutz und Aufbewahrung](https://www.netlify.com/privacy/#7-data-retention)
-- [Netlify: Zugriff auf das Trust Center](https://docs.netlify.com/manage/security/overview/#access-the-trust-center)
-- [Netlify: Observability und Verfügbarkeit nach Tarif](https://docs.netlify.com/manage/monitoring/observability/overview/)
-- [satellite: Datenschutz](https://www.satellite.me/datenschutz/)
 
 ## Barrierefreiheit und Performance
 
