@@ -1,4 +1,4 @@
-import type { CareerId } from "@/lib/career"
+import type { CareerId } from "@/data/career"
 
 export const de = {
   home: {
@@ -62,7 +62,7 @@ export const de = {
         "Ein inoffizieller Port von shadcn/ui für SolidJS: anpassbare UI-Komponenten auf Basis von Kobalte, Corvu und Tailwind CSS. Dazu gehören eine eigene Dokumentation und ein CLI-Tool, mit dem sich die Komponenten direkt in bestehende Projekte übernehmen lassen.",
       source: "GitHub"
     },
-    lager: {
+    stockSync: {
       name: "Lagerabgleich & Preisautomatisierung",
       kind: "Projekt bei Junksplayground",
       metricsAsOf: "Stand:",

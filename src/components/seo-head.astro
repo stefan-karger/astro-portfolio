@@ -1,8 +1,8 @@
 ---
-import { defaultLocale, locales, type Locale } from "@/i18n/types"
+import { defaultLocale, locales, type Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { switchLocale } from "@/i18n/url"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 
 interface Props {
   title: string
@@ -73,7 +73,7 @@ const imageAlt = getTranslations(metadataLocale).seo.imageAlt
     <meta property="og:description" content={description} />
     <meta property="og:type" content={article ? "article" : "website"} />
     <meta property="og:url" content={canonical.href} />
-    <meta property="og:site_name" content={siteConfig.name.public} />
+    <meta property="og:site_name" content={siteConfig.name.brand} />
     <meta property="og:locale" content={ogLocales[metadataLocale]} />
     {!article &&
       locales

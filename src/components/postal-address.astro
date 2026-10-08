@@ -1,6 +1,6 @@
 ---
-import { resolveLocale } from "@/i18n/types"
-import { siteConfig } from "@/lib/config"
+import { resolveLocale } from "@/i18n/locales"
+import { siteConfig } from "@/data/site"
 
 const locale = resolveLocale(Astro.currentLocale)
 const country =
@@ -8,7 +8,7 @@ const country =
   siteConfig.address.countryCode
 ---
 
-{siteConfig.name.legal}
+{siteConfig.name.full}
 <br />
 {siteConfig.address.street}
 <br />

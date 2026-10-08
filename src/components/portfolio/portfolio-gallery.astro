@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from "astro"
 
-import { resolveLocale } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import PageIntro from "@/components/page-intro.astro"
 import PortfolioImage from "./portfolio-image.astro"
@@ -71,7 +71,7 @@ const images = Object.entries(modules)
 </section>
 
 <script>
-  import "./portfolio"
+  import "./gallery"
 </script>
 
 <style>

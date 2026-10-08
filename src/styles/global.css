@@ -37,13 +37,4 @@
       @apply underline;
     }
   }
-
-  .text-link {
-    @apply [letter-spacing:inherit] text-inherit underline decoration-1 underline-offset-[0.18em] [font:inherit];
-
-    &:hover,
-    &:focus-visible {
-      @apply bg-ink-hover/12;
-    }
-  }
 }

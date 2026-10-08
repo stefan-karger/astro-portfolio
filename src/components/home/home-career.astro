@@ -1,7 +1,8 @@
 ---
-import { resolveLocale } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
-import { jobs } from "@/lib/career"
+import { jobs } from "@/data/career"
+import ExternalLinkIcon from "@/components/external-link-icon.astro"
 
 const locale = resolveLocale(Astro.currentLocale)
 const { career, links } = getTranslations(locale)
@@ -67,9 +68,7 @@ const { career, links } = getTranslations(locale)
                     class="site-link text-ink underline-offset-[0.3em]"
                   >
                     {job.company}
-                    <span aria-hidden="true" class="text-[0.65em]">
-                      &nbsp;↗
-                    </span>
+                    <ExternalLinkIcon />
                     <span class="sr-only"> ({links.opensInNewTab})</span>
                   </a>
                 ) : (

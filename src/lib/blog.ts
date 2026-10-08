@@ -2,10 +2,10 @@ import type { GetStaticPathsOptions } from "astro"
 import { getCollection, type CollectionEntry } from "astro:content"
 import { getRelativeLocaleUrl } from "astro:i18n"
 
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { getBlogFilters, matchesBlogFilter, type BlogFilter } from "@/lib/blog-filters"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 
 export const blogPageSize = 12
 
@@ -70,7 +70,7 @@ export function formatBlogFilter(locale: Locale, filter: BlogFilter) {
     }).format(new Date(`${filter.value}-01T00:00:00.000Z`))
   }
   if (filter.type === "language") {
-    return getTranslations(locale).blog.language[filter.value as Locale]
+    return getTranslations(locale).blog.language[filter.value]
   }
   return filter.value
 }
@@ -90,7 +90,7 @@ export function postMarkdown(post: CollectionEntry<"blog">, site: URL | undefine
     "---",
     `title: ${JSON.stringify(data.title)}`,
     `description: ${JSON.stringify(data.description)}`,
-    `author: ${JSON.stringify(siteConfig.name.legal)}`,
+    `author: ${JSON.stringify(siteConfig.name.full)}`,
     `language: ${JSON.stringify(data.language)}`,
     `pubDate: ${JSON.stringify(data.pubDate.toISOString().slice(0, 10))}`
   ]

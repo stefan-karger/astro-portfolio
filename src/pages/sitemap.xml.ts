@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro"
 import { getRelativeLocaleUrl } from "astro:i18n"
 
-import { locales } from "@/i18n/types"
+import { locales } from "@/i18n/locales"
 import { routeUrl } from "@/i18n/url"
 import { blogPageSize, getPosts, postUrl } from "@/lib/blog"
 

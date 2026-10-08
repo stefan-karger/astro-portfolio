@@ -1,6 +1,6 @@
 # Blog-Pagination
 
-Stand: 7. Oktober 2026. Die Pagination ist umgesetzt. Dieses Dokument beschreibt
+Stand: 8. Oktober 2026. Die Pagination ist umgesetzt. Dieses Dokument beschreibt
 die Routen, das Verhalten und die zugehörigen Prüfungen.
 
 ## Grundlage
@@ -81,21 +81,21 @@ pageSize: blogPageSize, props: { filter, filters } })`. `flatMap()` führt die
 
 ## Prüfung
 
-Die vorhandenen Integrationstests verwenden temporäre Beitragsfixtures und prüfen:
+Die Outputtests in `pnpm validate` prüfen den bestehenden Produktionsbuild.
+Optional erzeugt `pnpm test:integration` einen einzigen temporären Fixture-Build
+mit 25 veröffentlichten Beiträgen und einem Entwurf. Überlappende Tags bilden
+Filter mit 1, 12, 13 und 25 Beiträgen ab. Geprüft werden:
 
-- Leerer Bestand sowie 1, 12, 13 und 25 Beiträge: passende Seitenzahl,
-  höchstens 12 Einträge pro Seite, stabile Sortierung, keine Lücken oder Duplikate.
+- Passende Seitenzahl, höchstens 12 Einträge pro Seite, stabile Sortierung,
+  keine Lücken oder Duplikate.
 - Filter mit einer und mehreren Seiten; Gesamtzahlen unabhängig von der Seite;
   Filterwechsel und Zurücksetzen auf Seite 1.
-- DE/EN, Entwürfe im Entwicklungsmodus und Ausschluss im Produktionsbuild.
+- Beide Oberflächensprachen und Ausschluss von Entwürfen im Produktionsbuild.
 - Hervorhebung nur auf Seite 1 und passende Trenner auf Folgeseiten.
-- Erreichbare Artikel einschließlich verschachtelter IDs; keine URL-Kollisionen;
-  unbekannte Seitenzahlen liefern 404.
+- Erzeugte Artikelseiten einschließlich verschachtelter IDs und fehlende
+  Builddateien für Seitenzahlen außerhalb des Bestands.
 - Canonicals, Sprachalternativen, Seitentitel und Sitemap; die bestehende
   Unterscheidung zwischen Übersichten, Filtern und Artikeln in den SEO-Tests.
-- Build und Projektprüfungen sowie Browserprüfung der Navigation auf Desktop
-  und Mobile. Die Integrationstests erzeugen die benötigten Beiträge im temporären
-  Testprojekt.
 
 Die Beitragsmenge pro HTML-Seite bleibt damit begrenzt. Der Build verarbeitet
 weiterhin den vollständigen Bestand und erzeugt mit wachsendem Archiv mehr

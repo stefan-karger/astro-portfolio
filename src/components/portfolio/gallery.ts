@@ -55,25 +55,7 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
   const lightbox: PhotoSwipeLightbox = new PhotoSwipeLightbox({
     gallery,
     children: "[data-portfolio-item]",
-    pswpModule: async () => {
-      stylesPromise ??= new Promise<void>((resolve, reject) => {
-        const stylesheet = document.createElement("link")
-        stylesheet.rel = "stylesheet"
-        stylesheet.href = photoSwipeStyles
-        stylesheet.onload = () => resolve()
-        stylesheet.onerror = () => reject(new Error("PhotoSwipe stylesheet could not be loaded"))
-        document.head.appendChild(stylesheet)
-      })
-
-      try {
-        const [, photoswipe] = await Promise.all([stylesPromise, import("photoswipe")])
-        return photoswipe
-      } catch (error) {
-        const item = items[lightbox.options.index ?? 0]
-        if (item) window.location.assign(item.href)
-        throw error
-      }
-    },
+    pswpModule: loadPhotoSwipe,
     mainClass: "portfolio-lightbox",
     bgOpacity: 1,
     loop: false,
@@ -84,6 +66,26 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
     errorMsg: gallery.dataset.errorMessage
   })
 
+  async function loadPhotoSwipe() {
+    stylesPromise ??= new Promise<void>((resolve, reject) => {
+      const stylesheet = document.createElement("link")
+      stylesheet.rel = "stylesheet"
+      stylesheet.href = photoSwipeStyles
+      stylesheet.onload = () => resolve()
+      stylesheet.onerror = () => reject(new Error("PhotoSwipe stylesheet could not be loaded"))
+      document.head.appendChild(stylesheet)
+    })
+
+    try {
+      const [, photoswipe] = await Promise.all([stylesPromise, import("photoswipe")])
+      return photoswipe
+    } catch (error) {
+      const item = items[lightbox.options.index ?? 0]
+      if (item) window.location.assign(item.href)
+      throw error
+    }
+  }
+
   function historyIndex(): number | undefined {
     const state: unknown = window.history.state
     if (typeof state !== "object" || state === null || !("portfolioLightbox" in state)) return
@@ -93,6 +95,18 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
     if (entry.path !== window.location.pathname || typeof entry.index !== "number") return
     if (Number.isInteger(entry.index) && entry.index >= 0 && entry.index < items.length) {
       return entry.index
+    }
+  }
+
+  function rememberSlide() {
+    if (historyIndex() !== undefined) {
+      window.history.replaceState(
+        {
+          ...window.history.state,
+          portfolioLightbox: { path: window.location.pathname, index: lightbox.pswp!.currIndex }
+        },
+        ""
+      )
     }
   }
 
@@ -109,11 +123,26 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
     }
   }
 
-  // Let PhotoSwipe finish its opening handlers before reapplying the current history.
-  lightbox.on("openingAnimationEnd", () => queueMicrotask(syncHistory))
+  function prepareOpening() {
+    const duration = reducedMotion.matches ? 0 : 200
+    const options = lightbox.pswp!.options
+    openingIndex = options.index ?? 0
+    options.showAnimationDuration = duration
+    options.hideAnimationDuration = duration
+    options.zoomAnimationDuration = duration
 
-  // The dialog exists here, before PhotoSwipe moves focus with zero-duration animations.
-  lightbox.on("firstUpdate", () => {
+    if (historyIndex() === undefined) {
+      window.history.pushState(
+        {
+          ...window.history.state,
+          portfolioLightbox: { path: window.location.pathname, index: openingIndex }
+        },
+        ""
+      )
+    }
+  }
+
+  function prepareDialog() {
     const dialog = lightbox.pswp!.element!
     dialog.setAttribute("aria-label", gallery.dataset.dialogLabel!)
 
@@ -156,40 +185,19 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
         target?.focus({ preventScroll: true })
       }
     })
-  })
+  }
 
-  lightbox.on("beforeOpen", () => {
-    const duration = reducedMotion.matches ? 0 : 200
-    const options = lightbox.pswp!.options
-    openingIndex = options.index ?? 0
-    options.showAnimationDuration = duration
-    options.hideAnimationDuration = duration
-    options.zoomAnimationDuration = duration
+  function restorePage() {
+    for (const element of inertElements) element.inert = false
+    inertElements = []
 
-    if (historyIndex() === undefined) {
-      window.history.pushState(
-        {
-          ...window.history.state,
-          portfolioLightbox: { path: window.location.pathname, index: openingIndex }
-        },
-        ""
-      )
-    }
-  })
+    queueMicrotask(() => {
+      items[openingIndex].focus({ preventScroll: true })
+      syncHistory()
+    })
+  }
 
-  lightbox.on("change", () => {
-    if (historyIndex() !== undefined) {
-      window.history.replaceState(
-        {
-          ...window.history.state,
-          portfolioLightbox: { path: window.location.pathname, index: lightbox.pswp!.currIndex }
-        },
-        ""
-      )
-    }
-  })
-
-  lightbox.on("zoomPanUpdate", () => {
+  function updateZoomTitle() {
     const slide = lightbox.pswp?.currSlide
     const button = lightbox.pswp?.element?.querySelector<HTMLButtonElement>(".pswp__button--zoom")
     if (!slide || !button) return
@@ -204,22 +212,22 @@ function initLightbox(gallery: HTMLElement, items: HTMLAnchorElement[]) {
       button.title = title
       button.setAttribute("aria-label", title)
     }
-  })
+  }
 
+  // Let PhotoSwipe finish its opening handlers before reapplying the current history.
+  lightbox.on("openingAnimationEnd", () => queueMicrotask(syncHistory))
+
+  // Prepare the dialog before PhotoSwipe moves focus, including with zero-duration animations.
+  lightbox.on("firstUpdate", prepareDialog)
+  lightbox.on("beforeOpen", prepareOpening)
+  lightbox.on("change", rememberSlide)
+  lightbox.on("zoomPanUpdate", updateZoomTitle)
   lightbox.on("close", () => {
     if (historyIndex() !== undefined) window.history.back()
   })
 
   // A quick Forward action can arrive while the previous dialog is still closing.
-  lightbox.on("destroy", () => {
-    for (const element of inertElements) element.inert = false
-    inertElements = []
-
-    queueMicrotask(() => {
-      items[openingIndex].focus({ preventScroll: true })
-      syncHistory()
-    })
-  })
+  lightbox.on("destroy", restorePage)
   window.addEventListener("popstate", syncHistory)
   lightbox.init()
   if (historyIndex() !== undefined) syncHistory()

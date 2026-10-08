@@ -1,11 +1,11 @@
 import type { APIRoute } from "astro"
 
-import { locales } from "@/i18n/types"
+import { locales } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import { getPosts, markdownUrl, postUrl } from "@/lib/blog"
-import { siteConfig } from "@/lib/config"
-import { projects } from "@/lib/projects"
+import { siteConfig } from "@/data/site"
+import { projects } from "@/data/projects"
 
 function link(label: string, url: URL, description?: string) {
   const text = label.replace(/[\\[\]<>]/g, "\\$&").replace(/[\r\n]+/g, " ")
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ site }) => {
   const home = routeUrl("en", "home")
   const posts = (await getPosts()).filter(({ data }) => !data.draft)
   const lines = [
-    `# ${siteConfig.name.public}`,
+    `# ${siteConfig.name.brand}`,
     "",
     `> ${t.home.metaDescription}`,
     "",
@@ -41,9 +41,9 @@ export const GET: APIRoute = async ({ site }) => {
     link(`${projects.solid.name} website`, new URL(projects.solid.url)),
     link(`${projects.solid.name} GitHub`, new URL(projects.solid.repository)),
     link(
-      t.projects.lager.name,
-      new URL(`${home}#${projects.lager.id}`, site),
-      t.projects.lager.description
+      t.projects.stockSync.name,
+      new URL(`${home}#${projects.stockSync.id}`, site),
+      t.projects.stockSync.description
     ),
     "",
     "## Blog",

@@ -1,7 +1,7 @@
 ---
 import type { MarkdownHeading } from "astro"
 
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 
 interface Props {
@@ -44,7 +44,7 @@ const t = getTranslations(locale)
               {headings.map((heading) => (
                 <li class:list={[heading.depth === 3 && "pl-3"]}>
                   <a
-                    class="inline-block py-1 no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:font-bold aria-[current]:text-ink"
+                    class="site-link inline-block py-1 underline-offset-[0.45em] [font-family:inherit] hover:text-ink aria-[current]:font-bold aria-[current]:text-ink"
                     href={`#${heading.slug}`}
                   >
                     {heading.text}

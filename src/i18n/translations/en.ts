@@ -62,7 +62,7 @@ export const en = {
         "An unofficial port of shadcn/ui for SolidJS, with customizable UI components built on Kobalte, Corvu, and Tailwind CSS. It comes with its own documentation and a CLI tool for adding components directly to existing projects.",
       source: "GitHub"
     },
-    lager: {
+    stockSync: {
       name: "Stock sync & auto-pricing",
       kind: "Project at Junksplayground",
       metricsAsOf: "As of",

@@ -3,7 +3,7 @@ import { getRssString } from "@astrojs/rss"
 
 import { getTranslations } from "@/i18n/translations"
 import { getPosts, postUrl } from "@/lib/blog"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 
 function xml(value: string) {
   return value
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ site }) => {
 
   const posts = (await getPosts()).filter(({ data }) => !data.draft)
   const feed = await getRssString({
-    title: `${siteConfig.name.public} - Blog`,
+    title: `${siteConfig.name.brand} - Blog`,
     description: getTranslations("en").blog.description,
     site: new URL("/blog/", site),
     xmlns: {
@@ -35,7 +35,7 @@ export const GET: APIRoute = async ({ site }) => {
       pubDate: data.pubDate,
       categories: data.tags,
       customData:
-        `<dc:creator>${xml(siteConfig.name.legal)}</dc:creator>` +
+        `<dc:creator>${xml(siteConfig.name.full)}</dc:creator>` +
         `<dc:language>${data.language}</dc:language>` +
         (data.updatedDate
           ? `<dcterms:modified>${data.updatedDate.toISOString().slice(0, 10)}</dcterms:modified>`

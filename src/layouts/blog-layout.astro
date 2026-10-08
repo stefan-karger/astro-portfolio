@@ -8,11 +8,11 @@ import PostHeader from "@/components/blog/post-header.astro"
 import SeriesNavigation from "@/components/blog/series-navigation.astro"
 import TableOfContents from "@/components/blog/table-of-contents.astro"
 import StructuredData from "@/components/structured-data.astro"
-import { resolveLocale } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import { getPosts, markdownUrl, postUrl } from "@/lib/blog"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 import { articleGraph } from "@/lib/structured-data"
 
 interface Props {
@@ -45,7 +45,7 @@ const seriesPosts = series
 ---
 
 <BaseLayout
-  title={`${post.data.title} - ${siteConfig.name.public}`}
+  title={`${post.data.title} - ${siteConfig.name.brand}`}
   description={post.data.description}
   {canonicalPath}
   article={{
@@ -101,7 +101,10 @@ const seriesPosts = series
           ].map(
             ({ post: entry, label }) =>
               entry && (
-                <a class="text-link block py-2" href={postUrl(locale, entry.id)}>
+                <a
+                  class="site-link block py-2 [font-family:inherit]"
+                  href={postUrl(locale, entry.id)}
+                >
                   <span class="block text-xs text-muted">{label}</span>
                   <span class="mt-1 block font-semibold" lang={entry.data.language}>
                     {entry.data.title}

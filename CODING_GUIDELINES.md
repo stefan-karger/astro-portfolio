@@ -93,6 +93,11 @@ Use Tailwind utility classes on markup the project controls, including Astro
 image components, responsive layouts, pseudo-elements, and interactive states.
 Existing shared link styles may compose utilities with `@apply`.
 
+Reuse `site-link` for navigation and legal links, preserving the surrounding font
+in prose. Use [ExternalLinkIcon](src/components/external-link-icon.astro) for
+outbound markers in prose and portfolio links; footer links use plain text labels.
+The shared component controls icon alignment and inherits the link's underline.
+
 Keep custom CSS for generated Markdown, diagrams, syntax highlighting, or library
 elements where classes cannot be applied directly. Keep dynamically calculated
 positions and dimensions in the code that calculates them.

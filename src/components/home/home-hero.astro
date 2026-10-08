@@ -2,9 +2,9 @@
 import { Picture } from "astro:assets"
 
 import portrait from "@/assets/hero.jpg"
-import { resolveLocale } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 import EmailButton from "@/components/email-button.astro"
 
 const locale = resolveLocale(Astro.currentLocale)
@@ -19,7 +19,7 @@ const t = getTranslations(locale)
     <figure class="m-0 w-[min(55vw,11.25rem)] @min-[45rem]:w-full">
       <Picture
         src={portrait}
-        alt={t.home.hero.imageAlt(siteConfig.name.public)}
+        alt={t.home.hero.imageAlt(siteConfig.name.brand)}
         formats={["avif", "webp"]}
         fallbackFormat="jpeg"
         widths={[240, 320, 420, 640, 840]}

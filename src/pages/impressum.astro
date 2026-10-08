@@ -2,12 +2,12 @@
 import BaseLayout from "@/layouts/base-layout.astro"
 import LegalArticle from "@/components/legal-article.astro"
 import PostalAddress from "@/components/postal-address.astro"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 import { getTranslations } from "@/i18n/translations"
 ---
 
 <BaseLayout
-  title={`${siteConfig.name.public} - Impressum`}
+  title={`${siteConfig.name.brand} - Impressum`}
   description={getTranslations("de").legal.metaDescription}
   noindex
 >
@@ -22,12 +22,18 @@ import { getTranslations } from "@/i18n/translations"
     <h2>Kontakt</h2>
     <p>
       E-Mail:{" "}
-      <a class="text-link" href={`mailto:${siteConfig.contact.email}`}>
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href={`mailto:${siteConfig.contact.email}`}
+      >
         {siteConfig.contact.email}
       </a>
       <br />
       Telefon:{" "}
-      <a class="text-link" href={`tel:${siteConfig.contact.phone.replaceAll(" ", "")}`}>
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href={`tel:${siteConfig.contact.phone.replaceAll(" ", "")}`}
+      >
         {siteConfig.contact.phone}
       </a>
     </p>

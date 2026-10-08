@@ -4,7 +4,7 @@ description: "Teil 2 der Serie: Mermaid in Astro-Markdown integrieren, Diagramme
 pubDate: "2026-10-05"
 updatedDate: "2026-10-06"
 language: de
-tags: "Astro, Markdown, Mermaid, CSS"
+tags: ["Astro", "Markdown", "Mermaid", "CSS"]
 draft: false
 series:
   name: "Astro für Entwicklerblogs"
@@ -63,8 +63,8 @@ Die Diagrammverarbeitung liegt bei den bestehenden Blogdateien:
 ```text title="Dateien für die Mermaid-Integration"
 src/
   lib/
-    mermaid.ts
-    shiki/code-block.ts
+    markdown/mermaid.ts
+    markdown/code-block.ts
   components/blog/
     code-block-controls.astro
   layouts/blog-layout.astro
@@ -99,7 +99,7 @@ zur Verfügung. Für Mermaid verwende ich den ursprünglichen Quelltext aus
 `this.source`. Zeilennummern und die erzeugten HTML-Elemente gehören nicht zur
 Diagrammdefinition.
 
-```ts title="src/lib/shiki/code-block.ts · Erkennung"
+```ts title="src/lib/markdown/code-block.ts · Erkennung"
 const mermaid = this.options.lang === "mermaid"
 ```
 
@@ -132,7 +132,7 @@ Die Astro-Konfiguration ergänzt das Plugin im Markdown-Prozessor:
 ```js title="astro.config.mjs · Einbindung"
 import { defineConfig } from "astro/config"
 import { satteri } from "@astrojs/markdown-satteri"
-import { mermaidDiagrams } from "./src/lib/mermaid.ts"
+import { mermaidDiagrams } from "./src/lib/markdown/mermaid.ts"
 
 const mermaid = mermaidDiagrams()
 
@@ -146,6 +146,10 @@ export default defineConfig({
 ```
 
 Das Plugin sucht im HAST nach den vom Shiki-Transformer angelegten Diagrammblöcken.
+Die ursprüngliche Definition steht direkt auf dem Zwischenknoten als HAST-Eigenschaft
+`dataMermaidSource`. Das Plugin liest sie unabhängig vom Copy-Button und entfernt sie
+mit `ctx.setProperty(block, "dataMermaidSource", null)` vor der HTML-Ausgabe.
+Der sichtbare Quelltext und `dataCopyCode` für Copy bleiben erhalten.
 Bei Artikeln ohne Diagramme startet es keinen Browser. Für alle Diagramme eines
 Artikels öffnet es gemeinsam eine Chromium-Instanz und schließt sie anschließend.
 
@@ -161,7 +165,7 @@ Diagramme ergänzen ihre Position im Artikel. `deterministicIds` und
 ER-Tabellen, die intern auch beim `classic`-Look Rough.js verwenden. Der Kern des
 Renderings läuft im Buildbrowser:
 
-```ts title="src/lib/mermaid.ts · Rendering im Buildbrowser"
+```ts title="src/lib/markdown/mermaid.ts · Rendering im Buildbrowser"
 for (const [index, definition] of definitions.entries()) {
   const { svg } = await mermaid.render(`${prefix}-${index + 1}`, definition)
   // Das HAST-Plugin fügt dieses SVG in den zugehörigen Diagrammbereich ein.
@@ -220,7 +224,7 @@ nicht in einer Utility-Klasse findet. Der Buildrenderer liest ihn beim Rendern, 
 
 Der Renderer liest diese Werte direkt aus den CSS-Tokens:
 
-```ts title="src/lib/mermaid.ts · CSS-Farben im Buildbrowser lesen"
+```ts title="src/lib/markdown/mermaid.ts · CSS-Farben im Buildbrowser lesen"
 const style = getComputedStyle(document.documentElement)
 
 function color(name: string) {
@@ -232,7 +236,7 @@ So bleibt die Website die Quelle der Farben. Eine Änderung an den Tokens kommt
 auch bei Mermaid an. Die Konfiguration ergänzt die Grundfarben und die Stellen,
 an denen Mermaids abgeleitete Farben von der Websitegestaltung abweichen:
 
-```ts title="src/lib/mermaid.ts · Theme-Auszug"
+```ts title="src/lib/markdown/mermaid.ts · Theme-Auszug"
 const paper = color("--color-paper")
 const ink = color("--color-ink")
 const muted = color("--color-muted")

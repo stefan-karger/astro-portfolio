@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content"
 
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { postUrl } from "@/lib/blog"
 
@@ -27,7 +27,7 @@ const series = post.data.series
         >
           {/* One inline text flow keeps the hover underline continuous between words. */}
           <a
-            class="text-link inline-block min-h-11 py-2.5 text-muted no-underline [text-decoration-skip-ink:none] hover:bg-transparent hover:text-ink hover:underline focus-visible:text-ink aria-[current]:font-bold aria-[current]:text-ink"
+            class="site-link inline-block min-h-11 py-2.5 text-muted [font-family:inherit] [text-decoration-skip-ink:none] hover:text-ink focus-visible:text-ink aria-[current]:font-bold aria-[current]:text-ink"
             href={postUrl(locale, entry.id)}
             aria-current={entry.id === post.id ? "page" : undefined}
           >

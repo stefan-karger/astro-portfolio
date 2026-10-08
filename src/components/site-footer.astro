@@ -1,8 +1,8 @@
 ---
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 
 interface Props {
   locale: Locale
@@ -59,7 +59,6 @@ const legalLinks = [
                   rel="me noopener noreferrer"
                 >
                   {social.label}
-                  <span aria-hidden="true">&nbsp;↗</span>
                   <span class="sr-only"> ({t.links.opensInNewTab})</span>
                 </a>
               </li>
@@ -93,7 +92,7 @@ const legalLinks = [
       SK.
     </span>
     <p class="col-start-2 row-start-2 m-0 min-w-0 self-center text-right text-sm text-muted @min-[50rem]/footer:col-start-1 @min-[50rem]/footer:self-end @min-[50rem]/footer:text-left">
-      © {year} {siteConfig.name.public}
+      © {year} {siteConfig.name.brand}
     </p>
   </div>
 </footer>

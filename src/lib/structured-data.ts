@@ -2,10 +2,10 @@ import type { CollectionEntry } from "astro:content"
 import { getImage } from "astro:assets"
 
 import portrait from "@/assets/hero.jpg"
-import { locales, type Locale } from "@/i18n/types"
+import { locales, type Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
-import { siteConfig } from "@/lib/config"
-import { projects } from "@/lib/projects"
+import { siteConfig } from "@/data/site"
+import { projects } from "@/data/projects"
 
 async function entities(site: URL | undefined) {
   if (!site) throw new Error("Missing `site` in astro.config.mjs")
@@ -26,15 +26,15 @@ async function entities(site: URL | undefined) {
       "@type": "WebSite",
       "@id": websiteId,
       url,
-      name: siteConfig.name.public,
+      name: siteConfig.name.brand,
       inLanguage: locales,
       publisher: { "@id": personId }
     },
     person: {
       "@type": "Person",
       "@id": personId,
-      name: siteConfig.name.legal,
-      alternateName: siteConfig.name.public,
+      name: siteConfig.name.full,
+      alternateName: siteConfig.name.brand,
       url,
       image: new URL(image.src, site).href,
       sameAs: siteConfig.socialLinks.map(({ href }) => href)
@@ -69,10 +69,10 @@ export async function profileGraph({
     },
     {
       "@type": "CreativeWork",
-      "@id": new URL(`/#${projects.lager.id}`, website.url).href,
-      name: { "@value": copy.lager.name, "@language": locale },
-      description: { "@value": copy.lager.description, "@language": locale },
-      url: `${canonical}#${projects.lager.id}`
+      "@id": new URL(`/#${projects.stockSync.id}`, website.url).href,
+      name: { "@value": copy.stockSync.name, "@language": locale },
+      description: { "@value": copy.stockSync.description, "@language": locale },
+      url: `${canonical}#${projects.stockSync.id}`
     }
   ]
 

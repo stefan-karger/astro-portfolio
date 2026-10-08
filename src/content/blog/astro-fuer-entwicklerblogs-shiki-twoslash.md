@@ -4,7 +4,7 @@ description: "Teil 1 der Serie: So entsteht dieser Blog mit Astro-Collections, M
 pubDate: "2026-10-02"
 updatedDate: "2026-10-06"
 language: de
-tags: "Astro, Markdown, Shiki, TypeScript"
+tags: ["Astro", "Markdown", "Shiki", "TypeScript"]
 draft: false
 series:
   name: "Astro für Entwicklerblogs"
@@ -98,7 +98,7 @@ src/
     code-block-controls.astro
   lib/
     blog.ts
-    shiki/code-block.ts
+    markdown/code-block.ts
   styles/
     global.css
 ```
@@ -136,7 +136,7 @@ import {
   transformerRemoveNotationEscape
 } from "@shikijs/transformers"
 import { rendererRich, transformerTwoslash } from "@shikijs/twoslash"
-import { transformerCodeBlock } from "./src/lib/shiki/code-block.ts"
+import { transformerCodeBlock } from "./src/lib/markdown/code-block.ts"
 
 export default defineConfig({
   site: "https://stefan-karger.de",
@@ -173,7 +173,7 @@ export default defineConfig({
 `twoslash`. Gewöhnliche `ts`-Blöcke bleiben damit auch für unvollständige Ausschnitte
 geeignet. Query- und Fehlerausgaben erscheinen direkt im Codeblock.
 
-`transformerCodeBlock()` ist der eigene Renderer in `src/lib/shiki/code-block.ts`.
+`transformerCodeBlock()` ist der eigene Renderer in `src/lib/markdown/code-block.ts`.
 Er übernimmt drei Aufgaben:
 
 - Die Fence-Zusätze für Dateititel und Zeilennummern lesen und den Copy-Button anlegen.
@@ -200,41 +200,51 @@ in `Date`-Objekte mit UTC-Mitternacht um:
 ```ts title="src/content.config.ts"
 import { defineCollection } from "astro:content"
 import { glob } from "astro/loaders"
+
+import { blogSchema } from "@/lib/blog-schema"
+
+const blog = defineCollection({
+  // Render through Vite when the page uses the entry, so diagram assets follow
+  // configuration reloads instead of retaining HTML from the content store.
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog", deferRender: true }),
+  schema: blogSchema
+})
+
+export const collections = { blog }
+```
+
+Das Schema liegt in `src/lib/blog-schema.ts`; der Loader verwendet es unverändert:
+
+```ts title="src/lib/blog-schema.ts"
 import { z } from "astro/zod"
+
+import { locales } from "../i18n/locales.ts"
+import { uniqueTags } from "./blog-tags.ts"
 
 const date = z.iso
   .date({ error: 'Expected a valid date string in "YYYY-MM-DD"; quote dates in frontmatter.' })
   .transform((value) => new Date(`${value}T00:00:00.000Z`))
 
-const blog = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
-  schema: z
-    .object({
-      title: z.string().trim().min(1),
-      description: z.string().trim().min(1),
-      pubDate: date,
-      updatedDate: date.optional(),
-      language: z.enum(["de", "en"]),
-      tags: z
-        .string()
-        .default("")
-        .transform((value) => [
-          ...new Set(
-            value
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter(Boolean)
-          )
-        ]),
-      draft: z.boolean().default(false)
-    })
-    .refine(({ pubDate, updatedDate }) => !updatedDate || updatedDate >= pubDate, {
-      path: ["updatedDate"],
-      message: "updatedDate must be on or after pubDate."
-    })
-})
-
-export const collections = { blog }
+export const blogSchema = z
+  .object({
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    pubDate: date,
+    updatedDate: date.optional(),
+    language: z.enum(locales),
+    tags: z.array(z.string()).default([]).transform(uniqueTags),
+    draft: z.boolean().default(false),
+    series: z
+      .object({
+        name: z.string().trim().min(1),
+        part: z.number().int().positive()
+      })
+      .optional()
+  })
+  .refine(({ pubDate, updatedDate }) => !updatedDate || updatedDate >= pubDate, {
+    path: ["updatedDate"],
+    message: "updatedDate must be on or after pubDate."
+  })
 ```
 
 Ein neuer Beitrag beginnt beispielsweise so:
@@ -245,7 +255,7 @@ title: "Veröffentlichungsdaten zuverlässig formatieren"
 description: "Warum eine feste Zeitzone Datumsangaben im Blog stabil hält."
 pubDate: "2026-10-02"
 language: de
-tags: "Astro, TypeScript, Astro"
+tags: ["Astro", "TypeScript", "Astro"]
 draft: false
 ---
 
@@ -258,7 +268,7 @@ abgelehnt. Ein optionales `updatedDate` folgt derselben Schreibweise und darf
 nicht vor `pubDate` liegen. Es wird bei einer inhaltlichen Aktualisierung gesetzt.
 
 Aus den Tags werden hier `Astro` und `TypeScript`: Leerzeichen, leere Einträge und
-Dopplungen werden entfernt. Der Dateipfad bestimmt den Slug. Unterordner sind
+Groß-/Kleinschreibungsvarianten werden entfernt; die erste Schreibweise bleibt erhalten. Der Dateipfad bestimmt den Slug. Unterordner sind
 ebenfalls möglich; `language` beschreibt die Sprache des Beitrags.
 
 ### Beiträge rendern und veröffentlichen
@@ -408,7 +418,7 @@ const label = formatPostDate("de", new Date("2026-10-02T00:00:00Z"))
 ```
 
 Die kleine `Locale`-Definition oberhalb von `// ---cut---` steht nur für die
-Typprüfung bereit. Im Projekt wird dieser Typ aus `src/i18n/types.ts` importiert.
+Typprüfung bereit. Im Projekt wird dieser Typ aus `src/i18n/locales.ts` importiert.
 Die versteckte Definition erscheint weder in der Ausgabe noch im Kopiertext.
 
 `// ^?` zeigt den abgeleiteten Typ von `label` dauerhaft unter der Zeile an.
@@ -442,7 +452,7 @@ Die Content Collection erledigt eine vergleichbare Umwandlung beim Laden des
 Frontmatters nach der Prüfung mit `z.iso.date()`. So erhält das Layout geprüfte
 Daten, während der Beitrag selbst bei einfachem Markdown bleibt.
 
-Vor dem Veröffentlichen prüfe ich mit `pnpm test:blog` die Codeverarbeitung und mit
+Vor dem Veröffentlichen prüfe ich mit `pnpm test:markdown` die Codeverarbeitung und mit
 `pnpm check` und `pnpm build` das Projekt. Im Browser teste ich Copy, Sprunglinks und
 Typ-Popups auch mit Tastatur und schmalem Display. Ohne JavaScript bleiben Texte,
 Syntaxfarben, Diffs und die dauerhaften Typausgaben lesbar; Copy wird erst mit

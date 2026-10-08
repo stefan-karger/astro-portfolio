@@ -3,11 +3,11 @@ import type { Page } from "astro"
 import type { CollectionEntry } from "astro:content"
 import BaseLayout from "@/layouts/base-layout.astro"
 import BlogIndex from "@/components/blog/blog-index.astro"
-import { resolveLocale } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { formatBlogFilter } from "@/lib/blog"
 import type { BlogFilter } from "@/lib/blog-filters"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 
 interface Props {
   page: Page<CollectionEntry<"blog">>
@@ -20,7 +20,7 @@ const locale = resolveLocale(Astro.currentLocale)
 const t = getTranslations(locale)
 const label = formatBlogFilter(locale, filter)
 const heading = filter.type === "tag" ? t.blog.tags : t.blog.filters[filter.type]
-const title = `${heading}: ${label} - Blog - ${siteConfig.name.public}${page.currentPage > 1 ? ` - ${t.blog.pagination.page(page.currentPage)}` : ""}`
+const title = `${heading}: ${label} - Blog - ${siteConfig.name.brand}${page.currentPage > 1 ? ` - ${t.blog.pagination.page(page.currentPage)}` : ""}`
 ---
 
 <BaseLayout

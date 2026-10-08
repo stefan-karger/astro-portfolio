@@ -13,14 +13,16 @@
     "preview": "astro preview",
     "check": "astro check",
     "setup:diagrams": "playwright install --only-shell chromium",
-    "test:mermaid": "node --experimental-strip-types --test tests/mermaid.test.mjs",
-    "test:blog": "node --experimental-strip-types --test tests/blog-filters.test.mjs tests/code-block.test.mjs tests/type-popovers.test.mjs",
-    "test:seo": "node --experimental-strip-types --test tests/seo.spec.mjs",
+    "test:unit": "node --experimental-strip-types --test tests/blog-schema.test.mjs tests/blog-filters.test.mjs",
+    "test:markdown": "node --experimental-strip-types --test tests/code-block.test.mjs tests/mermaid-render.test.mjs",
+    "test:output": "node --experimental-strip-types --test tests/seo-build.test.mjs",
+    "test:integration": "node --experimental-strip-types --test tests/seo-integration.test.mjs",
+    "test:browser": "node --experimental-strip-types --test tests/browser.test.mjs",
     "lint": "eslint . --cache --max-warnings 0",
     "lint:fix": "eslint . --cache --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "validate": "pnpm format:check && pnpm lint && pnpm test:blog && pnpm check && pnpm build && pnpm test:mermaid && pnpm test:seo"
+    "validate": "pnpm format:check && pnpm lint && pnpm test:unit && pnpm check && pnpm test:markdown && pnpm build && pnpm test:output && pnpm test:browser"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

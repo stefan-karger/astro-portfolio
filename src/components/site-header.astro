@@ -1,8 +1,8 @@
 ---
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 import LanguageSwitch from "./language-switch.astro"
 
 interface Props {
@@ -43,7 +43,7 @@ const navItems = navRoutes.map((route) => {
     <a
       href={routeUrl(locale, "home")}
       class="site-link -ml-2 hidden min-h-11 min-w-11 items-center justify-center justify-self-start p-2 text-xl leading-none font-bold tracking-[-0.04em] sm:inline-flex"
-      aria-label={`SK, ${siteConfig.name.public}, ${t.nav.homeLinkLabel}`}
+      aria-label={`SK, ${siteConfig.name.brand}, ${t.nav.homeLinkLabel}`}
     >
       SK.
     </a>
@@ -87,7 +87,7 @@ const navItems = navRoutes.map((route) => {
       <a
         href={routeUrl(locale, "home")}
         class="site-link -ml-2 mb-6 inline-flex min-h-11 min-w-11 items-center p-2 text-xl leading-none font-bold tracking-[-0.04em]"
-        aria-label={`SK, ${siteConfig.name.public}, ${t.nav.homeLinkLabel}`}
+        aria-label={`SK, ${siteConfig.name.brand}, ${t.nav.homeLinkLabel}`}
       >
         SK.
       </a>

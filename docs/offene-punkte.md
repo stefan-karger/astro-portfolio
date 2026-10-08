@@ -1,6 +1,6 @@
 # Offene Punkte
 
-Stand: 7. Oktober 2026. Hier stehen ausstehende Inhaltsentscheidungen und
+Stand: 8. Oktober 2026. Hier stehen ausstehende Inhaltsentscheidungen und
 Prüfungen. Die aktuelle Umsetzung beschreibt die [README](../README.md).
 
 ## Inhalte und Fotografie
@@ -38,6 +38,12 @@ steht weiterhin aus.
 Die HTML-Vergleiche berücksichtigen den von Netlify eingefügten Preview-Drawer
 und abweichende generierte Twoslash-IDs. Die User-Agent-Prüfung belegt die
 Auslieferung mit diesen Kennungen, keine Besuche echter Anbietercrawler.
+
+Dieses Protokoll beschreibt den damaligen Preview-Stand. Seit dem 8. Oktober sind
+die Weiterleitungen von `/portfolio`, `/en/portfolio` und den beiden alten
+`astro-shiki-codebloecke`-Artikelpfaden entfernt. Diese Aliase liefern lokal 404;
+die Fotografie- und aktuellen Artikelrouten bleiben die gültigen Ziele.
+Die nächste Deploy-Abnahme muss den aktuellen Build prüfen.
 
 Der [Schema.org-Validator](https://validator.schema.org/) akzeptiert alle geprüften
 Graphen. Im [Google Rich Results Test](https://search.google.com/test/rich-results)

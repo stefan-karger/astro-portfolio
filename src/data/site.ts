@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: {
-    legal: "Stefan Eideloth-Karger",
-    public: "Stefan Karger"
+    full: "Stefan Eideloth-Karger",
+    brand: "Stefan Karger"
   },
 
   address: {

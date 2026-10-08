@@ -6,11 +6,11 @@ import StructuredData from "@/components/structured-data.astro"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import BaseLayout from "@/layouts/base-layout.astro"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 import { profileGraph } from "@/lib/structured-data"
 
 const t = getTranslations("de")
-const title = `${siteConfig.name.public} - ${t.home.metaTitle}`
+const title = `${siteConfig.name.brand} - ${t.home.metaTitle}`
 const description = t.home.metaDescription
 const canonicalPath = routeUrl("de", "home")
 const graph = await profileGraph({

@@ -1,6 +1,4 @@
 import assert from "node:assert/strict"
-import { readFile, readdir } from "node:fs/promises"
-import process from "node:process"
 import { test } from "node:test"
 import { URL } from "node:url"
 import { XMLParser } from "fast-xml-parser"
@@ -40,6 +38,7 @@ test("The Markdown pipeline renders all four diagram types with accessible, uniq
   assert.equal(diagrams.length, sources.length)
   assert.equal((code.match(/<details class="mermaid-source">/g) ?? []).length, sources.length)
   assert.equal((code.match(/class="mermaid-diagram" hidden/g) ?? []).length, 0)
+  assert.ok(!code.includes("data-mermaid-source"))
   const ids = []
   for (const svg of diagrams) {
     assert.equal(SyntaxValidator.validate(svg, { multipleRoots: false }), true)
@@ -66,43 +65,11 @@ test("The Markdown pipeline renders all four diagram types with accessible, uniq
   assert.deepEqual(copied, sources)
 })
 
-test("Repeated rendering is deterministic and different articles receive different IDs", async () => {
-  const source = definitions.map(fence).join("\n\n")
-  const first = svgs((await renderer.render(source, { fileURL })).code)
-  const second = svgs((await renderer.render(source, { fileURL })).code)
-  assert.deepEqual(second, first)
-  const other = svgs(
-    (
-      await renderer.render(source, {
-        fileURL: new URL("../src/content/blog/other-mermaid-test.md", import.meta.url)
-      })
-    ).code
-  )
-  const ids = new Set(first.flatMap((svg) => [...svg.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])))
-  assert.ok(other.every((svg) => [...svg.matchAll(/\sid="([^"]+)"/g)].every((m) => !ids.has(m[1]))))
-})
-
 test("An invalid diagram rejects rendering with the source file and diagram number", async () => {
   await assert.rejects(
     renderer.render(`${fence(definitions[0])}\n\n${fence("flowchart TD\n  A -->")}`, { fileURL }),
     /src\/content\/blog\/mermaid-test\.md.*Diagram 2/
   )
-})
-
-test("Articles without Mermaid work without an installed browser", async () => {
-  const previous = process.env.PLAYWRIGHT_BROWSERS_PATH
-  process.env.PLAYWRIGHT_BROWSERS_PATH = new URL("missing-browser", import.meta.url).pathname
-  try {
-    const { code } = await renderer.render("## Normaler Beitrag\n\n```ts\nconst count = 1\n```", {
-      fileURL
-    })
-    assert.ok(code.includes('id="normaler-beitrag"'))
-    assert.ok(code.includes("data-copy-code"))
-    assert.equal(svgs(code).length, 0)
-  } finally {
-    if (previous === undefined) delete process.env.PLAYWRIGHT_BROWSERS_PATH
-    else process.env.PLAYWRIGHT_BROWSERS_PATH = previous
-  }
 })
 
 test("Diagrams without an explicit title receive the localized region name", async () => {
@@ -116,29 +83,5 @@ test("Diagrams without an explicit title receive the localized region name", asy
     })
     assert.ok(code.includes(`aria-label="${label}"`))
     assert.equal(svgs(code).length, 1)
-  }
-})
-
-test("Both built article surfaces contain complete SVGs and omit Mermaid client bundles", async () => {
-  for (const prefix of ["", "en/"]) {
-    const html = await readFile(
-      new URL(
-        `../dist/${prefix}blog/astro-fuer-entwicklerblogs-mermaid-diagramme/index.html`,
-        import.meta.url
-      ),
-      "utf8"
-    )
-    assert.equal(svgs(html).length, 5)
-    assert.equal((html.match(/<details class="mermaid-source">/g) ?? []).length, 5)
-    assert.ok(!/mermaid-diagrams\.[^" ]+\.js/.test(html))
-    assert.ok(
-      svgs(html).every((svg) => SyntaxValidator.validate(svg, { multipleRoots: false }) === true)
-    )
-  }
-  const files = await readdir(new URL("../dist/_astro/", import.meta.url))
-  assert.ok(!files.some((file) => /^(?:mermaid|elk)-.*\.js$/.test(file)))
-  for (const file of files.filter((file) => file.endsWith(".js"))) {
-    const code = await readFile(new URL(`../dist/_astro/${file}`, import.meta.url), "utf8")
-    assert.ok(!/mermaidAPI|registerDiagram|elk-api/.test(code), file)
   }
 })

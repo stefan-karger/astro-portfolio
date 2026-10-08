@@ -3,7 +3,7 @@ import type { Page } from "astro"
 import type { CollectionEntry } from "astro:content"
 import PageIntro from "@/components/page-intro.astro"
 import BlogFilters from "@/components/blog/blog-filters.astro"
-import { resolveLocale } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { formatPostDate, postUrl } from "@/lib/blog"
 import type { BlogFilter } from "@/lib/blog-filters"
@@ -74,8 +74,8 @@ const featuredPage = page.currentPage === 1
                     >
                       <a
                         class:list={[
-                          "text-link no-underline hover:underline",
-                          featured && "outline-paper hover:bg-paper/10"
+                          "site-link [font-family:inherit]",
+                          featured && "outline-paper"
                         ]}
                         href={postUrl(locale, post.id)}
                       >
@@ -130,7 +130,7 @@ const featuredPage = page.currentPage === 1
           <div class="min-w-0">
             {page.url.prev && (
               <a
-                class="text-link inline-flex min-h-11 items-center"
+                class="site-link inline-flex min-h-11 items-center [font-family:inherit]"
                 href={page.url.prev}
                 rel="prev"
               >
@@ -144,7 +144,7 @@ const featuredPage = page.currentPage === 1
           <div class="min-w-0 text-right">
             {page.url.next && (
               <a
-                class="text-link inline-flex min-h-11 items-center"
+                class="site-link inline-flex min-h-11 items-center [font-family:inherit]"
                 href={page.url.next}
                 rel="next"
               >

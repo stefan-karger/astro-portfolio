@@ -5,7 +5,7 @@ export const projects = {
     url: "https://www.solid-ui.com/",
     repository: "https://github.com/stefan-karger/solid-ui"
   },
-  lager: {
+  stockSync: {
     id: "project-stock-sync",
     metricsDate: "2026-10-06",
     metrics: [

@@ -9,8 +9,8 @@ function post(date, language, tags) {
 
 test("Only populated months, languages and tags appear, counting each post once", () => {
   const posts = [
-    post("2026-03-01", "de", ["Astro", "Astro", "Photography"]),
-    post("2026-03-31", "en", ["Photography"]),
+    post("2026-03-01", "de", ["Astro", "Astro", "astro", "ASTRO", "Photography"]),
+    post("2026-03-31", "en", ["Photography", "astro"]),
     post("2025-03-01", "de", [])
   ]
   const filters = getBlogFilters(posts)
@@ -19,7 +19,7 @@ test("Only populated months, languages and tags appear, counting each post once"
     "month-2025-03": 1,
     "language-de": 2,
     "language-en": 1,
-    "tag-astro": 1,
+    "tag-astro": 2,
     "tag-photography": 2
   })
   assert.deepEqual(getBlogFilters([]), [])
@@ -29,11 +29,11 @@ test("Only populated months, languages and tags appear, counting each post once"
   )
 })
 
-test("Each filter independently matches its month, content language or exact authored tag", () => {
+test("Each filter independently matches its month, content language or case-insensitive tag", () => {
   const posts = [
     post("2026-03-01", "de", ["Street photography"]),
     post("2026-03-31", "en", ["Astro"]),
-    post("2025-03-01", "de", ["Street photography", "Astro"])
+    post("2025-03-01", "de", ["Street photography", "astro"])
   ]
   const filters = getBlogFilters(posts)
   const matching = (key) =>
@@ -52,12 +52,22 @@ test("Each filter independently matches its month, content language or exact aut
       post("2026-03-01", "de", ["astro"]),
       filters.find(({ key }) => key === "tag-astro")
     ),
-    false
+    true
   )
 })
 
-test("Tag URLs preserve matching values and distinguish punctuation, accents and case collisions", () => {
-  const tags = ["Street photography", "Straße & Städte", "C++", "C#", "Astro", "astro", "日本語"]
+test("Tag URLs use readable symbol replacements and preserve non-Latin letters", () => {
+  const tags = [
+    "Street photography",
+    "Straße & Städte",
+    "C++",
+    "C#",
+    "F#",
+    "C",
+    "@Astro",
+    "日本語",
+    "Research, development"
+  ]
   const filters = getBlogFilters([post("2026-03-01", "de", tags)]).filter(
     ({ type }) => type === "tag"
   )
@@ -65,12 +75,25 @@ test("Tag URLs preserve matching values and distinguish punctuation, accents and
     filters.map(({ value }) => value),
     tags
   )
-  assert.equal(new Set(filters.map(({ key }) => key.toLowerCase())).size, tags.length)
-  assert.ok(filters.every(({ key }) => /^tag-[a-z0-9-]+$/.test(key)))
-  assert.equal(
-    filters.find(({ value }) => value === "Street photography").key,
-    "tag-street-photography"
+  assert.deepEqual(
+    filters.map(({ key }) => key),
+    [
+      "tag-street-photography",
+      "tag-strasse-and-stadte",
+      "tag-cplusplus",
+      "tag-csharp",
+      "tag-fsharp",
+      "tag-c",
+      "tag-atastro",
+      "tag-日本語",
+      "tag-research-development"
+    ]
   )
+  for (const filter of filters) {
+    for (const tag of tags) {
+      assert.equal(matchesBlogFilter(post("2026-03-01", "de", [tag]), filter), tag === filter.value)
+    }
+  }
   assert.deepEqual(
     new Map(
       getBlogFilters([post("2026-03-01", "de", [...tags].reverse())]).map(({ value, key }) => [
@@ -79,5 +102,34 @@ test("Tag URLs preserve matching values and distinguish punctuation, accents and
       ])
     ),
     new Map(getBlogFilters([post("2026-03-01", "de", tags)]).map(({ value, key }) => [value, key]))
+  )
+})
+
+test("Adding case variants or other tags keeps existing tag URLs stable", () => {
+  const original = getBlogFilters([post("2026-03-01", "de", ["Astro", "C++", "C#"])])
+  const expanded = getBlogFilters([
+    post("2026-03-01", "de", ["Astro", "C++", "C#"]),
+    post("2026-03-31", "en", ["astro", "c++", "c#", "CSS"])
+  ])
+  for (const filter of original.filter(({ type }) => type === "tag")) {
+    assert.deepEqual(
+      expanded.find(({ key }) => key === filter.key),
+      { ...filter, count: 2 }
+    )
+  }
+  assert.equal(expanded.filter(({ key }) => key === "tag-astro").length, 1)
+})
+
+test("Unresolved slug collisions name both tags instead of adding hashes or merging them", () => {
+  assert.throws(
+    () => getBlogFilters([post("2026-03-01", "de", ["A/B", "A B"])]),
+    /Tags "A\/B" and "A B" both produce "tag-a-b"\. Rename a tag or update the symbol lookup/
+  )
+})
+
+test("Tags with no letters, numbers or supported symbols require a readable name", () => {
+  assert.throws(
+    () => getBlogFilters([post("2026-03-01", "de", ["🧪"])]),
+    /Tag "🧪" needs a readable URL name/
   )
 })

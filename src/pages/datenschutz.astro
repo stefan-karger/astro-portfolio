@@ -1,13 +1,14 @@
 ---
 import BaseLayout from "@/layouts/base-layout.astro"
 import LegalArticle from "@/components/legal-article.astro"
+import ExternalLinkIcon from "@/components/external-link-icon.astro"
 import { routeUrl } from "@/i18n/url"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 import { getTranslations } from "@/i18n/translations"
 ---
 
 <BaseLayout
-  title={`${siteConfig.name.public} - Datenschutz`}
+  title={`${siteConfig.name.brand} - Datenschutz`}
   description={getTranslations("de").privacy.metaDescription}
   noindex
 >
@@ -16,10 +17,13 @@ import { getTranslations } from "@/i18n/translations"
 
     <h2>Verantwortliche Stelle</h2>
     <p>
-      Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO) ist {siteConfig.name.legal}.
+      Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO) ist {siteConfig.name.full}.
       Die vollständigen Kontaktdaten, Adressangaben sowie Kontaktmöglichkeiten per E-Mail und
       Telefon findest du im{" "}
-      <a class="text-link" href={routeUrl("de", "legal")}>
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href={routeUrl("de", "legal")}
+      >
         Impressum
       </a>
       .
@@ -44,18 +48,30 @@ import { getTranslations } from "@/i18n/translations"
       Netlify kann Daten in den USA und anderen Ländern außerhalb des Europäischen Wirtschaftsraums
       verarbeiten. Für Übermittlungen in die USA sieht Netlifys Vereinbarung zur
       Auftragsverarbeitung das{" "}
-      <a class="text-link" href="https://www.dataprivacyframework.gov/participant/6208">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.dataprivacyframework.gov/participant/6208"
+      >
         EU-US Data Privacy Framework
+        <ExternalLinkIcon />
       </a>{" "}
       vor, für das Netlify nach eigenen Angaben zertifiziert ist. Soweit dieser Mechanismus nicht
       greift, sieht die Vereinbarung EU-Standardvertragsklauseln vor. Weitere Informationen stehen
       in den{" "}
-      <a class="text-link" href="https://www.netlify.com/privacy/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.netlify.com/privacy/"
+      >
         Datenschutzhinweisen von Netlify
+        <ExternalLinkIcon />
       </a>{" "}
       und in der{" "}
-      <a class="text-link" href="https://www.netlify.com/pdf/netlify-dpa.pdf">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.netlify.com/pdf/netlify-dpa.pdf"
+      >
         Vereinbarung zur Auftragsverarbeitung
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -79,12 +95,20 @@ import { getTranslations } from "@/i18n/translations"
       zur Erfüllung gesetzlicher Aufbewahrungspflichten benötigt werden, bleiben so lange erhalten,
       wie dies erforderlich ist. Weitere Informationen zur Verarbeitung durch STRATO findest du in
       den{" "}
-      <a class="text-link" href="https://www.strato.de/datenschutz/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.strato.de/datenschutz/"
+      >
         Datenschutzhinweisen von STRATO
+        <ExternalLinkIcon />
       </a>{" "}
       und in der{" "}
-      <a class="text-link" href="https://www.strato.de/agb/avv/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.strato.de/agb/avv/"
+      >
         Vereinbarung zur Auftragsverarbeitung
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -93,10 +117,11 @@ import { getTranslations } from "@/i18n/translations"
       Postfach einschließlich Papierkorb gelöschte Nachrichten noch bis zu 30 Tage wiederhergestellt
       werden. Einzelheiten stehen in der{" "}
       <a
-        class="text-link"
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
         href="https://www.strato.de/faq/mail/wie-kann-ich-meine-geloeschten-e-mails-wiederherstellen/"
       >
         Erläuterung zur E-Mail-Wiederherstellung
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -123,8 +148,12 @@ import { getTranslations } from "@/i18n/translations"
       der App lösche oder der Vertrag endet. Davon zu unterscheiden sind Daten, die sipgate für
       Abrechnung oder gesetzliche Aufbewahrungspflichten verarbeitet. Weitere Informationen findest
       du in den{" "}
-      <a class="text-link" href="https://www.satellite.me/datenschutz/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.satellite.me/datenschutz/"
+      >
         Datenschutzhinweisen von satellite
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -145,15 +174,22 @@ import { getTranslations } from "@/i18n/translations"
       Recht auf Datenübertragbarkeit. Soweit die Verarbeitung auf berechtigten Interessen beruht,
       kannst du aus Gründen, die sich aus deiner besonderen Situation ergeben, widersprechen. Wende
       dich zur Ausübung deiner Rechte über die Kontaktmöglichkeiten im{" "}
-      <a class="text-link" href={routeUrl("de", "legal")}>
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href={routeUrl("de", "legal")}
+      >
         Impressum
       </a>{" "}
       an mich.
     </p>
     <p>
       Du kannst dich bei einer Datenschutzaufsichtsbehörde beschweren, insbesondere beim{" "}
-      <a class="text-link" href="https://www.lda.bayern.de/de/beschwerde.html">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.lda.bayern.de/de/beschwerde.html"
+      >
         Bayerischen Landesamt für Datenschutzaufsicht (BayLDA)
+        <ExternalLinkIcon />
       </a>
       . Das Recht, dich an eine andere nach der DSGVO zuständige Aufsichtsbehörde zu wenden, bleibt
       bestehen.

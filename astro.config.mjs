@@ -10,9 +10,9 @@ import {
 } from "@shikijs/transformers"
 import { rendererRich, transformerTwoslash } from "@shikijs/twoslash"
 
-import { transformerCodeBlock } from "./src/lib/shiki/code-block.ts"
-import { mermaidDiagrams } from "./src/lib/mermaid.ts"
-import { defaultLocale, locales } from "./src/i18n/types.ts"
+import { transformerCodeBlock } from "./src/lib/markdown/code-block.ts"
+import { mermaidDiagrams } from "./src/lib/markdown/mermaid.ts"
+import { defaultLocale, locales } from "./src/i18n/locales.ts"
 
 const mermaid = mermaidDiagrams()
 
@@ -39,13 +39,6 @@ export default defineConfig({
         transformerCodeBlock()
       ]
     }
-  },
-
-  redirects: {
-    "/portfolio": "/fotografie",
-    "/en/portfolio": "/en/photography",
-    "/blog/astro-shiki-codebloecke": "/blog/astro-fuer-entwicklerblogs-shiki-twoslash",
-    "/en/blog/astro-shiki-codebloecke": "/en/blog/astro-fuer-entwicklerblogs-shiki-twoslash"
   },
 
   i18n: {

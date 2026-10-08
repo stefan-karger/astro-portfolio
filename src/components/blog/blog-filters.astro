@@ -1,7 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n"
 
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import { formatBlogFilter } from "@/lib/blog"
@@ -51,7 +51,7 @@ const groups = [
           )}
           <div class:list={["text-sm leading-snug text-muted", collapsible && "mt-3"]}>
             <a
-              class="mb-6 inline-block py-1 no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:font-bold aria-[current]:text-ink"
+              class="site-link mb-6 inline-block py-1 underline-offset-[0.45em] [font-family:inherit] hover:text-ink aria-[current]:font-bold aria-[current]:text-ink"
               href={routeUrl(locale, "blog")}
               aria-current={!active ? "page" : undefined}
             >
@@ -65,7 +65,7 @@ const groups = [
                     {group.filters.map((filter) => (
                       <li>
                         <a
-                          class="inline-block py-1 wrap-anywhere no-underline underline-offset-[0.45em] hover:text-ink hover:underline aria-[current]:font-bold aria-[current]:text-ink"
+                          class="site-link inline-block py-1 wrap-anywhere underline-offset-[0.45em] [font-family:inherit] hover:text-ink aria-[current]:font-bold aria-[current]:text-ink"
                           href={getRelativeLocaleUrl(locale, `blog/filter/${filter.key}`)}
                           aria-current={active === filter.key ? "page" : undefined}
                         >

@@ -1,16 +1,16 @@
 ---
 import BaseLayout from "@/layouts/base-layout.astro"
 import PageIntro from "@/components/page-intro.astro"
-import { defaultLocale } from "@/i18n/types"
+import { defaultLocale } from "@/i18n/locales"
 import { routeUrl } from "@/i18n/url"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 
 const description =
   "Die gesuchte Seite wurde nicht gefunden. Über die Startseite oder das Fotografie-Portfolio kannst du weitergehen."
 ---
 
 <BaseLayout
-  title={`${siteConfig.name.public} - Seite nicht gefunden`}
+  title={`${siteConfig.name.brand} - Seite nicht gefunden`}
   {description}
   mainClass="w-full flex-1"
   isErrorPage
@@ -21,11 +21,14 @@ const description =
       aria-label="Weitergehen"
       class="mx-auto flex w-[calc(100%-2rem)] max-w-6xl flex-wrap gap-x-8 gap-y-3"
     >
-      <a class="text-link inline-flex min-h-11 items-center" href={routeUrl(defaultLocale, "home")}>
+      <a
+        class="site-link inline-flex min-h-11 items-center [font-family:inherit]"
+        href={routeUrl(defaultLocale, "home")}
+      >
         Zur Startseite
       </a>
       <a
-        class="text-link inline-flex min-h-11 items-center"
+        class="site-link inline-flex min-h-11 items-center [font-family:inherit]"
         href={routeUrl(defaultLocale, "portfolio")}
       >
         Fotografien ansehen

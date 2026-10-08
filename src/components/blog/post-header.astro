@@ -1,11 +1,11 @@
 ---
 import type { CollectionEntry } from "astro:content"
 
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
 import { routeUrl } from "@/i18n/url"
 import { formatPostDate } from "@/lib/blog"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
 
 interface Props {
   post: CollectionEntry<"blog">
@@ -38,8 +38,12 @@ const date = post.data.updatedDate ?? post.data.pubDate
     </p>
     <p id="post-author" class="mt-5 text-sm text-muted">
       {t.blog.author}{" "}
-      <a class="underline-offset-4 hover:underline" href={routeUrl(locale, "home")} rel="author">
-        {siteConfig.name.legal}
+      <a
+        class="site-link underline-offset-4 [font-family:inherit]"
+        href={routeUrl(locale, "home")}
+        rel="author"
+      >
+        {siteConfig.name.full}
       </a>
     </p>
     <div class="post-dates mt-1.5 text-sm text-muted">

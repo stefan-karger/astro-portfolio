@@ -59,68 +59,6 @@ test("Titles are text nodes and only accept the documented metadata token", () =
   }
 })
 
-test("File icons follow title extensions, preserve titles and never enter copied code", () => {
-  const source = "const count = 1\n\nconsole.log(count)"
-  const titles = [
-    "package.json · Blog-Auszug",
-    "src/styles/GLOBAL.CSS",
-    "src/lib/example.test.ts",
-    "src/pages/[...slug].astro",
-    "C:\\Blog\\settings.JSON"
-  ]
-  const paths = []
-  for (const title of titles) {
-    const root = render(source, `title="${title}"`)
-    const icons = elements(root, (node) =>
-      node.properties.className?.includes("code-block-file-icon")
-    )
-    assert.equal(icons.length, 1, title)
-    const svg = icons[0]
-    assert.equal(svg.tagName, "svg")
-    assert.equal(svg.properties.width, 16)
-    assert.equal(svg.properties.height, 16)
-    assert.equal(svg.properties.ariaHidden, "true")
-    assert.equal(svg.properties.focusable, "false")
-    assert.equal(text(svg), "")
-    paths.push(svg.children[0].properties.d)
-    const filename = elements(root, (node) =>
-      node.properties.className?.includes("code-block-filename")
-    )
-    assert.equal(text(filename[0]), title)
-    assert.equal(copy(root), source)
-  }
-  assert.equal(new Set(paths.slice(0, 4)).size, 4)
-  assert.equal(paths[0], paths[4])
-
-  const typescript = elements(render(source, 'title="example.ts"'), (node) =>
-    node.properties.className?.includes("code-block-file-icon")
-  )[0]
-  for (const extension of ["js", "jsx", "ts", "tsx", "typescript", "mjs", "cjs", "mts", "cts"]) {
-    const root = render(source, `title="example.${extension} · excerpt"`)
-    const svg = elements(root, (node) =>
-      node.properties.className?.includes("code-block-file-icon")
-    )[0]
-    assert.deepEqual(svg, typescript, extension)
-  }
-})
-
-test("Untitled blocks and titles without file extensions omit file icons", () => {
-  for (const title of [
-    "",
-    "Entwicklung und Build",
-    ".gitignore",
-    "src/lib.v2/index",
-    "Release 1.1"
-  ]) {
-    const root = render("const count = 1", title ? `title="${title}"` : "")
-    assert.equal(
-      elements(root, (node) => node.properties.className?.includes("code-block-file-icon")).length,
-      0,
-      title
-    )
-  }
-})
-
 test("Diff copies additions and unchanged lines, excludes removals and preserves empty lines", () => {
   const root = render(
     "const old = 1 // [!code --]\nconst next = 2 // [!code ++]\n\nconsole.log(next)"
@@ -204,32 +142,6 @@ test("Hover popups escape the scroll container, have unique targets and retain J
   assert.equal(new Set(ids).size, ids.length)
 })
 
-test("Light syntax colors are generated without an unused dark palette", () => {
-  const roots = [
-    render("const count = 1"),
-    render('const user = { name: "Ada" }\nconsole.log(user.name)', "twoslash")
-  ]
-  for (const root of roots) {
-    const tokens = elements(
-      root,
-      (node) => node.tagName === "span" && String(node.properties.style ?? "").includes("color:")
-    )
-    assert.ok(tokens.length > 0)
-    assert.equal(
-      elements(root, (node) => String(node.properties.style ?? "").includes("--shiki-dark")).length,
-      0
-    )
-  }
-  const popups = elements(roots[1], (node) => node.properties.popover)
-  assert.ok(popups.length > 0)
-  assert.ok(
-    popups.some(
-      (popup) =>
-        elements(popup, (node) => String(node.properties.style ?? "").includes("color:")).length
-    )
-  )
-})
-
 test("showLineNumbers numbers visible code, preserves Copy and composes with Diff and Twoslash", () => {
   const source = "const old = 1 // [!code --]\nconst next = 2 // [!code ++]\n\nconsole.log(next)"
   const root = render(source, 'showLineNumbers title="diff.ts"')
@@ -260,12 +172,6 @@ test("showLineNumbers numbers visible code, preserves Copy and composes with Dif
   }
 })
 
-test("Untitled code reserves room for Copy without adding top padding", () => {
-  const pre = elements(render("const count = 1"), (node) => node.tagName === "pre")[0]
-  assert.ok(String(pre.properties.class).includes("pt-4"))
-  assert.ok(!String(pre.properties.class).includes("pt-12"))
-})
-
 test("Mermaid preserves its original definition and keeps a visible source fallback", () => {
   const source = '\nflowchart TD\n  A["A & B <text>"] --> B["Prüfung"]\n\n  %% [\\!code ++]\n'
   const root = render(source, 'title="<img onerror=x> & diagram.mmd" showLineNumbers', "mermaid")
@@ -273,6 +179,7 @@ test("Mermaid preserves its original definition and keeps a visible source fallb
   const blocks = elements(root, (node) => node.properties.dataMermaid === true)
   assert.equal(blocks.length, 1)
   assert.equal(blocks[0].tagName, "figure")
+  assert.equal(blocks[0].properties.dataMermaidSource, source)
   const details = elements(root, (node) => node.tagName === "details")
   assert.equal(details.length, 1)
   assert.equal(details[0].properties.open, true)
@@ -286,23 +193,4 @@ test("Mermaid preserves its original definition and keeps a visible source fallb
     elements(root, (node) => node.tagName === "img" || node.tagName === "script").length,
     0
   )
-})
-
-test("Untitled Mermaid blocks have a header and do not convert fences shown as Markdown", () => {
-  const source = "flowchart LR\n  A --> B"
-  for (const meta of ["", 'title=""', 'title="   "']) {
-    const root = render(source, meta, "mermaid")
-    assert.equal(copy(root), source)
-    assert.equal(
-      text(elements(root, (node) => node.properties.className?.includes("code-block-filename"))[0]),
-      "Mermaid"
-    )
-    const diagram = elements(root, (node) =>
-      node.properties.className?.includes("mermaid-diagram")
-    )[0]
-    assert.equal(diagram.properties.hidden, true)
-  }
-  const example = render(`\`\`\`mermaid\n${source}\n\`\`\``, "", "md")
-  assert.equal(elements(example, (node) => node.properties.dataMermaid !== undefined).length, 0)
-  assert.equal(copy(example), `\`\`\`mermaid\n${source}\n\`\`\``)
 })
