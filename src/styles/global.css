@@ -8,20 +8,24 @@
   --color-ink-hover: #3d3d39;
   --color-muted: #62625d;
   --color-rule: #d5d5d0;
+  --spacing-header: 3.5rem;
   --text-display: clamp(2.5rem, 5vw, 4.25rem);
   --text-page-title: clamp(2.25rem, calc(3vw + 1rem), 3.5rem);
+  --text-code: 0.875rem;
+}
+
+/* Mermaid reads these tokens during rendering; blog.css uses them via @reference. */
+@theme static {
+  --color-code: #f8f8f8;
 }
 
 @layer base {
   :focus-visible {
-    border-radius: 0;
-    outline: 2px solid var(--color-ink);
-    outline-offset: 4px;
+    @apply rounded-none outline-2 outline-offset-4 outline-ink;
   }
 
   ::selection {
-    background-color: var(--color-ink);
-    color: var(--color-paper);
+    @apply bg-ink text-paper;
   }
 }
 
@@ -32,31 +36,5 @@
     &:hover {
       @apply underline;
     }
-  }
-
-  .text-link {
-    font: inherit;
-    color: inherit;
-    letter-spacing: inherit;
-    text-decoration-line: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
-
-    &:hover,
-    &:focus-visible {
-      background-color: color-mix(in srgb, var(--color-ink-hover) 12%, transparent);
-    }
-  }
-
-  .legal-content h1 {
-    @apply mb-14 text-left font-mono text-page-title leading-[1.12] font-bold tracking-[-0.02em] sm:mb-20 sm:text-center;
-  }
-
-  .legal-content h2 {
-    @apply mt-10 mb-[0.65rem] font-mono text-xl leading-relaxed font-bold tracking-[-0.01em];
-  }
-
-  .legal-content p + p {
-    @apply mt-[0.85rem];
   }
 }

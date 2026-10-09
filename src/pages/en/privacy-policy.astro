@@ -1,20 +1,32 @@
 ---
 import BaseLayout from "@/layouts/base-layout.astro"
 import LegalArticle from "@/components/legal-article.astro"
+import ExternalLinkIcon from "@/components/external-link-icon.astro"
 import { routeUrl } from "@/i18n/url"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
+import { getTranslations } from "@/i18n/translations"
 ---
 
-<BaseLayout title={`${siteConfig.name.public} - Privacy Policy`}>
+<BaseLayout
+  title={`${siteConfig.name.brand} - Privacy Policy`}
+  description={getTranslations("en").privacy.metaDescription}
+  noindex
+>
   <LegalArticle>
     <h1>Privacy Policy</h1>
+    <p class="text-sm text-muted">
+      Last updated: <time datetime="2026-10-08">8 October 2026</time>
+    </p>
 
     <h2>Controller</h2>
     <p>
-      The controller under the General Data Protection Regulation (GDPR) is {siteConfig.name.legal}.
+      The controller under the General Data Protection Regulation (GDPR) is {siteConfig.name.full}.
       You can find the full contact details, postal address and ways to contact me by email and
       phone in the{" "}
-      <a class="text-link" href={routeUrl("en", "legal")}>
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href={routeUrl("en", "legal")}
+      >
         Legal Notice
       </a>
       .
@@ -29,26 +41,38 @@ import { siteConfig } from "@/lib/config"
     </p>
     <p>
       This processing makes the website available and secure. Its legal basis is Article 6(1)(f) of
-      the GDPR. My legitimate interest is to operate a functional and secure website. Access data is
-      retained by Netlify according to the purpose of the processing and the applicable deletion and
-      retention obligations. The provider documents linked below do not specify a single retention
-      period covering all technical access and security logs.
+      the GDPR. My legitimate interest is to operate a functional and secure website. For the
+      central logging and monitoring of its service components, Netlify states in the data
+      processing agreement linked below that logs are retained online for 90 days and offline for
+      one year.
     </p>
     <p>
       Netlify may process data in the United States and other countries outside the European
       Economic Area. For transfers to the United States, Netlify's data processing agreement
       provides for the{" "}
-      <a class="text-link" href="https://www.dataprivacyframework.gov/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.dataprivacyframework.gov/participant/6208"
+      >
         EU-US Data Privacy Framework
+        <ExternalLinkIcon />
       </a>
       , under which Netlify states it is certified. Where this mechanism does not apply, the
       agreement provides for EU Standard Contractual Clauses. For more information, see{" "}
-      <a class="text-link" href="https://www.netlify.com/privacy/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.netlify.com/privacy/"
+      >
         Netlify's privacy notice
+        <ExternalLinkIcon />
       </a>{" "}
       and the{" "}
-      <a class="text-link" href="https://www.netlify.com/pdf/netlify-dpa.pdf">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.netlify.com/pdf/netlify-dpa.pdf"
+      >
         data processing agreement
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -69,12 +93,20 @@ import { siteConfig } from "@/lib/config"
       from the mailbox and trash. Records still needed for an ongoing matter or to meet statutory
       retention obligations are kept for as long as necessary. For more information about processing
       by STRATO, see{" "}
-      <a class="text-link" href="https://www.strato.de/datenschutz/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.strato.de/datenschutz/"
+      >
         STRATO's privacy notice
+        <ExternalLinkIcon />
       </a>{" "}
       and the{" "}
-      <a class="text-link" href="https://www.strato.de/agb/avv/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.strato.de/agb/avv/"
+      >
         data processing agreement
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -83,10 +115,11 @@ import { siteConfig } from "@/lib/config"
       from the mailbox, including the trash, can still be recovered for up to 30 days. For details,
       see the{" "}
       <a
-        class="text-link"
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
         href="https://www.strato.de/faq/mail/wie-kann-ich-meine-geloeschten-e-mails-wiederherstellen/"
       >
         explanation of email recovery
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -110,8 +143,12 @@ import { siteConfig } from "@/lib/config"
       sipgate. According to the provider, these entries are deleted when I delete them in the app or
       the contract ends. This is separate from data sipgate processes for billing or statutory
       retention obligations. For more information, see{" "}
-      <a class="text-link" href="https://www.satellite.me/datenschutz/">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.satellite.me/datenschutz/"
+      >
         satellite's privacy notice
+        <ExternalLinkIcon />
       </a>
       .
     </p>
@@ -131,15 +168,22 @@ import { siteConfig } from "@/lib/config"
       portability. Where processing is based on legitimate interests, you may object on grounds
       relating to your particular situation. To exercise your rights, contact me using the details
       in the{" "}
-      <a class="text-link" href={routeUrl("en", "legal")}>
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href={routeUrl("en", "legal")}
+      >
         Legal Notice
       </a>
       .
     </p>
     <p>
       You may lodge a complaint with a data protection supervisory authority, particularly the{" "}
-      <a class="text-link" href="https://www.lda.bayern.de/de/beschwerde.html">
+      <a
+        class="site-link text-muted [font-family:inherit] hover:text-ink"
+        href="https://www.lda.bayern.de/de/beschwerde.html"
+      >
         Bavarian State Office for Data Protection Supervision (BayLDA)
+        <ExternalLinkIcon />
       </a>
       . You retain the right to contact another supervisory authority competent under the GDPR.
     </p>

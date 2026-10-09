@@ -3,6 +3,7 @@ export default {
   printWidth: 100,
   tabWidth: 2,
   useTabs: false,
+  endOfLine: "auto",
 
   semi: false,
   singleQuote: false,

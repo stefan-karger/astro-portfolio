@@ -1,18 +1,23 @@
 ---
-import { defaultLocale, locales } from "@/i18n/types"
+import { resolveLocale } from "@/i18n/locales"
 import { getTranslations } from "@/i18n/translations"
-import { siteConfig } from "@/lib/config"
+import { projects as projectData } from "@/data/projects"
+import ExternalLinkIcon from "@/components/external-link-icon.astro"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
-const { projects } = getTranslations(locale)
-const solidUrl = "https://www.solid-ui.com/"
-const sourceUrl = "https://github.com/stefan-karger/solid-ui"
+const locale = resolveLocale(Astro.currentLocale)
+const { projects, links } = getTranslations(locale)
+const number = new Intl.NumberFormat(locale)
+const metricsDate = new Intl.DateTimeFormat(locale, {
+  dateStyle: "long",
+  timeZone: "UTC"
+}).format(new Date(projectData.stockSync.metricsDate))
+const websiteLabel = new URL(projectData.solid.url).hostname.replace(/^www\./, "")
 const recordGridClasses =
   "grid grid-cols-[minmax(12rem,0.7fr)_minmax(0,1.3fr)] gap-[clamp(2rem,6vw,5rem)] max-[45rem]:grid-cols-1 max-[45rem]:gap-4"
 ---
 
 <section class="pb-[clamp(5rem,10vw,9rem)]" aria-labelledby="projects-title">
-  <div class="mx-auto w-[calc(100%_-_2rem)] max-w-6xl">
+  <div class="mx-auto w-[calc(100%-2rem)] max-w-6xl">
     <div class:list={[recordGridClasses, "pb-[clamp(2.5rem,5vw,4rem)]"]}>
       <h2
         id="projects-title"
@@ -22,62 +27,79 @@ const recordGridClasses =
       </h2>
     </div>
 
-    <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
+    <article
+      id={projectData.solid.id}
+      class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}
+    >
       <div>
-        <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-[1.25] font-bold tracking-[-0.04em]">
-          {projects.solid.name}
+        <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-tight font-bold tracking-[-0.04em]">
+          {projectData.solid.name}
         </h3>
         <p class="mt-3 text-[0.84rem] text-muted">{projects.solid.kind}</p>
       </div>
-      <div class="max-w-[43rem]">
+      <div class="max-w-172">
         <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">
           {projects.solid.description}
         </p>
         <div class="mt-8 flex flex-wrap gap-x-[1.6rem] gap-y-3">
           <a
-            href={solidUrl}
+            href={projectData.solid.url}
             target="_blank"
             rel="noopener noreferrer"
             class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
           >
-            {projects.solid.website}&nbsp;↗
+            {websiteLabel}
+            <ExternalLinkIcon />
+            <span class="sr-only"> ({links.opensInNewTab})</span>
           </a>
           <a
-            href={sourceUrl}
+            href={projectData.solid.repository}
+            aria-label={`${projects.solid.source} – ${projectData.solid.name} (${links.opensInNewTab})`}
             target="_blank"
             rel="noopener noreferrer"
             class="site-link inline-flex min-h-11 items-center font-normal whitespace-nowrap text-muted underline-offset-[0.3em] hover:text-ink"
           >
-            {projects.solid.source}&nbsp;↗
+            {projects.solid.source}
+            <ExternalLinkIcon />
           </a>
         </div>
       </div>
     </article>
 
-    {siteConfig.showJunksplayground && (
-      <article class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}>
-        <div>
-          <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-[1.25] font-bold tracking-[-0.04em]">
-            {projects.lager.name}
-          </h3>
-          <p class="mt-3 text-[0.84rem] text-muted">{projects.lager.kind}</p>
-        </div>
-        <div class="max-w-[43rem]">
-          <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">
-            {projects.lager.description}
-          </p>
-          <dl class="mt-12 grid grid-cols-2 gap-8 max-[25rem]:grid-cols-1">
-            {projects.lager.metrics.map((metric) => (
-              <div class="@container flex flex-col-reverse">
-                <dt class="m-0 text-[0.84rem] text-muted">{metric.label}</dt>
-                <dd class="m-0 font-mono text-[min(clamp(1.65rem,2.8vw,2.4rem),12cqw)] font-bold tracking-[-0.05em] whitespace-nowrap">
-                  {metric.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </article>
-    )}
+    <article
+      id={projectData.stockSync.id}
+      class:list={[recordGridClasses, "border-t border-rule py-[clamp(3rem,5vw,5rem)]"]}
+    >
+      <div>
+        <h3 class="m-0 max-w-72 font-mono text-[clamp(1.5rem,2.5vw,2.1rem)] leading-tight font-bold tracking-[-0.04em]">
+          {projects.stockSync.name}
+        </h3>
+        <p class="mt-3 text-[0.84rem] text-muted">{projects.stockSync.kind}</p>
+        <p class="mt-1 text-[0.84rem] text-muted">
+          {projects.stockSync.metricsAsOf}{" "}
+          <time datetime={projectData.stockSync.metricsDate}>{metricsDate}</time>
+        </p>
+      </div>
+      <div class="max-w-172">
+        <p class="m-0 text-[clamp(1.1rem,1.5vw,1.25rem)] leading-[1.65] text-ink">
+          {projects.stockSync.description}
+        </p>
+        <dl class="mt-12 grid grid-cols-2 gap-8 max-[25rem]:grid-cols-1">
+          {projectData.stockSync.metrics.map((metric) => (
+            <div class="@container flex flex-col-reverse">
+              <dt class="m-0 text-[0.84rem] text-muted">
+                {metric.id === "orders"
+                  ? projects.stockSync.metrics.orders(metric.since)
+                  : projects.stockSync.metrics[metric.id]}
+              </dt>
+              <dd class="m-0 font-mono text-[min(clamp(1.65rem,2.8vw,2.4rem),12cqw)] font-bold tracking-tighter whitespace-nowrap">
+                {metric.comparison}
+                {number.format(metric.value)}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </article>
   </div>
 </section>

@@ -1,14 +1,14 @@
 ---
-import { defaultLocale, locales } from "@/i18n/types"
-import { siteConfig } from "@/lib/config"
+import { resolveLocale } from "@/i18n/locales"
+import { siteConfig } from "@/data/site"
 
-const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
+const locale = resolveLocale(Astro.currentLocale)
 const country =
   new Intl.DisplayNames([locale], { type: "region" }).of(siteConfig.address.countryCode) ??
   siteConfig.address.countryCode
 ---
 
-{siteConfig.name.legal}
+{siteConfig.name.full}
 <br />
 {siteConfig.address.street}
 <br />

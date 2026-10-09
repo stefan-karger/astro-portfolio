@@ -1,0 +1,119 @@
+---
+import { render, type CollectionEntry } from "astro:content"
+
+import BaseLayout from "@/layouts/base-layout.astro"
+import "@/styles/blog.css"
+import CodeBlockControls from "@/components/blog/code-block-controls.astro"
+import PostHeader from "@/components/blog/post-header.astro"
+import SeriesNavigation from "@/components/blog/series-navigation.astro"
+import TableOfContents from "@/components/blog/table-of-contents.astro"
+import StructuredData from "@/components/structured-data.astro"
+import { resolveLocale } from "@/i18n/locales"
+import { getTranslations } from "@/i18n/translations"
+import { routeUrl } from "@/i18n/url"
+import { getPosts, markdownUrl, postUrl } from "@/lib/blog"
+import { siteConfig } from "@/data/site"
+import { articleGraph } from "@/lib/structured-data"
+
+interface Props {
+  post: CollectionEntry<"blog">
+}
+const { post } = Astro.props
+const { Content, headings } = await render(post)
+const locale = resolveLocale(Astro.currentLocale)
+const t = getTranslations(locale)
+const canonicalPath = postUrl(post.data.language, post.id)
+const graph = post.data.draft
+  ? undefined
+  : await articleGraph({ site: Astro.site, canonicalPath, post })
+const posts = await getPosts()
+const index = posts.findIndex((entry) => entry.id === post.id)
+const previous = posts[index + 1]
+const next = index > 0 ? posts[index - 1] : undefined
+const contents = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
+const series = post.data.series
+const seriesPosts = series
+  ? posts
+      .filter(
+        (entry) =>
+          !entry.data.draft &&
+          entry.data.language === post.data.language &&
+          entry.data.series?.name === series.name
+      )
+      .sort((a, b) => a.data.series!.part - b.data.series!.part)
+  : []
+---
+
+<BaseLayout
+  title={`${post.data.title} - ${siteConfig.name.brand}`}
+  description={post.data.description}
+  {canonicalPath}
+  article={{
+    language: post.data.language,
+    publishedTime: post.data.pubDate.toISOString(),
+    modifiedTime: post.data.updatedDate?.toISOString()
+  }}
+>
+  <Fragment slot="head">
+    {graph && (
+      <>
+        <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
+        <link
+          rel="alternate"
+          type="text/markdown"
+          href={markdownUrl(post.data.language, post.id)}
+        />
+        <StructuredData data={graph} />
+      </>
+    )}
+  </Fragment>
+  <article
+    class="mx-auto min-w-0 max-w-6xl pt-10 pb-16 sm:pt-16 sm:pb-24"
+    aria-labelledby="post-title"
+  >
+    <PostHeader {post} {locale} />
+    <SeriesNavigation {post} posts={seriesPosts} {locale} />
+    <CodeBlockControls locale={locale} />
+    <div class="mt-12 grid min-w-0 gap-10 xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-14">
+      <TableOfContents headings={contents} {locale} language={post.data.language} />
+      <div
+        class="blog-content min-w-0 max-w-[85ch] xl:col-start-1 xl:row-start-1 xl:max-w-none"
+        lang={post.data.language}
+      >
+        <Content />
+      </div>
+    </div>
+    <nav
+      class="mt-14 max-w-[85ch] border-t border-rule pt-6 xl:max-w-[calc(100%-17.5rem)]"
+      aria-label={t.blog.navigation}
+    >
+      <a
+        class="site-link inline-flex min-h-11 items-center text-sm"
+        href={routeUrl(locale, "blog")}
+      >
+        {t.blog.back}
+      </a>
+      {(previous || next) && (
+        <div class="mt-5 grid gap-6 sm:grid-cols-2">
+          {[
+            { post: previous, label: t.blog.previous },
+            { post: next, label: t.blog.next }
+          ].map(
+            ({ post: entry, label }) =>
+              entry && (
+                <a
+                  class="site-link block py-2 [font-family:inherit]"
+                  href={postUrl(locale, entry.id)}
+                >
+                  <span class="block text-xs text-muted">{label}</span>
+                  <span class="mt-1 block font-semibold" lang={entry.data.language}>
+                    {entry.data.title}
+                  </span>
+                </a>
+              )
+          )}
+        </div>
+      )}
+    </nav>
+  </article>
+</BaseLayout>

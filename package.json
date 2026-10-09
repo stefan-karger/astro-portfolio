@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@12.10.0",
   "engines": {
     "node": "^22.13.0 || >=24.0.0"
   },
@@ -11,13 +12,20 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "setup:diagrams": "playwright install --only-shell chromium",
+    "test:unit": "node --experimental-strip-types --test tests/blog-schema.test.mjs tests/blog-filters.test.mjs",
+    "test:markdown": "node --experimental-strip-types --test tests/code-block.test.mjs tests/mermaid-render.test.mjs",
+    "test:output": "node --experimental-strip-types --test tests/seo-build.test.mjs",
+    "test:integration": "node --experimental-strip-types --test tests/seo-integration.test.mjs",
+    "test:browser": "node --experimental-strip-types --test tests/browser.test.mjs",
     "lint": "eslint . --cache --max-warnings 0",
     "lint:fix": "eslint . --cache --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "validate": "pnpm format:check && pnpm lint && pnpm check && pnpm build"
+    "validate": "pnpm format:check && pnpm lint && pnpm test:unit && pnpm check && pnpm test:markdown && pnpm build && pnpm test:output && pnpm test:browser"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.19",
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
@@ -26,20 +34,27 @@
     "sharp": "0.35.4",
     "tailwindcss": "^4.3.3"
   },
-  "allowScripts": {
-    "esbuild": true
-  },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@astrojs/markdown-satteri": "0.4.2",
     "@eslint/js": "^10.0.1",
+    "@shikijs/transformers": "4.4.3",
+    "@shikijs/twoslash": "4.4.3",
+    "@types/hast": "3.0.5",
     "@types/node": "^24.19.0",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^3.2.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "fast-xml-parser": "^5.11.2",
+    "fast-xml-validator": "^1.4.2",
+    "mermaid": "^12.1.0",
+    "playwright": "1.63.0",
     "prettier": "^3.9.8",
     "prettier-plugin-astro": "^1.0.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "satteri": "0.10.5",
+    "shiki": "4.4.3",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.1"
   }

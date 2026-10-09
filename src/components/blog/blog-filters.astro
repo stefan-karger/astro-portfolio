@@ -1,0 +1,85 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n"
+
+import type { Locale } from "@/i18n/locales"
+import { getTranslations } from "@/i18n/translations"
+import { routeUrl } from "@/i18n/url"
+import { formatBlogFilter } from "@/lib/blog"
+import type { BlogFilter } from "@/lib/blog-filters"
+
+interface Props {
+  filters: BlogFilter[]
+  active?: string
+  locale: Locale
+}
+
+const { filters, active, locale } = Astro.props
+const t = getTranslations(locale)
+const collator = new Intl.Collator(locale)
+const groups = [
+  { type: "month", title: t.blog.filters.month },
+  { type: "language", title: t.blog.filters.language },
+  { type: "tag", title: t.blog.tags }
+]
+  .map((group) => ({
+    ...group,
+    filters: filters
+      .filter((filter) => filter.type === group.type)
+      .sort((a, b) =>
+        group.type === "month"
+          ? b.value.localeCompare(a.value)
+          : collator.compare(formatBlogFilter(locale, a), formatBlogFilter(locale, b))
+      )
+  }))
+  .filter((group) => group.filters.length > 0)
+---
+
+<aside class="min-w-0 xl:col-start-2 xl:row-start-1">
+  <nav
+    id="blog-filters"
+    class="xl:sticky xl:top-[calc(var(--spacing-header)+2rem)] xl:max-h-[calc(100dvh-var(--spacing-header)-4rem)] xl:overflow-y-auto"
+    aria-label={t.blog.filters.label}
+  >
+    {[true, false].map((collapsible) => {
+      const Container = collapsible ? "details" : "div"
+      return (
+        <Container class={collapsible ? "xl:hidden" : "hidden xl:block"}>
+          {collapsible && (
+            <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-bold text-muted before:size-[0.4rem] before:shrink-0 before:-rotate-45 before:border-r before:border-b before:content-[''] [details[open]_&]:before:rotate-45 [&::-webkit-details-marker]:hidden">
+              {t.blog.filters.label}
+            </summary>
+          )}
+          <div class:list={["text-sm leading-snug text-muted", collapsible && "mt-3"]}>
+            <a
+              class="site-link mb-6 inline-block py-1 underline-offset-[0.45em] [font-family:inherit] hover:text-ink aria-[current]:font-bold aria-[current]:text-ink"
+              href={routeUrl(locale, "blog")}
+              aria-current={!active ? "page" : undefined}
+            >
+              {t.blog.filters.all}
+            </a>
+            <div class="grid gap-8 sm:grid-cols-3 xl:block xl:space-y-8">
+              {groups.map((group) => (
+                <section>
+                  <h2 class="mb-3 text-sm font-bold">{group.title}</h2>
+                  <ul class="space-y-2">
+                    {group.filters.map((filter) => (
+                      <li>
+                        <a
+                          class="site-link inline-block py-1 wrap-anywhere underline-offset-[0.45em] [font-family:inherit] hover:text-ink aria-[current]:font-bold aria-[current]:text-ink"
+                          href={getRelativeLocaleUrl(locale, `blog/filter/${filter.key}`)}
+                          aria-current={active === filter.key ? "page" : undefined}
+                        >
+                          {formatBlogFilter(locale, filter)} ({filter.count})
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          </div>
+        </Container>
+      )
+    })}
+  </nav>
+</aside>
