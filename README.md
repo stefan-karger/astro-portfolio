@@ -71,5 +71,7 @@ den Canonical und Markdown-Export; beide Oberflächensprachen können ihn anzeig
 
 ## Weitere Informationen
 
+- [Lizenzhinweise für übernommene Assets](public/third-party-notices.txt), veröffentlicht unter
+  `/third-party-notices.txt`.
 - [Bildpipeline und Galerie](docs/image-pipeline.md)
 - [Offene Punkte und Betreiberprüfungen](docs/offene-punkte.md)
