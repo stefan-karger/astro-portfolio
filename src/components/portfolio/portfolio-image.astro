@@ -23,7 +23,9 @@ if (import.meta.env.PROD && Math.min(sourceWidth, sourceHeight) < 2000) {
   )
 }
 const width = Math.min(sourceWidth, 1280)
-const widths = [...new Set([320, 480, 640, 768, 960, 1280].map((size) => Math.min(size, width)))]
+const widths = [
+  ...new Set([320, 432, 480, 640, 672, 768, 960, 1280].map((size) => Math.min(size, width)))
+]
 const edge = Math.min(Math.max(sourceWidth, sourceHeight), 3000)
 const edges = [...new Set([1200, 1800, 2400, 3000].map((size) => Math.min(size, edge)))]
 const lightboxImages = await Promise.all(

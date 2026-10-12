@@ -391,7 +391,7 @@ test("RSS and Markdown publish each canonical article once and are discovered on
   }
   assert.equal(
     (await readFile(path.join(dist, "_headers"), "utf8")).replace(/\r\n/g, "\n"),
-    "/rss.xml\n  Content-Type: application/rss+xml; charset=utf-8\n\n/blog/*.md\n  Content-Type: text/markdown; charset=utf-8\n  X-Robots-Tag: noindex, follow\n\n/en/blog/*.md\n  Content-Type: text/markdown; charset=utf-8\n  X-Robots-Tag: noindex, follow\n"
+    "/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n\n/rss.xml\n  Content-Type: application/rss+xml; charset=utf-8\n\n/blog/*.md\n  Content-Type: text/markdown; charset=utf-8\n  X-Robots-Tag: noindex, follow\n\n/en/blog/*.md\n  Content-Type: text/markdown; charset=utf-8\n  X-Robots-Tag: noindex, follow\n"
   )
 })
 
