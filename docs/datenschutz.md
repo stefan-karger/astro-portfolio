@@ -21,8 +21,24 @@ Seitentitel sind ab 640 Pixeln zentriert und darunter linksbündig zum Text.
 Zwischenüberschriften verwenden Monospace, Links den üblichen Website-Stil.
 
 Die Texte liegen in [datenschutz.astro](../src/pages/datenschutz.astro) und
-[privacy-policy.astro](../src/pages/en/privacy-policy.astro). App-spezifische
-Datenschutzerklärungen bleiben ein separates Vorhaben.
+[privacy-policy.astro](../src/pages/en/privacy-policy.astro).
+
+## Private n8n-Workflows
+
+Die separate Anwendungsseite liegt unter `/apps/n8n/`, ihre Datenschutzerklärung
+unter `/apps/n8n/datenschutz/`. Beide Seiten sind ausschließlich auf Deutsch
+verfügbar, ohne Sprachumschalter oder Verweise auf englische Fassungen. Sie sind
+mit `noindex, follow` versehen und werden nicht in der Hauptnavigation verlinkt.
+
+Die Anwendung nutzt Google Drive derzeit ausschließlich für Backups eigener
+Workflow-Konfigurationen. Die konkrete Serveradresse wird nicht veröffentlicht.
+Der Anwendungsabschnitt steht nicht mehr in den allgemeinen Datenschutzseiten.
+
+In der Google-OAuth-Konfiguration sind als Startseite
+`https://stefan-karger.de/apps/n8n/` und als Datenschutzerklärung
+`https://stefan-karger.de/apps/n8n/datenschutz/` einzutragen. Die öffentliche
+Anwendungsbezeichnung lautet "Private n8n-Workflows". Name und Links im
+Einwilligungsdialog müssen mit den Anwendungsseiten abgeglichen werden.
 
 ## Vor Veröffentlichung prüfen
 

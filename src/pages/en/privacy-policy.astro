@@ -119,49 +119,6 @@ import { siteConfig } from "@/lib/config"
       .
     </p>
 
-    <h2>n8n and Google Drive for workflow backups</h2>
-    <p>
-      I run a private n8n instance at n8n.stefan-karger.de. Its Google Drive integration is used
-      exclusively to back up my own n8n workflows and restore them when needed. Visiting this
-      website does not trigger access to Google Drive.
-    </p>
-    <p>
-      The integration transfers exported workflow definitions as JSON files to my Google Drive
-      account. These files contain workflow names and configurations and may include personal data,
-      such as email addresses, entered in those configurations. To manage the backups, the
-      integration processes the relevant file contents and metadata, such as file names, file and
-      folder IDs, and modification times. I do not use other Drive content for this integration.
-    </p>
-    <p>
-      I authorize access to my Google account through Google OAuth. My n8n instance stores access
-      and refresh tokens as credentials for this purpose. Where personal data is processed, the
-      legal basis is Article 6(1)(f) of the GDPR. My legitimate interest is to back up and restore
-      my workflow configurations.
-    </p>
-    <p>
-      The backups are stored in Google Drive. I retain them for as long as they are needed for
-      recovery and delete backups that are no longer needed. I can revoke access at any time in my{" "}
-      <a class="text-link" href="https://myaccount.google.com/connections">
-        Google account connections
-      </a>
-      . Revoking access stops further access but does not delete existing backups. I delete those
-      separately in Google Drive, including from the trash. When I stop using the integration, I
-      also remove its credentials from n8n.
-    </p>
-    <p>
-      Google receives the backup files as the provider of Google Drive. Google may also process data
-      outside the European Economic Area. For more information, see{" "}
-      <a class="text-link" href="https://policies.google.com/privacy?hl=en">
-        Google's privacy policy
-      </a>
-      . I use data obtained through Google APIs exclusively for these backups and their restoration.
-      I do not sell this data or use it for advertising. Its use and transfer comply with the{" "}
-      <a class="text-link" href="https://developers.google.com/terms/api-services-user-data-policy">
-        Google API Services User Data Policy
-      </a>
-      , including the Limited Use requirements.
-    </p>
-
     <h2>Fonts, cookies, and analytics</h2>
     <p>
       The fonts, images and gallery are served with the website. Loading them does not connect to
