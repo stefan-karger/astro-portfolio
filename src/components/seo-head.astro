@@ -9,6 +9,7 @@ interface Props {
   description: string
   locale: Locale
   canonicalPath?: string
+  hasTranslations?: boolean
   noindex?: boolean
   article?: {
     language: Locale
@@ -23,6 +24,7 @@ const {
   description: inputDescription,
   locale,
   canonicalPath = Astro.url.pathname,
+  hasTranslations = true,
   noindex = false,
   article,
   isErrorPage = false
@@ -64,10 +66,14 @@ const imageAlt = getTranslations(metadataLocale).seo.imageAlt
 {!isErrorPage && (
   <>
     <link rel="canonical" href={canonical.href} />
-    {alternates.map(({ locale, href }) => (
-      <link rel="alternate" hreflang={locale} href={href} />
-    ))}
-    <link rel="alternate" hreflang="x-default" href={xDefault} />
+    {hasTranslations && (
+      <>
+        {alternates.map(({ locale, href }) => (
+          <link rel="alternate" hreflang={locale} href={href} />
+        ))}
+        <link rel="alternate" hreflang="x-default" href={xDefault} />
+      </>
+    )}
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -76,6 +82,7 @@ const imageAlt = getTranslations(metadataLocale).seo.imageAlt
     <meta property="og:site_name" content={siteConfig.name.brand} />
     <meta property="og:locale" content={ogLocales[metadataLocale]} />
     {!article &&
+      hasTranslations &&
       locales
         .filter((target) => target !== locale)
         .map((target) => <meta property="og:locale:alternate" content={ogLocales[target]} />)}

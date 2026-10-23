@@ -8,9 +8,10 @@ import LanguageSwitch from "./language-switch.astro"
 interface Props {
   locale: Locale
   isErrorPage?: boolean
+  showLanguageSwitch?: boolean
 }
 
-const { locale, isErrorPage = false } = Astro.props
+const { locale, isErrorPage = false, showLanguageSwitch = true } = Astro.props
 const t = getTranslations(locale)
 const navRoutes = ["home", "portfolio", "blog"] as const
 
@@ -76,7 +77,7 @@ const navItems = navRoutes.map((route) => {
       </ul>
     </nav>
 
-    {!isErrorPage && <LanguageSwitch {locale} />}
+    {!isErrorPage && showLanguageSwitch && <LanguageSwitch {locale} />}
 
     <nav
       id="mobile-nav"
