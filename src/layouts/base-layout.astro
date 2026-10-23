@@ -13,11 +13,15 @@ interface Props {
   title: string
   description?: string
   mainClass?: string
+  hasTranslations?: boolean
+  noindex?: boolean
 }
 
 const {
   title,
   description,
+  hasTranslations = true,
+  noindex = false,
   mainClass = "mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8"
 } = Astro.props
 
@@ -47,6 +51,7 @@ const xDefault = new URL(switchLocale(Astro.url.pathname, locale, defaultLocale)
     <title>{title}</title>
 
     {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex, follow" />}
 
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
@@ -57,11 +62,14 @@ const xDefault = new URL(switchLocale(Astro.url.pathname, locale, defaultLocale)
 
     <link rel="canonical" href={canonical} />
 
-    {alternates.map(({ locale, href }) => (
-      <link rel="alternate" hreflang={locale} href={href} />
-    ))}
-
-    <link rel="alternate" hreflang="x-default" href={xDefault} />
+    {hasTranslations && (
+      <>
+        {alternates.map(({ locale, href }) => (
+          <link rel="alternate" hreflang={locale} href={href} />
+        ))}
+        <link rel="alternate" hreflang="x-default" href={xDefault} />
+      </>
+    )}
 
     <slot name="head" />
   </head>
@@ -73,7 +81,7 @@ const xDefault = new URL(switchLocale(Astro.url.pathname, locale, defaultLocale)
     >
       {t.nav.skipLink}
     </a>
-    <SiteHeader />
+    <SiteHeader showLanguageSwitch={hasTranslations} />
     <main id="main-content" class={mainClass} tabindex="-1">
       <slot />
     </main>

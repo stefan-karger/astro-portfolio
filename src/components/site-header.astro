@@ -5,6 +5,11 @@ import { routeUrl } from "@/i18n/url"
 import { siteConfig } from "@/lib/config"
 import LanguageSwitch from "./language-switch.astro"
 
+interface Props {
+  showLanguageSwitch?: boolean
+}
+
+const { showLanguageSwitch = true } = Astro.props
 const locale = locales.find((item) => item === Astro.currentLocale) ?? defaultLocale
 const t = getTranslations(locale)
 const navRoutes = ["home", "portfolio"] as const
@@ -48,6 +53,6 @@ function normalizePath(path: string) {
       </ul>
     </nav>
 
-    <LanguageSwitch />
+    {showLanguageSwitch && <LanguageSwitch />}
   </div>
 </header>
