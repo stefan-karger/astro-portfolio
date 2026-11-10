@@ -2,18 +2,28 @@
 import HomeHero from "@/components/home/home-hero.astro"
 import HomeProjects from "@/components/home/home-projects.astro"
 import HomeCareer from "@/components/home/home-career.astro"
+import StructuredData from "@/components/structured-data.astro"
 import { getTranslations } from "@/i18n/translations"
+import { routeUrl } from "@/i18n/url"
 import BaseLayout from "@/layouts/base-layout.astro"
-import { siteConfig } from "@/lib/config"
+import { siteConfig } from "@/data/site"
+import { profileGraph } from "@/lib/structured-data"
 
 const t = getTranslations("en")
+const title = `${siteConfig.name.brand} - ${t.home.metaTitle}`
+const description = t.home.metaDescription
+const canonicalPath = routeUrl("en", "home")
+const graph = await profileGraph({
+  site: Astro.site,
+  canonicalPath,
+  locale: "en",
+  title,
+  description
+})
 ---
 
-<BaseLayout
-  title={`${siteConfig.name.public} - ${t.home.metaTitle}`}
-  description={t.home.metaDescription}
-  mainClass="w-full flex-1"
->
+<BaseLayout {title} {description} {canonicalPath} mainClass="w-full flex-1">
+  <StructuredData slot="head" data={graph} />
   <HomeHero />
   <HomeProjects />
   <HomeCareer />

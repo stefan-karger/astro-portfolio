@@ -1,0 +1,13 @@
+---
+import type { InferGetStaticPropsType } from "astro"
+import BlogFilterLayout from "@/layouts/blog-filter-layout.astro"
+import { getBlogFilterPaths } from "@/lib/blog"
+
+export const getStaticPaths = getBlogFilterPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { page, filter, filters } = Astro.props
+---
+
+<BlogFilterLayout {page} {filter} {filters} />

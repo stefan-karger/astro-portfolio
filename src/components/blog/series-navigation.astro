@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry } from "astro:content"
+
+import type { Locale } from "@/i18n/locales"
+import { getTranslations } from "@/i18n/translations"
+import { postUrl } from "@/lib/blog"
+
+interface Props {
+  post: CollectionEntry<"blog">
+  posts: CollectionEntry<"blog">[]
+  locale: Locale
+}
+
+const { post, posts, locale } = Astro.props
+const t = getTranslations(locale)
+const series = post.data.series
+---
+
+{series && posts.length > 0 && (
+  <nav class="post-series mt-8 max-w-[75ch]" aria-label={t.blog.series}>
+    <h2 class="text-sm font-semibold text-muted">{t.blog.series}</h2>
+    <ol class="mt-2 ml-1 grid grid-cols-1 border-l border-rule text-sm">
+      {posts.map((entry) => (
+        <li
+          class="relative pl-5 before:absolute before:top-[1.125rem] before:-left-1 before:size-[0.4375rem] before:rounded-full before:border before:border-muted before:bg-paper before:content-[''] has-[[aria-current]]:before:border-ink has-[[aria-current]]:before:bg-ink"
+          data-series-part={entry.data.series!.part}
+        >
+          {/* One inline text flow keeps the hover underline continuous between words. */}
+          <a
+            class="site-link inline-block min-h-11 py-2.5 text-muted [font-family:inherit] [text-decoration-skip-ink:none] hover:text-ink focus-visible:text-ink aria-[current]:font-bold aria-[current]:text-ink"
+            href={postUrl(locale, entry.id)}
+            aria-current={entry.id === post.id ? "page" : undefined}
+          >
+            {`${t.blog.part} ${entry.data.series!.part}: `}
+            <span lang={entry.data.language}>
+              {entry.data.title.replace(`${series.name}: `, "")}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}

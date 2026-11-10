@@ -1,0 +1,159 @@
+---
+import type { Page } from "astro"
+import type { CollectionEntry } from "astro:content"
+import PageIntro from "@/components/page-intro.astro"
+import BlogFilters from "@/components/blog/blog-filters.astro"
+import { resolveLocale } from "@/i18n/locales"
+import { getTranslations } from "@/i18n/translations"
+import { formatPostDate, postUrl } from "@/lib/blog"
+import type { BlogFilter } from "@/lib/blog-filters"
+
+interface Props {
+  page: Page<CollectionEntry<"blog">>
+  filters: BlogFilter[]
+  filter?: BlogFilter
+}
+
+const { page, filters, filter } = Astro.props
+
+const locale = resolveLocale(Astro.currentLocale)
+const t = getTranslations(locale)
+const featuredPage = page.currentPage === 1
+---
+
+<section class="pt-[clamp(2.5rem,7vw,7rem)] pb-16 sm:pb-24" aria-labelledby="blog-title">
+  <PageIntro id="blog-title" title="Blog" description={t.blog.description} />
+  <div class="mx-auto grid w-[calc(100%-2rem)] max-w-6xl min-w-0 gap-10 xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-14">
+    {filters.length > 0 && <BlogFilters {filters} active={filter?.key} {locale} />}
+    <div class="min-w-0 xl:col-start-1 xl:row-start-1">
+      {page.data.length === 0 ? (
+        <p class="text-muted">{t.blog.empty}</p>
+      ) : (
+        <ul>
+          {page.data.map((post, index) => {
+            const featured = featuredPage && index === 0
+
+            return (
+              <li
+                class:list={[
+                  "min-w-0",
+                  !featured && "py-6",
+                  index > (featuredPage ? 1 : 0) && "border-t border-rule"
+                ]}
+              >
+                <article
+                  class:list={[
+                    "grid min-w-0",
+                    featured
+                      ? "mb-8 gap-6 bg-ink p-6 text-paper selection:bg-paper selection:text-ink sm:p-10"
+                      : "gap-3 sm:grid-cols-[minmax(0,1fr)_10rem] sm:gap-6"
+                  ]}
+                >
+                  <div
+                    class:list={[
+                      "flex flex-wrap items-center gap-x-3 gap-y-2 text-sm",
+                      featured
+                        ? "text-paper/75"
+                        : "text-muted sm:col-start-2 sm:row-start-1 sm:flex-col sm:items-end"
+                    ]}
+                  >
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {formatPostDate(locale, post.data.pubDate)}
+                    </time>
+                    {post.data.draft && <span class="text-xs">{t.blog.draft}</span>}
+                  </div>
+                  <div class:list={["min-w-0", !featured && "sm:col-start-1 sm:row-start-1"]}>
+                    <h2
+                      class:list={[
+                        "font-semibold tracking-tight wrap-break-word",
+                        featured
+                          ? "max-w-[24ch] text-3xl leading-tight sm:text-[2.5rem]"
+                          : "font-mono text-lg leading-snug sm:text-xl"
+                      ]}
+                      lang={post.data.language}
+                    >
+                      <a
+                        class:list={[
+                          "site-link [font-family:inherit]",
+                          featured && "outline-paper"
+                        ]}
+                        href={postUrl(locale, post.id)}
+                      >
+                        {post.data.title}
+                      </a>
+                    </h2>
+                    <p
+                      class={
+                        featured
+                          ? "mt-3 max-w-[55ch] text-paper/75 sm:text-lg"
+                          : "mt-2 max-w-[70ch] text-sm text-muted"
+                      }
+                      lang={post.data.language}
+                    >
+                      {post.data.description}
+                    </p>
+                    {post.data.tags.length > 0 && (
+                      <ul
+                        class:list={[
+                          "flex flex-wrap gap-y-2",
+                          featured ? "mt-4 gap-x-2" : "mt-3 gap-x-4"
+                        ]}
+                        aria-label={t.blog.tags}
+                      >
+                        {post.data.tags.map((tag) => (
+                          <li
+                            class:list={[
+                              "text-xs",
+                              featured
+                                ? "bg-paper/10 px-2.5 py-1 text-paper/75"
+                                : "text-muted before:content-['#']"
+                            ]}
+                            lang={post.data.language}
+                          >
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </article>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+      {page.lastPage > 1 && (
+        <nav
+          class="mt-8 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 font-mono text-xs sm:text-sm"
+          aria-label={t.blog.pagination.label}
+        >
+          <div class="min-w-0">
+            {page.url.prev && (
+              <a
+                class="site-link inline-flex min-h-11 items-center [font-family:inherit]"
+                href={page.url.prev}
+                rel="prev"
+              >
+                {t.blog.pagination.previous}
+              </a>
+            )}
+          </div>
+          <span class="text-muted" aria-current="page">
+            {t.blog.pagination.status(page.currentPage, page.lastPage)}
+          </span>
+          <div class="min-w-0 text-right">
+            {page.url.next && (
+              <a
+                class="site-link inline-flex min-h-11 items-center [font-family:inherit]"
+                href={page.url.next}
+                rel="next"
+              >
+                {t.blog.pagination.next}
+              </a>
+            )}
+          </div>
+        </nav>
+      )}
+    </div>
+  </div>
+</section>

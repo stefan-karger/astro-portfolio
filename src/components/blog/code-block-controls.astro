@@ -1,0 +1,85 @@
+---
+import type { Locale } from "@/i18n/locales"
+import { getTranslations } from "@/i18n/translations"
+
+interface Props {
+  locale: Locale
+}
+const { locale } = Astro.props
+const t = getTranslations(locale)
+---
+
+<div
+  id="code-controls"
+  lang={locale}
+  data-locale={locale}
+  data-copy={t.blog.copy}
+  data-copied={t.blog.copied}
+  data-error={t.blog.copyError}
+>
+  <span id="code-copy-label" class="sr-only">
+    {t.blog.copy}
+  </span>
+  <span id="code-type-info-label" class="sr-only">
+    {t.blog.typeInfo}
+  </span>
+  <p id="code-copy-status" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+</div>
+
+<script>
+  import { initTypePopovers } from "./type-popovers"
+
+  const controls = document.querySelector<HTMLElement>("#code-controls")
+  const status = document.querySelector<HTMLElement>("#code-copy-status")
+  const timers = new WeakMap<HTMLButtonElement, number>()
+  const copying = new WeakSet<HTMLButtonElement>()
+
+  if (controls && status && navigator.clipboard?.writeText) {
+    // This component always emits these labels from its required translations.
+    const copyLabel = controls.dataset.copy!
+    const copiedLabel = controls.dataset.copied!
+    const errorLabel = controls.dataset.error!
+
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-code]").forEach((button) => {
+      button.hidden = false
+      button.lang = controls.lang
+      button.title = copyLabel
+    })
+
+    document.addEventListener("click", async (event) => {
+      if (!(event.target instanceof Element)) return
+      const button = event.target.closest<HTMLButtonElement>("[data-copy-code]")
+      if (!button || copying.has(button)) return
+      const source = button.dataset.copyCode
+      if (source === undefined) return
+
+      window.clearTimeout(timers.get(button))
+      copying.add(button)
+      button.setAttribute("aria-busy", "true")
+      status.textContent = ""
+      let message: string
+      try {
+        await navigator.clipboard.writeText(source)
+        button.dataset.state = "copied"
+        message = copiedLabel
+      } catch {
+        button.dataset.state = "error"
+        message = errorLabel
+      } finally {
+        copying.delete(button)
+        button.removeAttribute("aria-busy")
+      }
+      button.title = message
+      status.textContent = message
+      timers.set(
+        button,
+        window.setTimeout(() => {
+          button.dataset.state = "idle"
+          button.title = copyLabel
+        }, 2_000)
+      )
+    })
+  }
+
+  initTypePopovers()
+</script>

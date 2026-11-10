@@ -1,7 +1,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n"
 
 import { routes, type RouteId } from "@/i18n/routes"
-import type { Locale } from "@/i18n/types"
+import type { Locale } from "@/i18n/locales"
 
 function trimSlashes(path: string) {
   return path.replace(/^\/+|\/+$/g, "")

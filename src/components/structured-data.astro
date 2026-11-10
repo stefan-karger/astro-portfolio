@@ -1,0 +1,14 @@
+---
+import type { Graph } from "@/lib/structured-data"
+
+interface Props {
+  data: Graph
+}
+
+const { data } = Astro.props
+---
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(data).replace(/</g, "\\u003c")}
+></script>

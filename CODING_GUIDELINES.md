@@ -3,9 +3,9 @@
 These guidelines define the preferred approach to designing and writing code in
 this repository.
 
-The goal is not to minimize lines of code. The goal is to minimize unnecessary
-complexity, concepts, indirection, and maintenance cost while keeping the code
-easy to understand and change.
+The goal is not to minimize lines of code, file count, or initial implementation
+effort. The goal is to minimize unnecessary complexity and maintenance cost while
+keeping the code easy to understand and change.
 
 ## KISS — Keep It Simple
 
@@ -28,6 +28,18 @@ modules merely to make individual functions shorter.
 Extract code when the resulting boundary has meaningful semantic value, hides
 real complexity, represents a reusable concept, or materially improves
 maintainability.
+
+### Separate assets from application logic
+
+Prefer dedicated asset files for substantial SVG geometry and other opaque
+asset data. Keep asset selection and usage logic close to its consumers.
+
+A single consumer is sufficient when separation improves readability,
+editing, previewing, or review. A small private loader or adapter is an
+acceptable cost for those benefits.
+
+Keep short, readable literals inline when extraction offers little benefit.
+Use the simplest loading approach that supports the existing build and tests.
 
 ### Make abstractions earn their existence
 
@@ -74,6 +86,21 @@ pattern, check whether the language, framework, standard library, or existing
 codebase already provides a suitable solution.
 
 Prefer established project patterns when multiple approaches are equally valid.
+
+### Style controlled markup with Tailwind
+
+Use Tailwind utility classes on markup the project controls, including Astro
+image components, responsive layouts, pseudo-elements, and interactive states.
+Existing shared link styles may compose utilities with `@apply`.
+
+Reuse `site-link` for navigation and legal links, preserving the surrounding font
+in prose. Use [ExternalLinkIcon](src/components/external-link-icon.astro) for
+outbound markers in prose and portfolio links; footer links use plain text labels.
+The shared component controls icon alignment and inherits the link's underline.
+
+Keep custom CSS for generated Markdown, diagrams, syntax highlighting, or library
+elements where classes cannot be applied directly. Keep dynamically calculated
+positions and dimensions in the code that calculates them.
 
 ### Treat dependencies as complexity
 
@@ -139,7 +166,13 @@ implementing guessed future requirements.
 ## Decision rule
 
 When multiple implementations satisfy the current requirements equally well,
-prefer the one with:
+first compare how easy each result is to find, understand, edit, and verify.
+
+Accept a small initial implementation cost when it improves ongoing development
+and maintenance. Also account for recurring costs, such as dependency maintenance,
+slower builds, or loss of automatic reloads.
+
+When those benefits and costs are comparable, prefer the one with:
 
 - fewer concepts,
 - fewer layers and indirections,
