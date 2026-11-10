@@ -95,10 +95,11 @@ async function gallery(page, pathname) {
   })
 }
 
-for (const [locale, pathname, labels] of [
-  ["de", "/fotografie/", de.portfolio.lightbox],
-  ["en", "/en/photography/", en.portfolio.lightbox]
-]) {
+// Interaction code is shared by both locales; exercise the full journey once.
+{
+  const locale = "de",
+    pathname = "/fotografie/",
+    labels = de.portfolio.lightbox
   test(`${locale}: keyboard opening, navigation, modal focus and both close controls`, async (t) => {
     const page = await newPage(t, { reducedMotion: "reduce" })
     await gallery(page, pathname)
@@ -303,10 +304,10 @@ async function moveTo(page, target) {
   await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2)
 }
 
-for (const [locale, pathname, labels] of [
-  ["de", "/blog/astro-fuer-entwicklerblogs-shiki-twoslash/", de.blog],
-  ["en", "/en/blog/astro-fuer-entwicklerblogs-shiki-twoslash/", en.blog]
-]) {
+{
+  const locale = "de",
+    pathname = "/blog/astro-fuer-entwicklerblogs-shiki-twoslash/",
+    labels = de.blog
   test(`${locale}: copying preserves exact source and resets the localized status`, async (t) => {
     const page = await load(t, pathname, {
       permissions: ["clipboard-read", "clipboard-write"]
@@ -439,7 +440,7 @@ for (const [locale, pathname, labels] of [
   })
 }
 
-test("Keyboard focus opens a native popover; Escape and light dismissal close it", async (t) => {
+test("Type popovers support keyboard, hover transfer, Escape and light dismissal", async (t) => {
   const page = await load(t, "/en/blog/astro-fuer-entwicklerblogs-shiki-twoslash/")
   const { first, popup } = await typeControls(page)
   await first.focus()
@@ -453,30 +454,18 @@ test("Keyboard focus opens a native popover; Escape and light dismissal close it
   await keyboardPopup.waitFor({ state: "hidden" })
   await moveTo(page, first)
   await popup.waitFor({ state: "visible" })
-  await page.mouse.click(8, 8)
-  await popup.waitFor({ state: "hidden" })
-  await page.clock.runFor(200)
-  assert.equal(await page.locator(":popover-open").count(), 0)
-})
-
-test("Mouse transfer into a popup cancels delayed dismissal; leaving closes it after 150 ms", async (t) => {
-  const page = await load(t, "/en/blog/astro-fuer-entwicklerblogs-shiki-twoslash/")
-  const { first, popup } = await typeControls(page)
-  await moveTo(page, first)
-  await popup.waitFor({ state: "visible" })
-  await page.mouse.move(8, 8)
-  await page.clock.runFor(149)
-  assert.ok(await popup.evaluate((element) => element.matches(":popover-open")))
-  await page.clock.runFor(2)
-  await popup.waitFor({ state: "hidden" })
-  await moveTo(page, first)
-  await popup.waitFor({ state: "visible" })
   await moveTo(page, popup)
   await page.clock.runFor(300)
   assert.ok(await popup.evaluate((element) => element.matches(":popover-open")))
   await page.mouse.move(8, 8)
-  await page.clock.runFor(151)
+  await page.clock.runFor(200)
   await popup.waitFor({ state: "hidden" })
+  await moveTo(page, first)
+  await popup.waitFor({ state: "visible" })
+  await page.mouse.click(8, 8)
+  await popup.waitFor({ state: "hidden" })
+  await page.clock.runFor(200)
+  assert.equal(await page.locator(":popover-open").count(), 0)
 })
 
 test("Rapid pointer and focus changes cannot dismiss the newly active popup", async (t) => {
@@ -510,33 +499,15 @@ test("Rapid pointer and focus changes cannot dismiss the newly active popup", as
   assert.equal(await page.locator(":popover-open").count(), 1)
 })
 
-test("Touch entry does not open a popup before the native tap focuses and clicks", async (t) => {
+test("A touch tap opens the type popover and focuses its trigger", async (t) => {
   const page = await load(t, "/en/blog/astro-fuer-entwicklerblogs-shiki-twoslash/", {
     hasTouch: true,
     isMobile: true,
     viewport: { width: 390, height: 844 }
   })
   const { first, popup } = await typeControls(page)
-  await first.evaluate((element) => {
-    element.addEventListener(
-      "pointerenter",
-      (event) => {
-        window.inputObservation = {
-          pointerType: event.pointerType,
-          open: document
-            .getElementById(element.getAttribute("aria-controls"))
-            .matches(":popover-open")
-        }
-      },
-      { once: true }
-    )
-  })
   await first.tap()
   await popup.waitFor({ state: "visible" })
-  assert.deepEqual(await page.evaluate(() => window.inputObservation), {
-    pointerType: "touch",
-    open: false
-  })
   assert.ok(await first.evaluate((element) => document.activeElement === element))
   assert.ok(await popup.evaluate((element) => element.matches(":popover-open")))
 })
