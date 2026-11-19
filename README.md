@@ -30,5 +30,10 @@ der Produktionsbuild lokal ansehen.
   Das [Schema](src/content.config.ts) definiert die Metadaten.
 - [Bildpipeline und Galerie](docs/image-pipeline.md) beschreibt die Arbeit mit Fotos.
 
-[Hinweise zu Assets von Dritten](public/third-party-notices.txt) ·
 [n8n-Konfiguration](docs/n8n.md)
+
+## Lizenz
+
+Der eigene Quellcode steht unter der [MIT-Lizenz](LICENSE). Für Fotos, Texte
+und Logos von Stefan Karger bleiben alle Rechte vorbehalten. Für Material
+Dritter gelten die [jeweiligen Lizenzhinweise](public/third-party-notices.txt).
