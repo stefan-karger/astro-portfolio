@@ -22,6 +22,8 @@ und `pnpm exec astro dev stop` verwalten.
 die Tests aus. Mit `pnpm build` und anschließend `pnpm preview` lässt sich
 der Produktionsbuild lokal ansehen.
 
+Der [Testsuite-Audit](docs/test-suite-audit.md) dokumentiert Testauswahl und Laufzeiten.
+
 ## Inhalte bearbeiten
 
 - [`src/data/`](src/data/) enthält Portfolio, Projekte und Berufsstationen.
