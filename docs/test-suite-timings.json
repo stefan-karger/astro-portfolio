@@ -1,0 +1,742 @@
+{
+  "environment": {
+    "date": "2026-11-10",
+    "node": "24.13.0",
+    "pnpm": "12.10.0",
+    "platform": "Windows",
+    "caches": "warm"
+  },
+  "measurements": [
+    {
+      "phase": "before",
+      "command": "validate",
+      "seconds": 50.0249423,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "command": "test:unit",
+      "seconds": 0.5021812,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "command": "test:markdown",
+      "seconds": 6.7090922,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "command": "test:output",
+      "seconds": 2.7422397,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "command": "test:browser",
+      "seconds": 10.2671152,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "command": "test:integration",
+      "seconds": 33.8966355,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "format:check",
+      "seconds": 3.4286964,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "lint",
+      "seconds": 3.4744291,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "test:unit",
+      "seconds": 0.4798312,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "check",
+      "seconds": 11.8557128,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "test:markdown",
+      "seconds": 6.671626,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "build",
+      "seconds": 10.1356455,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "test:output",
+      "seconds": 2.6914507,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 1,
+      "command": "test:browser",
+      "seconds": 10.439621,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "format:check",
+      "seconds": 3.1472087,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "lint",
+      "seconds": 3.3045212,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "test:unit",
+      "seconds": 0.4737379,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "check",
+      "seconds": 11.8710162,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "test:markdown",
+      "seconds": 6.8088262,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "build",
+      "seconds": 9.6475762,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "test:output",
+      "seconds": 2.7400443,
+      "exitCode": 0
+    },
+    {
+      "phase": "before",
+      "round": 2,
+      "command": "test:browser",
+      "seconds": 10.4243194,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "command": "test:integration",
+      "seconds": 30.6269741,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "format:check",
+      "seconds": 3.0706465,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "lint",
+      "seconds": 3.2460905,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "test:unit",
+      "seconds": 0.4605297,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "check",
+      "seconds": 11.5319102,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "test:markdown",
+      "seconds": 5.3478029,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "build",
+      "seconds": 9.4339142,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "test:output",
+      "seconds": 2.5713614,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 3,
+      "command": "test:browser",
+      "seconds": 8.9540446,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "format:check",
+      "seconds": 3.1488613,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "lint",
+      "seconds": 3.2741236,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "test:unit",
+      "seconds": 0.4738853,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "check",
+      "seconds": 11.6703394,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "test:markdown",
+      "seconds": 5.3691459,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "build",
+      "seconds": 9.456752,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "test:output",
+      "seconds": 2.6513529,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 4,
+      "command": "test:browser",
+      "seconds": 9.0016096,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "format:check",
+      "seconds": 3.1092915,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "lint",
+      "seconds": 3.2612031,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "test:unit",
+      "seconds": 0.463745,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "check",
+      "seconds": 11.5798624,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "test:markdown",
+      "seconds": 5.3167674,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "build",
+      "seconds": 9.6337544,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "test:output",
+      "seconds": 2.7888894,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 5,
+      "command": "test:browser",
+      "seconds": 8.9346397,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "command": "tests/blog-schema.test.mjs",
+      "seconds": 0.3204301,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "command": "tests/blog-filters.test.mjs",
+      "seconds": 0.1707745,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "command": "tests/code-block.test.mjs",
+      "seconds": 2.8336903,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "command": "tests/mermaid-render.test.mjs",
+      "seconds": 5.0976137,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "command": "tests/seo-build.test.mjs",
+      "seconds": 2.3997068,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "command": "tests/browser.test.mjs",
+      "seconds": 8.8598195,
+      "exitCode": 0
+    }
+  ],
+  "excludedMeasurements": [
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "format:check",
+      "seconds": 3.1707964,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "lint",
+      "seconds": 3.5075691,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "test:unit",
+      "seconds": 0.4881283,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "check",
+      "seconds": 11.6195877,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "test:markdown",
+      "seconds": 5.5031891,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "build",
+      "seconds": 9.5162287,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "test:output",
+      "seconds": 2.6029476,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 1,
+      "command": "test:browser",
+      "seconds": 9.3457763,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "format:check",
+      "seconds": 3.6815639,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "lint",
+      "seconds": 4.8199016,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "test:unit",
+      "seconds": 0.5366058,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "check",
+      "seconds": 13.1934982,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "test:markdown",
+      "seconds": 5.5267215,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "build",
+      "seconds": 9.6151339,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "test:output",
+      "seconds": 2.6038578,
+      "exitCode": 0
+    },
+    {
+      "phase": "after",
+      "round": 2,
+      "command": "test:browser",
+      "seconds": 8.923629,
+      "exitCode": 0
+    }
+  ],
+  "exclusionReason": "After rounds 1 and 2 overlapped the integration fixture build; integration after is functional verification only.",
+  "individualBefore": [
+    {
+      "name": "de: keyboard opening, navigation, modal focus and both close controls",
+      "ms": [1053.1878, 1013.653, 925.9318, 1058.5249]
+    },
+    {
+      "name": "en: keyboard opening, navigation, modal focus and both close controls",
+      "ms": [558.0689, 544.8768, 497.361, 546.2668]
+    },
+    {
+      "name": "de: Back, Forward and Forward during the closing animation preserve the selected image",
+      "ms": [2232.6966, 2205.5592, 2249.7943, 2166.3465]
+    },
+    {
+      "name": "A failed PhotoSwipe stylesheet follows the original image link",
+      "ms": [237.9597, 228.809, 267.1454, 236.0353]
+    },
+    {
+      "name": "Without JavaScript the gallery links still open their images",
+      "ms": [184.6801, 201.5819, 183.9866, 198.1843]
+    },
+    {
+      "name": "de: copying preserves exact source and resets the localized status",
+      "ms": [295.8276, 311.6812, 298.8922, 314.7601]
+    },
+    {
+      "name": "en: copying preserves exact source and resets the localized status",
+      "ms": [299.6151, 300.6994, 299.2416, 315.8477]
+    },
+    {
+      "name": "en: clipboard rejection reports the error and permits another attempt",
+      "ms": [334.3516, 350.8179, 352.1697, 332.4622]
+    },
+    {
+      "name": "en: repeated clicks share one pending copy and replace the previous reset timer",
+      "ms": [387.4259, 404.9582, 425.2987, 404.872]
+    },
+    {
+      "name": "en: an unavailable Clipboard API keeps copy controls hidden and type controls working",
+      "ms": [317.3463, 300.5849, 312.0178, 318.0541]
+    },
+    {
+      "name": "Keyboard focus opens a native popover; Escape and light dismissal close it",
+      "ms": [322.1745, 303.0873, 336.2992, 320.0032]
+    },
+    {
+      "name": "Mouse transfer into a popup cancels delayed dismissal; leaving closes it after 150 ms",
+      "ms": [350.2554, 350.4303, 383.9705, 351.7388]
+    },
+    {
+      "name": "Rapid pointer and focus changes cannot dismiss the newly active popup",
+      "ms": [424.5597, 390.9156, 424.8787, 440.2561]
+    },
+    {
+      "name": "Touch entry does not open a popup before the native tap focuses and clicks",
+      "ms": [324.6901, 308.6606, 309.4624, 327.1151]
+    },
+    {
+      "name": "Copy preserves whitespace, empty lines, quotes, markup and backslashes",
+      "ms": [89.5111, 89.9788, 84.1861, 88.9209]
+    },
+    {
+      "name": "Titles are text nodes and only accept the documented metadata token",
+      "ms": [2.815, 2.4765, 2.4719, 2.6432]
+    },
+    {
+      "name": "Diff copies additions and unchanged lines, excludes removals and preserves empty lines",
+      "ms": [13.8045, 14.5704, 13.2532, 14.6355]
+    },
+    {
+      "name": "Highlight strips active comments without dropping code",
+      "ms": [0.9501, 1.0828, 0.9563, 0.9796]
+    },
+    {
+      "name": "Escaped notation stays literal in displayed and copied code",
+      "ms": [0.6413, 0.6828, 0.635, 0.7363]
+    },
+    {
+      "name": "Twoslash excludes queries, type output and hidden setup from Copy",
+      "ms": [542.696, 626.1392, 576.1402, 569.3114]
+    },
+    {
+      "name": "Twoslash runs only on explicit fences and fails for unexpected errors",
+      "ms": [16.5642, 27.1301, 28.7245, 15.8535]
+    },
+    {
+      "name": "Hover popups escape the scroll container, have unique targets and retain JSDoc",
+      "ms": [62.5326, 50.0222, 54.0049, 65.0707]
+    },
+    {
+      "name": "showLineNumbers numbers visible code, preserves Copy and composes with Diff and Twoslash",
+      "ms": [15.7783, 14.9238, 16.4604, 15.6118]
+    },
+    {
+      "name": "Mermaid preserves its original definition and keeps a visible source fallback",
+      "ms": [10.536, 10.7098, 10.7202, 10.2784]
+    },
+    {
+      "name": "The Markdown pipeline renders all four diagram types with accessible, unique SVGs",
+      "ms": [1270.288, 1370.2606, 1314.5319, 1335.6743]
+    },
+    {
+      "name": "An invalid diagram rejects rendering with the source file and diagram number",
+      "ms": [973.4483, 984.5184, 979.7357, 971.5823]
+    },
+    {
+      "name": "Diagrams without an explicit title receive the localized region name",
+      "ms": [1893.4322, 1910.3857, 1908.5762, 1903.3972]
+    },
+    {
+      "name": "All content pages have complete, consistent metadata and the correct indexing policy",
+      "ms": [2.1769, 2.238, 2.2612, 2.1984]
+    },
+    {
+      "name": "Canonicals and language alternatives are absolute, reciprocal and point to built pages",
+      "ms": [80.7843, 80.9695, 78.0017, 81.4862]
+    },
+    {
+      "name": "Both homepages identify the same person and link their structured data",
+      "ms": [2.075, 2.1405, 2.3589, 2.0323]
+    },
+    {
+      "name": "Profiles and published articles share the optimized hero portrait without source metadata",
+      "ms": [51.4487, 50.5368, 49.3806, 50.2017]
+    },
+    {
+      "name": "llms.txt lists published canonical content and resolvable pages and project anchors",
+      "ms": [13.1353, 13.8877, 12.0391, 13.3723]
+    },
+    {
+      "name": "The sitemap lists each indexable canonical once and robots.txt advertises it",
+      "ms": [6.7948, 7.6759, 9.8818, 7.1479]
+    },
+    {
+      "name": "RSS and Markdown publish each canonical article once and are discovered only in the head",
+      "ms": [13.0929, 13.3739, 12.97, 12.3446]
+    },
+    {
+      "name": "Blog pagination preserves ordering, filter counts and localized navigation",
+      "ms": [31.9218, 30.3045, 30.4784, 30.3186]
+    },
+    {
+      "name": "Published articles preserve their content language and canonical across both interfaces",
+      "ms": [2.1815, 2.2949, 2.2167, 2.147]
+    },
+    {
+      "name": "One German 404 artifact has usable return links and no content-page SEO tags",
+      "ms": [1.3628, 1.7225, 1.5881, 1.3597]
+    },
+    {
+      "name": "Both built article surfaces contain complete SVGs and omit Mermaid client bundles",
+      "ms": [23.6916, 15.6951, 15.584, 15.5156]
+    },
+    {
+      "name": "Only populated months, languages and tags appear, counting each post once",
+      "ms": [4.554, 3.8139, 3.1724, 3.1137]
+    },
+    {
+      "name": "Each filter independently matches its month, content language or case-insensitive tag",
+      "ms": [0.727, 0.4592, 0.4635, 0.4499]
+    },
+    {
+      "name": "Tag URLs use readable symbol replacements and preserve non-Latin letters",
+      "ms": [2.6048, 1.8092, 1.2175, 1.8068]
+    },
+    {
+      "name": "Adding case variants or other tags keeps existing tag URLs stable",
+      "ms": [0.286, 0.285, 0.9765, 0.2846]
+    },
+    {
+      "name": "Unresolved slug collisions name both tags instead of adding hashes or merging them",
+      "ms": [0.4714, 0.4593, 0.4608, 0.4889]
+    },
+    {
+      "name": "Tags with no letters, numbers or supported symbols require a readable name",
+      "ms": [0.1905, 0.1806, 0.186, 0.176]
+    },
+    {
+      "name": "pubDate accepts a leap day and returns UTC midnight",
+      "ms": [4.278, 4.5471, 4.2552, 4.4871]
+    },
+    {
+      "name": "updatedDate accepts a leap day and returns UTC midnight",
+      "ms": [0.29, 0.3098, 0.3958, 0.3278]
+    },
+    {
+      "name": "Dates reject a leap day in a non-leap century with a field-specific authoring error",
+      "ms": [1.6141, 1.7036, 1.6844, 1.5652]
+    },
+    {
+      "name": "Dates reject an unpadded date with a field-specific authoring error",
+      "ms": [0.3177, 0.3247, 0.324, 0.3178]
+    },
+    {
+      "name": "Dates reject a timestamp with a field-specific authoring error",
+      "ms": [0.2907, 0.286, 0.3, 0.2839]
+    },
+    {
+      "name": "Dates reject null with a field-specific authoring error",
+      "ms": [0.3263, 0.3254, 0.328, 0.3222]
+    },
+    {
+      "name": "Dates reject a parsed YAML Date object with a field-specific authoring error",
+      "ms": [0.2236, 0.2088, 0.218, 0.2127]
+    },
+    {
+      "name": "Publication is required, while an omitted update stays absent",
+      "ms": [0.2226, 0.2147, 0.2069, 0.201]
+    },
+    {
+      "name": "Updates may match or follow publication, and earlier updates name updatedDate",
+      "ms": [0.3042, 0.281, 0.293, 0.2896]
+    },
+    {
+      "name": "The production schema preserves defaults, trimmed text, and normalized tag order",
+      "ms": [0.4376, 0.4482, 0.4419, 0.4252]
+    },
+    {
+      "name": "Empty tag arrays and blank names normalize to empty; a comma stays within one tag",
+      "ms": [0.2327, 0.2451, 0.2324, 0.2279]
+    },
+    {
+      "name": "Tags reject a comma-separated string with a field-specific error",
+      "ms": [0.3531, 0.3532, 0.3482, 0.3537]
+    },
+    {
+      "name": "Tags reject an array containing a number with a field-specific error",
+      "ms": [0.1968, 0.1863, 0.1903, 0.1899]
+    },
+    {
+      "name": "One build covers 1, 12, 13 and 25 posts across archives and filters",
+      "ms": [31118.5811]
+    },
+    {
+      "name": "RSS preserves escaped metadata, normalized tags, ordering and optional update dates",
+      "ms": [0.559]
+    },
+    {
+      "name": "Markdown preserves source bodies, nested IDs and optional frontmatter",
+      "ms": [27.4063]
+    },
+    {
+      "name": "Both interfaces retain the article language, identity, escaped text and updated date",
+      "ms": [5.6637]
+    },
+    {
+      "name": "Drafts are absent from HTML, Markdown, RSS, sitemap and llms.txt",
+      "ms": [3.3387]
+    },
+    {
+      "name": "Sitemap lists one canonical per article and uses the latest author supplied date",
+      "ms": [3.0417]
+    },
+    {
+      "name": "Series parts are ordered and their links follow the current interface language",
+      "ms": [5.7682]
+    }
+  ]
+}

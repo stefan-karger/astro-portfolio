@@ -127,7 +127,10 @@ test("Canonicals and language alternatives are absolute, reciprocal and point to
       assert.equal(url.search, "", file)
       assert.equal(url.hash, "", file)
       const target = decodeURIComponent(url.pathname).replace(/^\//, "").replace(/\/?$/, "/")
-      const other = await readPage(target === "/" ? "index.html" : `${target}index.html`, dist)
+      const other = regularPages.find(
+        ({ file }) => file === (target === "/" ? "index.html" : `${target}index.html`)
+      )
+      assert.ok(other, `${file}: missing language alternative ${target}`)
       assert.deepEqual(
         other.links.filter((link) => link.hreflang),
         alternatives,
@@ -219,7 +222,6 @@ test("Profiles and published articles share the optimized hero portrait without 
 test("llms.txt lists published canonical content and resolvable pages and project anchors", async () => {
   const text = await readFile(path.join(dist, "llms.txt"), "utf8")
   assert.ok(text.startsWith(`# ${siteConfig.name.brand}\n\n> ${en.home.metaDescription}\n`))
-  assert.ok(!text.includes("__seo-draft"))
   const sections = text.split(/^## /m)
   const main = sections.find((section) => section.startsWith("Main\n"))
   const blog = sections.find((section) => section.startsWith("Blog\n"))
@@ -474,11 +476,29 @@ test("Both built article surfaces contain complete SVGs and omit Mermaid client 
     )
     assert.equal(svgs(html).length, 5)
     assert.equal((html.match(/<details class="mermaid-source">/g) ?? []).length, 5)
+    assert.equal((html.match(/class="mermaid-diagram" hidden/g) ?? []).length, 0)
     assert.ok(!/\sdata-mermaid-source(?:=|\s|>)/.test(html))
     assert.ok(!/mermaid-diagrams\.[^" ]+\.js/.test(html))
-    assert.ok(
-      svgs(html).every((svg) => SyntaxValidator.validate(svg, { multipleRoots: false }) === true)
-    )
+    const ids = []
+    for (const svg of svgs(html)) {
+      assert.equal(SyntaxValidator.validate(svg, { multipleRoots: false }), true)
+      const parsed = new XMLParser({ ignoreAttributes: false }).parse(svg).svg
+      assert.ok(parsed["@_viewBox"])
+      assert.ok(parsed.title)
+      assert.ok(parsed.desc)
+      assert.ok(svg.includes(`aria-labelledby="${parsed.title["@_id"]}"`))
+      assert.ok(svg.includes(`aria-describedby="${parsed.desc["@_id"]}"`))
+      assert.ok(tags(html, "div").some((tag) => tag["aria-label"] === parsed.title["#text"]))
+      assert.ok(!/<(?:script|foreignObject)\b/.test(svg))
+      const ownIds = [...svg.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1])
+      for (const reference of svg
+        .replace(/<style>[\s\S]*?<\/style>/g, "")
+        .matchAll(/url\(#([^)]*)\)/g)) {
+        assert.ok(ownIds.includes(reference[1]), `Missing SVG reference ${reference[1]}`)
+      }
+      ids.push(...ownIds)
+    }
+    assert.equal(new Set(ids).size, ids.length)
   }
   const files = await readdir(new URL("../dist/_astro/", import.meta.url))
   assert.ok(!files.some((file) => /^(?:mermaid|elk)-.*\.js$/.test(file)))

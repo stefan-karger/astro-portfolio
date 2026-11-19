@@ -41,6 +41,9 @@ Die Output- und Browsertests verwenden denselben Build. Bei Bedarf prüft
 `pnpm test:integration` zusätzliche Inhaltsszenarien mit einem einzigen Fixture-Build.
 Netlify installiert Chromium und veröffentlicht `dist/` gemäß `netlify.toml`.
 
+Laufzeiten, Einzeltest-Ausreißer und die begründete Testauswahl sind im
+[Testsuite-Audit](docs/test-suite-audit.md) dokumentiert.
+
 ## Inhalte und Aufbau
 
 | Verzeichnis                                     | Inhalt                                          |
