@@ -72,7 +72,7 @@ export const en = {
         variants: "Product variants",
         stock: "Individual units in stock",
         orders: (since: number) => `Cardmarket orders since ${since}`,
-        priceChecksPerDay: "Price evaluation per day"
+        priceChecksPerDay: "Price evaluations per day"
       }
     }
   },
