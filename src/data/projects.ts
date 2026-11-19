@@ -7,11 +7,11 @@ export const projects = {
   },
   stockSync: {
     id: "project-stock-sync",
-    metricsDate: "2026-10-06",
+    metricsDate: "2026-11-13",
     metrics: [
       { id: "variants", value: 200_000, comparison: "≈" },
-      { id: "stock", value: 4_000_000, comparison: "≈" },
-      { id: "orders", value: 40_000, comparison: "≈", since: 2024 },
+      { id: "stock", value: 4_000_000, comparison: ">" },
+      { id: "orders", value: 40_000, comparison: ">", since: 2024 },
       { id: "priceChecksPerDay", value: 100_000, comparison: ">" }
     ]
   }

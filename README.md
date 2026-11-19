@@ -1,23 +1,10 @@
 # stefan-karger.de
 
-Persönliche Website von Stefan Karger: berufliches Portfolio, Fotogalerie und
-Entwicklerblog mit deutscher und englischer Oberfläche.
-Die Seiten entstehen statisch mit Astro und werden auf Netlify veröffentlicht.
+Persönliches Portfolio von Stefan Karger mit Fotogalerie und Entwicklerblog.
+Die Website ist auf Deutsch und Englisch verfügbar, wird statisch mit Astro
+und Tailwind CSS gebaut und über Netlify veröffentlicht.
 
-## Was die Website bietet
-
-- Portfolio mit Projekten, Berufsstationen und Kontaktmöglichkeiten.
-- Fotogalerie mit optimierten Bildern, Masonry-Layout und PhotoSwipe-Lightbox.
-- Markdown-Blog mit Serien, RSS und Filtern nach Monat, Sprache und Tags.
-- Codebeispiele mit Shiki, Twoslash-Typinformationen und Kopierfunktion;
-  Mermaid-Diagramme werden beim Build als SVG erzeugt.
-- Metadaten, strukturierte Daten, Sitemap, Markdown-Exporte und `llms.txt`.
-
-Astro, HTML und CSS übernehmen den Großteil der Arbeit. JavaScript ergänzt
-die Galerie und die Blog-Steuerungen. Es gibt kein Backend und kein CMS.
-Tailwind CSS gestaltet die Oberfläche; die Schriften werden lokal ausgeliefert.
-
-## Lokal starten
+## Lokal entwickeln
 
 Voraussetzungen: Node.js `^22.13.0 || >=24.0.0` und pnpm `12.10.0`.
 
@@ -27,55 +14,28 @@ pnpm setup:diagrams
 pnpm exec astro dev --background
 ```
 
-`setup:diagrams` installiert einmalig Chromium für den Mermaid-Buildrenderer
-und die Browsertests. Den Entwicklungsserver mit `pnpm exec astro dev status`,
-`pnpm exec astro dev logs` und `pnpm exec astro dev stop` verwalten.
+`pnpm setup:diagrams` installiert Chromium für Mermaid und die Browsertests.
+Den Entwicklungsserver mit `pnpm exec astro dev status`, `pnpm exec astro dev logs`
+und `pnpm exec astro dev stop` verwalten.
 
-| Befehl          | Zweck                                                                 |
-| --------------- | --------------------------------------------------------------------- |
-| `pnpm build`    | Produktionsseiten in `dist/` erzeugen                                 |
-| `pnpm preview`  | Den fertigen Build lokal ansehen                                      |
-| `pnpm validate` | Formatierung, Lint, Typen und Tests mit einem Produktionsbuild prüfen |
+`pnpm validate` prüft Formatierung, Lint und Typen, baut die Website und führt
+die Tests aus. Mit `pnpm build` und anschließend `pnpm preview` lässt sich
+der Produktionsbuild lokal ansehen.
 
-Die Output- und Browsertests verwenden denselben Build. Bei Bedarf prüft
-`pnpm test:integration` zusätzliche Inhaltsszenarien mit einem einzigen Fixture-Build.
-Netlify installiert Chromium und veröffentlicht `dist/` gemäß `netlify.toml`.
+Der [Testsuite-Audit](docs/test-suite-audit.md) dokumentiert Testauswahl und Laufzeiten.
 
-Laufzeiten, Einzeltest-Ausreißer und die begründete Testauswahl sind im
-[Testsuite-Audit](docs/test-suite-audit.md) dokumentiert.
+## Inhalte bearbeiten
 
-## Inhalte und Aufbau
+- [`src/data/`](src/data/) enthält Portfolio, Projekte und Berufsstationen.
+- [`src/i18n/`](src/i18n/) enthält die deutschen und englischen Oberflächentexte.
+- [`src/content/blog/`](src/content/blog/) enthält die Blogbeiträge als Markdown.
+  Das [Schema](src/content.config.ts) definiert die Metadaten.
+- [Bildpipeline und Galerie](docs/image-pipeline.md) beschreibt die Arbeit mit Fotos.
 
-| Verzeichnis                                     | Inhalt                                          |
-| ----------------------------------------------- | ----------------------------------------------- |
-| `src/data/`                                     | Identität, Projekte und Berufsstationen         |
-| `src/i18n/`                                     | Deutsche und englische Texte sowie Sprachrouten |
-| `src/content/blog/`                             | Blogbeiträge als Markdown                       |
-| `src/assets/`                                   | Quellbilder für die Bildoptimierung             |
-| `src/components/`, `src/layouts/`, `src/pages/` | Oberfläche und Seiten                           |
-| `src/lib/`                                      | Bloglogik, Metadaten und Markdown-Verarbeitung  |
+[n8n-Konfiguration](docs/n8n.md)
 
-Ein Blogbeitrag beginnt beispielsweise so:
+## Lizenz
 
-```yaml
----
-title: "Mein Beitrag"
-description: "Worum es geht."
-pubDate: "2026-10-02"
-language: de
-tags: [Astro, TypeScript]
----
-```
-
-Datumswerte stehen in Anführungszeichen, Tags in einer YAML-Liste.
-Optional sind `updatedDate`, `draft: true` und `series` mit `name` und `part`.
-Entwürfe erscheinen nicht im Produktionsbuild. Die Beitragssprache bestimmt
-den Canonical und Markdown-Export; beide Oberflächensprachen können ihn anzeigen.
-
-## Weitere Informationen
-
-- [Lizenzhinweise für übernommene Assets](public/third-party-notices.txt), veröffentlicht unter
-  `/third-party-notices.txt`.
-- [Bildpipeline und Galerie](docs/image-pipeline.md)
-- [Private n8n-Workflows und OAuth-Konfiguration](docs/n8n.md)
-- [Offene Punkte und Betreiberprüfungen](docs/offene-punkte.md)
+Der eigene Quellcode steht unter der [MIT-Lizenz](LICENSE). Für Fotos, Texte
+und Logos von Stefan Karger bleiben alle Rechte vorbehalten. Für Material
+Dritter gelten die [jeweiligen Lizenzhinweise](public/third-party-notices.txt).
