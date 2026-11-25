@@ -15,9 +15,7 @@ function fence(source) {
 }
 
 function svgs(html) {
-  return [...html.matchAll(/<svg\b[^>]*\bid="mermaid-[^"]+"[\s\S]*?<\/svg>/g)].map(
-    (match) => match[0]
-  )
+  return [...html.matchAll(/<svg\b[^>]*\bclass="pele\b[\s\S]*?<\/svg>/g)].map((match) => match[0])
 }
 
 test("An invalid diagram rejects rendering with the source file and diagram number", async () => {

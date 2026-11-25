@@ -135,6 +135,20 @@
     margin-inline: auto;
   }
 
+  /* Pele draws with these variables, so diagrams follow the site tokens. */
+  .mermaid-diagram > .pele {
+    --pele-font: var(--font-mono);
+    --pele-font-mono: var(--font-mono);
+    --pele-bg: var(--color-code);
+    --pele-fg: var(--color-ink);
+    --pele-muted: var(--color-muted);
+    --pele-line: var(--color-muted);
+    --pele-border: var(--color-muted);
+    --pele-surface: var(--color-paper);
+    --pele-surface-alt: var(--color-code);
+    --pele-accent: var(--color-ink);
+  }
+
   .mermaid-diagram :is(text, tspan)::selection {
     fill: var(--color-paper);
     -webkit-text-fill-color: var(--color-paper);

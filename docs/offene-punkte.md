@@ -58,7 +58,15 @@ aufklappbarem Quelltext direkt im HTML. Mermaid- und ELK-JavaScript werden nicht
 nachgeladen. Desktop und schmale Ansichten mit 320 und 375 Pixeln sind geprüft;
 die Diagramme verursachen keinen Seitenüberlauf. Die Auswahlfarbe ist hell.
 
+Am 25. November 2026 auf Pele 1.13.0 umgestellt. Der Build braucht kein Chromium
+mehr, `netlify.toml` baut nur noch mit `pnpm build`. Lokal geprüft: fünf gültige
+SVGs je Sprachfassung, zusammen rund 22 statt 128 kB, kein Seitenüberlauf bei
+320, 375 und 1280 Pixeln. Breite Diagramme scrollen innerhalb ihres Blocks.
+
 ### Noch offen
+
+- [ ] Die Umstellung auf Pele auf der Deploy-Preview prüfen: Netlify-Build ohne
+      Chromium, Diagramme in Desktop und schmalen Ansichten, Auswahlfarbe.
 
 - [ ] Nach Veröffentlichung die Produktionsdomain prüfen: HTML-Indexierbarkeit,
       Auslieferungs-Header, Canonicals sowie RSS, Markdown, llms.txt, robots.txt

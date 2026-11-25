@@ -2,9 +2,9 @@
 title: "Astro für Entwicklerblogs: Mermaid-Diagramme"
 description: "Teil 2 der Serie: Mermaid in Astro-Markdown integrieren, Diagramme mit den vorhandenen Schriften und Farben gestalten und die Funktionen direkt ausprobieren."
 pubDate: "2026-10-05"
-updatedDate: "2026-10-06"
+updatedDate: "2026-11-25"
 language: de
-tags: ["Astro", "Markdown", "Mermaid", "CSS"]
+tags: ["Astro", "Markdown", "Mermaid", "Pele", "CSS"]
 draft: false
 series:
   name: "Astro für Entwicklerblogs"
@@ -30,33 +30,34 @@ der Quelltext aufklappen und über den Button in der Kopfzeile kopieren.
 | [Astro und Content Collections](https://docs.astro.build/en/guides/content-collections/) | Laden die Markdown-Beiträge und erzeugen beim Build statische Seiten. |
 | Markdown                                                                                 | Enthält die Diagrammdefinition in einem `mermaid`-Fence.              |
 | [Shiki](https://shiki.style/)                                                            | Färbt den Mermaid-Quelltext bereits beim Build ein.                   |
-| [Mermaid 12.1.0](https://mermaid.js.org/config/usage.html)                               | Berechnet beim Build das Diagramm und erzeugt ein SVG.                |
+| [Pele 1.13.0](https://pele.run/)                                                         | Rendert die Mermaid-Syntax beim Build in Node zu einem SVG.           |
 | Tailwind CSS und CSS-Tokens                                                              | Gestalten Blockrahmen, Diagramm und Quelltext passend zur Website.    |
-| Sätteri und Playwright                                                                   | Ergänzen das fertige SVG in Astros Markdown-Verarbeitung.             |
+| Sätteri                                                                                  | Ergänzt das fertige SVG in Astros Markdown-Verarbeitung.              |
 
 Die Diagramme stehen bereits im ausgelieferten HTML. Der Browser muss keine
-Mermaid-Bibliothek laden oder Diagramme berechnen. Auch ohne JavaScript bleiben
+Diagrammbibliothek laden oder Diagramme berechnen. Auch ohne JavaScript bleiben
 die SVGs sichtbar und der Quelltext lässt sich mit einem nativen `details`-Element
 öffnen. Nur die Kopierfunktion benötigt JavaScript.
 
 Astro verwendet hier den [Sätteri-Markdown-Prozessor](https://docs.astro.build/en/guides/markdown-content/#markdown-processors).
 Ein HAST-Plugin ergänzt die SVGs nach dem bestehenden Shiki-Transformer.
-Playwright stellt dafür Chromium bereit. Der Browser läuft ausschließlich während
-der Inhaltsverarbeitung auf dem Entwicklungsrechner oder dem Buildserver.
+[Pele](https://github.com/obsidianmd/pele) ist ein eigenständiger Renderer für
+die Mermaid-Syntax aus dem Obsidian-Team. Er läuft direkt in Node. Beim Build ist
+deshalb kein Browser nötig.
 
-## Mermaid installieren und Dateien ergänzen
+## Pele installieren und Dateien ergänzen
 
 Die zusätzlichen Abhängigkeiten werden nur für die Entwicklung und den Build benötigt:
 
-```sh title="Mermaid installieren"
-pnpm add -D mermaid playwright @astrojs/markdown-satteri satteri
-pnpm exec playwright install --only-shell chromium
+```sh title="Pele installieren"
+pnpm add -D --save-exact pele @astrojs/markdown-satteri satteri
 ```
 
-Dieser Beitrag verwendet Mermaid 12.1.0. Das Lockfile hält die tatsächlich
-installierte Version fest. Auf einem Linux-Buildserver installiert
-`playwright install --with-deps --only-shell chromium` zusätzlich die benötigten
-Systembibliotheken. MDX und eine hydratisierte UI-Komponente sind nicht nötig.
+Dieser Beitrag verwendet Pele 1.13.0. Pele unterstützt die Syntax und alle
+eingebauten Diagrammtypen von Mermaid 12.1.0 und hat keine Laufzeitabhängigkeiten.
+Die Bibliothek ist jung und erscheint in kurzen Abständen. `--save-exact` hält
+die Version deshalb fest. Ein Update wird bewusst geprüft. MDX und eine
+hydratisierte UI-Komponente sind nicht nötig.
 
 Die Diagrammverarbeitung liegt bei den bestehenden Blogdateien:
 
@@ -77,6 +78,7 @@ src/
 ```
 
 Der Transformer erzeugt das HTML. `mermaid.ts` ergänzt die SVGs im Markdown-Prozessor.
+Der Dateiname beschreibt die Syntax, nicht den Renderer.
 Die Astro-Konfiguration bindet das Plugin ein. `global.css` enthält
 die gemeinsamen CSS-Tokens. `blog.css` gestaltet die erzeugten Elemente und wird
 nur im Bloglayout importiert. Die Kopierfunktion bleibt in `code-block-controls.astro`.
@@ -150,176 +152,97 @@ Die ursprüngliche Definition steht direkt auf dem Zwischenknoten als HAST-Eigen
 `dataMermaidSource`. Das Plugin liest sie unabhängig vom Copy-Button und entfernt sie
 mit `ctx.setProperty(block, "dataMermaidSource", null)` vor der HTML-Ausgabe.
 Der sichtbare Quelltext und `dataCopyCode` für Copy bleiben erhalten.
-Bei Artikeln ohne Diagramme startet es keinen Browser. Für alle Diagramme eines
-Artikels öffnet es gemeinsam eine Chromium-Instanz und schließt sie anschließend.
 
-Der Renderer lädt die vorhandenen CSS-Tokens und die lokal installierte
-JetBrains Mono. Erst nach `document.fonts.load()` und `document.fonts.ready`
-misst Mermaid die Beschriftungen aus. Dadurch entstehen Knotenbreiten und
-Zeilenumbrüche mit derselben Schrift wie auf der Website.
+Pele rendert synchron. Jeder Artikel erhält ein stabiles ID-Präfix aus seinem
+Dateipfad, die einzelnen Diagramme ergänzen ihre Position im Artikel. Pele setzt
+dieses Präfix über `idPrefix` vor alle IDs im SVG, auch vor Titel und
+Beschreibung. Mehrere Diagramme auf einer Seite kommen sich so nicht in die Quere:
 
-Jeder Artikel erhält ein stabiles ID-Präfix aus seinem Dateipfad. Die einzelnen
-Diagramme ergänzen ihre Position im Artikel. `deterministicIds` und
-`deterministicIDSeed` stabilisieren auch Mermaids interne IDs. Ein fester
-`handDrawnSeed` verhindert zufällige Unterschiede in den SVG-Pfaden von
-ER-Tabellen, die intern auch beim `classic`-Look Rough.js verwenden. Der Kern des
-Renderings läuft im Buildbrowser:
-
-```ts title="src/lib/markdown/mermaid.ts · Rendering im Buildbrowser"
-for (const [index, definition] of definitions.entries()) {
-  const { svg } = await mermaid.render(`${prefix}-${index + 1}`, definition)
-  // Das HAST-Plugin fügt dieses SVG in den zugehörigen Diagrammbereich ein.
-}
+```ts title="src/lib/markdown/mermaid.ts · Rendering beim Build"
+const id = `${prefix}-${index + 1}`
+const { svg } = render(source, { idPrefix: id, fontSize, measurer, responsive: false })
+// Das HAST-Plugin fügt dieses SVG in den zugehörigen Diagrammbereich ein.
 ```
 
-Anschließend ergänzt das Plugin den zugänglichen Namen des Scrollbereichs aus
-dem SVG-Titel, zeigt das Diagramm an und klappt den Quelltext ein. Eine fehlerhafte
-Definition stoppt den Build mit Dateipfad und Diagrammnummer. So wird eine kaputte
-Grafik vor der Veröffentlichung erkannt.
+Anschließend benennt das Plugin den Scrollbereich über `aria-labelledby` mit dem
+SVG-Titel, zeigt das Diagramm an und klappt den Quelltext ein. Diagramme ohne
+`accTitle` erhalten die übersetzte Bezeichnung „Diagramm“. Eine fehlerhafte
+Definition stoppt den Build mit Dateipfad, Diagrammnummer und der Zeile aus Peles
+Fehlermeldung. So wird eine kaputte Grafik vor der Veröffentlichung erkannt.
 
 Die Collection verwendet Astros
 [`deferRender: true`](https://docs.astro.build/en/reference/content-loader-reference/#deferrender).
 Dadurch läuft die Markdown-Verarbeitung beim Rendern der Seite durch Vite.
-Die Integration registriert CSS- und Schriftdateien mit `addWatchFile`, damit
-Änderungen einen Neustart der Konfiguration auslösen. So bleiben im Devserver
-keine SVGs aus einem älteren Stand der Gestaltung im Inhaltscache erhalten.
+Die Integration registriert `global.css` und das Plugin selbst mit `addWatchFile`.
+Ändert sich die Schriftgröße, löst das einen Neustart der Konfiguration aus. So
+bleiben im Devserver keine SVGs mit veralteten Maßen im Inhaltscache erhalten.
 Beim Produktionsbuild entsteht weiterhin vollständiges statisches HTML.
 
 Die Definition bleibt am Copy-Button erhalten. Das SVG ersetzt den Quelltext nicht.
 Auch nach dem Rendern lässt sich die Definition mit dem nativen `details`-Element
 öffnen, lesen und kopieren.
 
-## Mermaid wie die Website gestalten
+## Diagramme wie die Website gestalten
 
 ### Farben und Schriften übernehmen
 
-Mermaids Standardfarben passen nicht zur monochromen Gestaltung dieses Blogs.
-Die Integration verwendet das anpassbare `base`-Theme und den `classic`-Look.
-Diagrammtypen mit eigenen Defaults erhalten diese Angaben ebenfalls ausdrücklich.
-Die Details beschreibt die [Mermaid-Dokumentation zum Theming](https://mermaid.js.org/config/theming.html).
+Pele schreibt keine festen Farben ins SVG. Flächen, Linien und Texte verweisen
+auf CSS-Variablen wie `--pele-fg` oder `--pele-surface`. Mermaid-Themes und
+`themeVariables` braucht es deshalb nicht. Die
+[Pele-Dokumentation zum Theming](https://pele.run/theming) listet alle Variablen.
 
-Die Farbzuordnung folgt den bestehenden CSS-Tokens:
+`blog.css` ordnet sie den bestehenden CSS-Tokens zu:
 
-| CSS-Token       | Aufgabe im Diagramm                                        |
-| --------------- | ---------------------------------------------------------- |
-| `--color-paper` | Helle Knoten und Akteure                                   |
-| `--color-ink`   | Beschriftungen                                             |
-| `--color-muted` | Pfeile, Linien und Knotenränder                            |
-| `--color-rule`  | Dezente Gruppenränder                                      |
-| `--color-code`  | Hintergrundflächen, Notizen und alternative Tabellenzeilen |
-| `--font-mono`   | JetBrains Mono für Diagrammbeschriftungen                  |
-
-Mermaids Farbberechnung erwartet Hex-Werte. Die Farb-Tokens der Website verwenden
-deshalb dieses Format. Auch der Codeblock-Hintergrund steht als Hexwert im CSS:
-
-```css title="src/styles/global.css · Codeblock-Hintergrund"
-@theme static {
-  --color-code: #f8f8f8;
+```css title="src/styles/blog.css · Diagrammfarben"
+.mermaid-diagram > .pele {
+  --pele-font: var(--font-mono);
+  --pele-font-mono: var(--font-mono);
+  --pele-bg: var(--color-code);
+  --pele-fg: var(--color-ink);
+  --pele-muted: var(--color-muted);
+  --pele-line: var(--color-muted);
+  --pele-border: var(--color-muted);
+  --pele-surface: var(--color-paper);
+  --pele-surface-alt: var(--color-code);
+  --pele-accent: var(--color-ink);
 }
 ```
 
-`@theme static` erhält den Token auch dann im erzeugten CSS, wenn Tailwind ihn
-nicht in einer Utility-Klasse findet. Der Buildrenderer liest ihn beim Rendern, und
-`blog.css` verwendet ihn über eine `@reference` auf `global.css`.
+| CSS-Token       | Aufgabe im Diagramm                                       |
+| --------------- | --------------------------------------------------------- |
+| `--color-paper` | Helle Knoten, Akteure und Tabellen                        |
+| `--color-ink`   | Beschriftungen und Hervorhebungen                         |
+| `--color-muted` | Pfeile, Linien und Knotenränder                           |
+| `--color-code`  | Hintergrund, Gruppenflächen und Flächen hinter Kantentext |
+| `--font-mono`   | JetBrains Mono für Diagrammbeschriftungen                 |
 
-Der Renderer liest diese Werte direkt aus den CSS-Tokens:
+So bleibt die Website die Quelle der Farben. Weil der Browser die Variablen erst
+beim Anzeigen auflöst, wirkt eine Änderung an den Tokens ohne neues Rendering.
+Hex-Werte sind nicht mehr nötig. Der Codeblock-Hintergrund steht weiterhin mit
+`@theme static` in `global.css`. So bleibt er im erzeugten CSS erhalten, obwohl
+keine Utility-Klasse ihn verwendet.
 
-```ts title="src/lib/markdown/mermaid.ts · CSS-Farben im Buildbrowser lesen"
-const style = getComputedStyle(document.documentElement)
+### Beschriftungen ohne Browser ausmessen
 
-function color(name: string) {
-  return style.getPropertyValue(name).trim()
-}
+Für Knotenbreiten und Zeilenumbrüche muss Pele wissen, wie breit ein Text ist.
+Im Browser misst Pele über ein Canvas, in Node schätzt es die Breite mit einer
+eingebauten Tabelle. Die Diagramme dieses Blogs verwenden JetBrains Mono. In
+dieser Schrift ist jedes Zeichen 0,6 em breit, in allen Schnitten. Ein eigener
+Messer kommt deshalb ohne Schriftdatei aus:
+
+```ts title="src/lib/markdown/mermaid.ts · Textbreiten"
+const measurer = { width: (text: string, size: number) => [...text].length * size * 0.6 }
 ```
 
-So bleibt die Website die Quelle der Farben. Eine Änderung an den Tokens kommt
-auch bei Mermaid an. Die Konfiguration ergänzt die Grundfarben und die Stellen,
-an denen Mermaids abgeleitete Farben von der Websitegestaltung abweichen:
+Die Schriftgröße liest das Plugin aus dem Token `--text-code` in `global.css`:
+hier 0,875 rem, also 14 Pixel. Pele berechnet Knoten und Abstände bereits mit
+dieser Größe. Eine nachträgliche Änderung im CSS würde die Texte dagegen
+verkleinern, ohne das Layout neu zu berechnen.
 
-```ts title="src/lib/markdown/mermaid.ts · Theme-Auszug"
-const paper = color("--color-paper")
-const ink = color("--color-ink")
-const muted = color("--color-muted")
-const rule = color("--color-rule")
-const surface = color("--color-code")
-const appearance = { theme: "base", look: "classic", useMaxWidth: false } as const
-const code = document.querySelector<HTMLElement>(".astro-code")!
-const fontSize = getComputedStyle(code).fontSize
-
-mermaid.initialize({
-  startOnLoad: false,
-  securityLevel: "strict",
-  suppressErrorRendering: true,
-  htmlLabels: false,
-  layout: "elk",
-  theme: "base",
-  look: "classic",
-  fontFamily: "var(--font-mono)",
-  fontSize: parseFloat(fontSize),
-  themeVariables: {
-    fontFamily: "var(--font-mono)",
-    fontSize,
-    background: surface,
-    primaryColor: paper,
-    primaryTextColor: ink,
-    primaryBorderColor: muted,
-    secondaryColor: surface,
-    secondaryTextColor: ink,
-    secondaryBorderColor: muted,
-    tertiaryColor: paper,
-    tertiaryTextColor: ink,
-    tertiaryBorderColor: muted,
-    lineColor: muted,
-    clusterBkg: surface,
-    clusterBorder: rule,
-    signalColor: muted,
-    noteBkgColor: surface,
-    noteBorderColor: muted,
-    noteTextColor: ink,
-    activationBorderColor: muted,
-    sequenceNumberColor: paper,
-    attributeBackgroundColorOdd: paper,
-    attributeBackgroundColorEven: surface
-  },
-  flowchart: {
-    ...appearance,
-    curve: "linear",
-    subGraphTitleMargin: { top: 12, bottom: 12 }
-  },
-  sequence: appearance,
-  state: appearance,
-  er: appearance
-})
-```
-
-Das `base`-Theme übernimmt viele Werte bereits aus den Grundfarben. Zum Beispiel
-folgen Akteure der primären Knotenfarbe, ihr Text `primaryTextColor` und ihre
-Ränder `primaryBorderColor`. Diese Zuordnungen müssen nicht einzeln wiederholt
-werden. Gruppenränder, Notizen und Tabellenzeilen bekommen die passenden Tokens
-ausdrücklich zugewiesen.
-
-Die Schriftfamilie lässt sich direkt als `var(--font-mono)` übergeben. Mermaid
-setzt sie in SVG-Styles ein, die der Browser auch beim Ausmessen der Texte
-auflöst. Der Tokenname `--font-mono` allein wäre dagegen ein Schriftname.
-
-Die Schriftgröße stammt aus dem berechneten CSS des Quelltextblocks: hier 14
-Pixel. Mermaid verwendet sie bereits beim Ausmessen der Beschriftungen.
-Sequenzdiagramme benötigen zusätzlich die numerische `fontSize` auf der obersten
-Konfigurationsebene. Die Themevariable allein ändert ihre Inline-Schriftgrößen
-nicht.
-
-Eine nachträgliche Änderung im SVG könnte die Texte verkleinern, ohne Knoten und
-Abstände neu zu berechnen. `subGraphTitleMargin` reserviert bei Gruppen jeweils
-12 Pixel oberhalb und unterhalb der Überschrift. So sitzt sie nicht direkt auf
-dem Rahmen. Die Option ist in der
-[Flowchart-Konfiguration](https://mermaid.js.org/config/schema-docs/config-defs-flowchart-diagram-config.html#subgraphtitlemargin)
-beschrieben.
-
-`htmlLabels: false` hält die Beschriftungen in SVG-Elementen. Damit wirken die
-allgemeinen Markdown-Styles für Absätze, Tabellen und Inline-Code nicht auf
-HTML innerhalb eines Diagramms. `securityLevel: "strict"` deaktiviert unter
-anderem Mermaid-Klickaktionen. `suppressErrorRendering: true` überlässt die
-Fehlerbehandlung dem Buildrenderer.
+Pele erzeugt Beschriftungen immer als SVG-Text. Beliebiges HTML in Labels
+unterstützt es nicht, nur einige Inline-Tags wie `<b>`, `<code>` oder `<br>`.
+Damit wirken die allgemeinen Markdown-Styles nicht auf ein Diagramm.
+JavaScript-Callbacks in `click`-Anweisungen ignoriert Pele.
 
 ### Den Block und die mobile Darstellung abstimmen
 
@@ -339,10 +262,11 @@ Innenabstand und einen lokalen Scrollbereich:
 }
 ```
 
-Mit `useMaxWidth: false` setzt Mermaid selbst die natürliche Breite und Höhe am
-SVG. CSS übernimmt diese Größe und zentriert das Diagramm. Dadurch bleibt auch
-die 14 Pixel große Schrift erhalten. Breitere Diagramme scrollen innerhalb des
-Blocks.
+Mit `responsive: false` setzt Pele die natürliche Breite und Höhe am SVG. CSS
+übernimmt diese Größe und zentriert das Diagramm. Dadurch bleibt auch die
+14 Pixel große Schrift erhalten. Breitere Diagramme scrollen innerhalb des
+Blocks. Peles eigene Anpassung an die Containerbreite bräuchte JavaScript im
+Browser und bleibt hier ungenutzt.
 
 Der Scrollbereich ist per Tab erreichbar und über den zugänglichen Diagrammtitel
 benannt. Der Quelltext-Schalter verwendet dieselben Abstände und Farben wie die
@@ -350,26 +274,26 @@ Codeblock-Kopfzeile. Diagrammbeschriftungen, Code und Titel verwenden JetBrains 
 
 ## Diagramme ausprobieren
 
-Alle folgenden Definitionen enthalten `accTitle` und `accDescr`. Mermaid erzeugt
+Alle folgenden Definitionen enthalten `accTitle` und `accDescr`. Pele erzeugt
 daraus Titel, Beschreibung und ARIA-Verweise im SVG. Der Fließtext erklärt den
 Inhalt zusätzlich. Siehe [Mermaids Barrierefreiheitsoptionen](https://mermaid.js.org/config/accessibility.html).
 
 ### Flowchart für den Blog-Stack
 
 Astro verarbeitet den Beitrag beim Build. Shiki erzeugt den Quelltextblock,
-anschließend ergänzt Mermaid das fertige SVG:
+anschließend ergänzt Pele das fertige SVG:
 
 ```mermaid title="Der Weg vom Markdown zum Diagramm" showLineNumbers
 flowchart LR
   accTitle: Markdown und Mermaid im Astro-Blog
-  accDescr: Astro lädt einen Markdown-Beitrag aus der Content Collection. Shiki färbt die Definition ein. Mermaid erzeugt beim Build das SVG. Der Browser zeigt die fertige Grafik mit aufklappbarem Quelltext.
+  accDescr: Astro lädt einen Markdown-Beitrag aus der Content Collection. Shiki färbt die Definition ein. Pele erzeugt beim Build das SVG. Der Browser zeigt die fertige Grafik mit aufklappbarem Quelltext.
   Markdown[Markdown] --> Build
   subgraph Build[Beim Build]
     direction TB
     Collection[Content Collection]
     Collection --> Shiki[Shiki und Codeblock]
-    Shiki --> Mermaid[Mermaid und lokale Schriften]
-    Mermaid --> HTML[Blogseite mit SVG und Quelltext]
+    Shiki --> Pele[Pele mit Schriftmaßen]
+    Pele --> HTML[Blogseite mit SVG und Quelltext]
   end
   Build --> Browser
   subgraph Browser[Im Browser]
@@ -383,24 +307,24 @@ die eingeblendeten Zeilennummern nicht in der Definition stehen.
 
 ### Sequenzdiagramm für das Rendering
 
-Der Buildrenderer erzeugt die Grafik vor der Veröffentlichung. Eine ungültige
+Das Markdown-Plugin erzeugt die Grafik vor der Veröffentlichung. Eine ungültige
 Definition bricht den Build ab:
 
 ```mermaid title="Diagramme beim Build erzeugen"
 sequenceDiagram
   accTitle: Ein Mermaid-Diagramm beim Build rendern
-  accDescr: Astro verarbeitet den Artikel. Der Renderer startet Chromium mit lokalen Schriften und Mermaid. Bei Erfolg ergänzt er das SVG im HTML. Bei einem Fehler stoppt der Build.
+  accDescr: Astro verarbeitet den Artikel. Das Plugin liest die Schriftgröße und lässt Pele jede Definition rendern. Bei Erfolg ergänzt es das SVG im HTML. Bei einem Fehler stoppt der Build.
   participant A as Astro
-  participant R as Buildrenderer
-  participant M as Mermaid
+  participant R as Markdown-Plugin
+  participant P as Pele
   A->>R: Artikel mit Diagrammblöcken verarbeiten
-  Note over R: Chromium starten und Schriften laden
-  R->>M: Definition rendern
+  Note over R: Schriftgröße aus global.css lesen
+  R->>P: Definition rendern
   alt Definition ist gültig
-    M-->>R: SVG
+    P-->>R: SVG
     R-->>A: HTML mit SVG und aufklappbarem Quelltext
   else Definition ist fehlerhaft
-    M-->>R: Fehler
+    P-->>R: Fehler mit Zeilennummer
     R-->>A: Build mit Dateipfad und Diagrammnummer abbrechen
   end
 ```
@@ -450,8 +374,8 @@ erDiagram
   }
 ```
 
-Die abwechselnden Zeilenflächen des ER-Diagramms müssen ebenfalls die hellen
-Grautöne verwenden. Die Beziehungslinien bleiben deutlich sichtbar.
+Die Tabellenköpfe und Attributzeilen des ER-Diagramms müssen ebenfalls die
+hellen Töne der Website verwenden. Die Beziehungslinien bleiben deutlich sichtbar.
 
 ### Ein breites Diagramm auf dem Smartphone
 
@@ -510,6 +434,20 @@ Die großen Chunks betrafen also den fertigen Build.
 
 Deshalb entstehen die SVGs inzwischen beim Build. Mermaid und ELK werden nicht
 mehr an Besucher ausgeliefert. Die Diagramme behalten ihre Gestaltung und sind
-auch ohne JavaScript sichtbar. Als zusätzlicher Schritt ist Chromium auf dem
-Buildrechner erforderlich. Dieser Artikel und seine Beispiele beschreiben bereits
-die neue Umsetzung.
+auch ohne JavaScript sichtbar.
+
+## Nachtrag: Pele statt Mermaid.js
+
+Das Rendering beim Build lief zunächst weiter mit Mermaid.js. Mermaid braucht
+zum Ausmessen der Beschriftungen einen Browser. Deshalb startete der Build für
+jeden Artikel mit Diagrammen ein Chromium über Playwright, lud die Schrift als
+Data-URL und las die Farben aus berechneten Styles. Auf dem Buildserver musste
+Chromium vor jedem Build installiert werden.
+
+Seit November 2026 rendert Pele die Diagramme direkt in Node. Die Mermaid-Syntax
+in den Artikeln bleibt unverändert. Damit entfallen Chromium im Build, die
+Übergabe der Farben als Hex-Werte und das nachträgliche Umbenennen von IDs.
+Die fünf SVGs dieses Artikels sind zusammen rund 22 kB statt 128 kB groß.
+Pele verwendet ein eigenes Layout. Knoten und Pfeile liegen daher etwas anders
+als mit Mermaids ELK-Layout. Dieser Artikel und seine Beispiele beschreiben
+bereits die Umsetzung mit Pele.

@@ -14,7 +14,7 @@
   --text-code: 0.875rem;
 }
 
-/* Mermaid reads these tokens during rendering; blog.css uses them via @reference. */
+/* No utility uses this token; blog.css reads it via @reference, also for diagrams. */
 @theme static {
   --color-code: #f8f8f8;
 }
