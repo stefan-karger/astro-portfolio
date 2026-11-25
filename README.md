@@ -10,11 +10,12 @@ Voraussetzungen: Node.js `^22.13.0 || >=24.0.0` und pnpm `12.10.0`.
 
 ```sh
 pnpm install --frozen-lockfile
-pnpm setup:diagrams
+pnpm setup:browser
 pnpm exec astro dev --background
 ```
 
-`pnpm setup:diagrams` installiert Chromium für Mermaid und die Browsertests.
+`pnpm setup:browser` installiert Chromium für die Browsertests. Mermaid-Diagramme
+rendert [Pele](https://pele.run/) beim Build ohne Browser.
 Den Entwicklungsserver mit `pnpm exec astro dev status`, `pnpm exec astro dev logs`
 und `pnpm exec astro dev stop` verwalten.
 

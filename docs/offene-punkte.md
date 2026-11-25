@@ -58,6 +58,15 @@ aufklappbarem Quelltext direkt im HTML. Mermaid- und ELK-JavaScript werden nicht
 nachgeladen. Desktop und schmale Ansichten mit 320 und 375 Pixeln sind geprüft;
 die Diagramme verursachen keinen Seitenüberlauf. Die Auswahlfarbe ist hell.
 
+Am 25. November 2026 auf Pele 1.13.0 umgestellt. Der Build braucht kein Chromium
+mehr, `netlify.toml` baut nur noch mit `pnpm build`. Lokal geprüft: fünf gültige
+SVGs je Sprachfassung, zusammen rund 22 statt 128 kB, kein Seitenüberlauf bei
+320, 375 und 1280 Pixeln. Breite Diagramme scrollen innerhalb ihres Blocks.
+Auf der
+[Deploy-Preview von PR #7](https://deploy-preview-7--stefan-karger.netlify.app/blog/astro-fuer-entwicklerblogs-mermaid-diagramme/)
+nachgeprüft: Der Netlify-Build läuft ohne Chromium, beide Sprachfassungen liefern
+dieselben fünf SVGs und die Diagramme sehen auf Desktop und Mobil passend aus.
+
 ### Noch offen
 
 - [ ] Nach Veröffentlichung die Produktionsdomain prüfen: HTML-Indexierbarkeit,

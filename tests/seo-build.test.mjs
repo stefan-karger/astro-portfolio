@@ -460,12 +460,10 @@ test("One German 404 artifact has usable return links and no content-page SEO ta
 })
 
 function svgs(html) {
-  return [...html.matchAll(/<svg\b[^>]*\bid="mermaid-[^"]+"[\s\S]*?<\/svg>/g)].map(
-    (match) => match[0]
-  )
+  return [...html.matchAll(/<svg\b[^>]*\bclass="pele\b[\s\S]*?<\/svg>/g)].map((match) => match[0])
 }
 
-test("Both built article surfaces contain complete SVGs and omit Mermaid client bundles", async () => {
+test("Both built article surfaces contain complete SVGs and omit diagram client bundles", async () => {
   for (const prefix of ["", "en/"]) {
     const html = await readFile(
       new URL(
@@ -488,7 +486,7 @@ test("Both built article surfaces contain complete SVGs and omit Mermaid client 
       assert.ok(parsed.desc)
       assert.ok(svg.includes(`aria-labelledby="${parsed.title["@_id"]}"`))
       assert.ok(svg.includes(`aria-describedby="${parsed.desc["@_id"]}"`))
-      assert.ok(tags(html, "div").some((tag) => tag["aria-label"] === parsed.title["#text"]))
+      assert.ok(tags(html, "div").some((tag) => tag["aria-labelledby"] === parsed.title["@_id"]))
       assert.ok(!/<(?:script|foreignObject)\b/.test(svg))
       const ownIds = [...svg.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1])
       for (const reference of svg
@@ -501,9 +499,9 @@ test("Both built article surfaces contain complete SVGs and omit Mermaid client 
     assert.equal(new Set(ids).size, ids.length)
   }
   const files = await readdir(new URL("../dist/_astro/", import.meta.url))
-  assert.ok(!files.some((file) => /^(?:mermaid|elk)-.*\.js$/.test(file)))
+  assert.ok(!files.some((file) => /^(?:mermaid|elk|pele)-.*\.js$/.test(file)))
   for (const file of files.filter((file) => file.endsWith(".js"))) {
     const code = await readFile(new URL(`../dist/_astro/${file}`, import.meta.url), "utf8")
-    assert.ok(!/mermaidAPI|registerDiagram|elk-api/.test(code), file)
+    assert.ok(!/mermaidAPI|registerDiagram|elk-api|PeleError/.test(code), file)
   }
 })
